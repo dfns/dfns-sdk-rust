@@ -1,0 +1,25 @@
+[package]
+name = "dfns-sdk-rust"
+version = "0.1.0"
+edition = "2021"
+description = "Dfns API SDK for Rust (generated client + hand-written core)"
+license = "MIT"
+
+[lib]
+# Doc comments carry API descriptions verbatim from the spec, not runnable Rust
+# examples; indented prose would otherwise be compiled as failing doctests.
+doctest = false
+
+[dependencies]
+reqwest = { version = "0.12", features = ["json", "multipart"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+urlencoding = "2"
+thiserror = "2"
+async-trait = "0.1"
+sha2 = "0.10"
+hex = "0.4"
+
+[dev-dependencies]
+tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
+wiremock = "0.6"
