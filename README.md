@@ -3,7 +3,8 @@
 [![Crates.io](https://img.shields.io/crates/v/dfns-sdk-rust.svg)](https://crates.io/crates/dfns-sdk-rust)
 [![Downloads](https://img.shields.io/crates/d/dfns-sdk-rust.svg)](https://crates.io/crates/dfns-sdk-rust)
 [![docs.rs](https://img.shields.io/docsrs/dfns-sdk-rust)](https://docs.rs/dfns-sdk-rust)
-[![CI](https://github.com/dfns/dfns-sdk-rust/actions/workflows/ci.yaml/badge.svg)](https://github.com/dfns/dfns-sdk-rust/actions/workflows/ci.yaml)
+[![Rust Build](https://github.com/dfns/dfns-sdk-rust/actions/workflows/build.yaml/badge.svg)](https://github.com/dfns/dfns-sdk-rust/actions/workflows/build.yaml)
+[![lint](https://github.com/dfns/dfns-sdk-rust/actions/workflows/lint.yaml/badge.svg)](https://github.com/dfns/dfns-sdk-rust/actions/workflows/lint.yaml)
 [![MSRV](https://img.shields.io/badge/MSRV-1.75-blue)](https://github.com/dfns/dfns-sdk-rust)
 [![License: MIT](https://img.shields.io/crates/l/dfns-sdk-rust.svg)](https://github.com/dfns/dfns-sdk-rust/blob/main/LICENSE)
 
