@@ -35,10 +35,9 @@ jobs:
       - name: Test
         run: cargo llvm-cov --all-features --workspace --lcov --output-path lcov.info
 
-      # TODO: enable once the repo is activated on codecov.io and CODECOV_TOKEN is set
-      # - name: Upload coverage reports to Codecov
-      #   uses: codecov/codecov-action@af09b5e394c93991b95a5e7646aeb90c1917f78f # v5.5.1
-      #   with:
-      #     token: ${{ secrets.CODECOV_TOKEN }}
-      #     files: lcov.info
-      #     slug: dfns/dfns-sdk-rust
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@af09b5e394c93991b95a5e7646aeb90c1917f78f # v5.5.1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: lcov.info
+          slug: dfns/dfns-sdk-rust
