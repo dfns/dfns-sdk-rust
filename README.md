@@ -5,6 +5,7 @@
 [![docs.rs](https://img.shields.io/docsrs/dfns-sdk-rust)](https://docs.rs/dfns-sdk-rust)
 [![Rust Build](https://github.com/dfns/dfns-sdk-rust/actions/workflows/build.yaml/badge.svg)](https://github.com/dfns/dfns-sdk-rust/actions/workflows/build.yaml)
 [![lint](https://github.com/dfns/dfns-sdk-rust/actions/workflows/lint.yaml/badge.svg)](https://github.com/dfns/dfns-sdk-rust/actions/workflows/lint.yaml)
+[![Coverage](https://codecov.io/github/dfns/dfns-sdk-rust/graph/badge.svg)](https://codecov.io/github/dfns/dfns-sdk-rust)
 [![MSRV](https://img.shields.io/badge/MSRV-1.75-blue)](https://github.com/dfns/dfns-sdk-rust)
 [![License: MIT](https://img.shields.io/crates/l/dfns-sdk-rust.svg)](https://github.com/dfns/dfns-sdk-rust/blob/main/LICENSE)
 

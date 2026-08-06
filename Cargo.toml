@@ -2,8 +2,15 @@
 name = "dfns-sdk-rust"
 version = "0.1.0"
 edition = "2021"
+rust-version = "1.75"
 description = "Dfns API SDK for Rust (generated client + hand-written core)"
 license = "MIT"
+repository = "https://github.com/dfns/dfns-sdk-rust"
+homepage = "https://www.dfns.co"
+documentation = "https://docs.rs/dfns-sdk-rust"
+readme = "README.md"
+keywords = ["dfns", "wallet", "custody", "blockchain", "sdk"]
+categories = ["api-bindings", "cryptography::cryptocurrencies"]
 
 [lib]
 # Doc comments carry API descriptions verbatim from the spec, not runnable Rust
