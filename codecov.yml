@@ -1,0 +1,30 @@
+coverage:
+  status:
+    project:
+      default:
+        target: auto
+    patch:
+      default:
+        target: auto
+
+ignore:
+  - "src/address_watches/**"
+  - "src/agreements/**"
+  - "src/allocations/**"
+  - "src/auth/**"
+  - "src/exchanges/**"
+  - "src/fee_sponsors/**"
+  - "src/keys/**"
+  - "src/networks/**"
+  - "src/payins/**"
+  - "src/payouts/**"
+  - "src/permissions/**"
+  - "src/policies/**"
+  - "src/signers/**"
+  - "src/staking/**"
+  - "src/swaps/**"
+  - "src/vaults/**"
+  - "src/wallets/**"
+  - "src/webhooks/**"
+  - "src/types.rs"
+  - "src/lib.rs"

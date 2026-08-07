@@ -2,8 +2,7 @@
 //!
 //! Write operations on the Dfns API require a *user action signature*: the client
 //! requests a challenge, signs it with the caller's credential, and replays the
-//! assertion on the real request. The signing keys never leave the caller, so this
-//! is the hand-written, security-critical seam — NOT generated from the spec.
+//! assertion on the real request. The signing keys never leave the caller.
 
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};

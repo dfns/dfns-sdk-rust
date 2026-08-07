@@ -801,6 +801,8 @@ pub struct VaultBalanceEntry {
         skip_serializing_if = "Option::is_none"
     )]
     pub quarantine_id: Option<String>,
+    #[serde(rename = "lockId", default, skip_serializing_if = "Option::is_none")]
+    pub lock_id: Option<String>,
 }
 
 /// Vault net worth in fiat, broken down by balance kind plus a total.
@@ -911,6 +913,39 @@ pub struct TransferRequest {
     pub details: Option<
         std::collections::HashMap<String, std::collections::HashMap<String, serde_json::Value>>,
     >,
+}
+
+/// Vault lock object: funds manually locked for off-chain settlement or escrow.
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct VaultLock {
+    #[serde(rename = "id")]
+    pub id: String,
+    #[serde(rename = "vaultId")]
+    pub vault_id: String,
+    #[serde(rename = "network")]
+    pub network: String,
+    #[serde(rename = "tid")]
+    pub tid: String,
+    #[serde(rename = "amount")]
+    pub amount: String,
+    #[serde(rename = "owner")]
+    pub owner: String,
+    #[serde(
+        rename = "externalId",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub external_id: Option<String>,
+    #[serde(rename = "reason", default, skip_serializing_if = "Option::is_none")]
+    pub reason: Option<String>,
+    #[serde(rename = "dateCreated")]
+    pub date_created: String,
+    #[serde(
+        rename = "dateDeleted",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub date_deleted: Option<String>,
 }
 
 /// Vault address object.
