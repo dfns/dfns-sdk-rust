@@ -180,6 +180,87 @@ async fn requires_signature_full_flow() {
 }
 
 #[tokio::test]
+async fn delegated_init_complete_flow() {
+    let server = MockServer::start().await;
+
+    // Init must carry the canonical path and the exact payload, without signing locally.
+    Mock::given(method("POST"))
+        .and(path("/auth/action/init"))
+        .and(body_partial_json(json!({
+            "userActionHttpMethod": "POST",
+            "userActionHttpPath": "/test/endpoint",
+            "userActionPayload": "{\"key\":\"value\"}",
+        })))
+        .respond_with(ResponseTemplate::new(200).set_body_json(json!({
+            "challenge": "dGVzdC1jaGFsbGVuZ2U",
+            "challengeIdentifier": "challenge-123",
+        })))
+        .mount(&server)
+        .await;
+    Mock::given(method("POST"))
+        .and(path("/auth/action"))
+        .and(body_partial_json(
+            json!({ "challengeIdentifier": "challenge-123" }),
+        ))
+        .respond_with(ResponseTemplate::new(200).set_body_json(json!({
+            "userAction": "user-action-token-xyz",
+        })))
+        .mount(&server)
+        .await;
+    Mock::given(method("POST"))
+        .and(path("/test/endpoint"))
+        .and(header("x-dfns-useraction", "user-action-token-xyz"))
+        .respond_with(ResponseTemplate::new(200).set_body_json(json!({ "result": "ok" })))
+        .mount(&server)
+        .await;
+
+    // No signer on the client: the assertion comes from outside.
+    let c = client(&server, None);
+    let body = json!({ "key": "value" });
+
+    let challenge = c
+        .create_user_action_challenge(Method::POST, "/test/endpoint", Some(&body))
+        .await
+        .unwrap();
+    assert_eq!(challenge.challenge_identifier, "challenge-123");
+
+    let assertion = CredentialAssertion {
+        kind: "Key".to_string(),
+        credential_assertion: CredentialAssertionData {
+            cred_id: "cred-1".to_string(),
+            client_data: "Y2xpZW50LWRhdGE".to_string(),
+            signature: "c2lnbmF0dXJl".to_string(),
+        },
+    };
+    let user_action = c
+        .complete_user_action_signing(challenge.challenge_identifier, &assertion)
+        .await
+        .unwrap();
+
+    let out: serde_json::Value = c
+        .request_with_user_action(Method::POST, "/test/endpoint", Some(&body), &user_action)
+        .await
+        .unwrap();
+    assert_eq!(out["result"], "ok");
+}
+
+#[tokio::test]
+async fn request_no_content_with_user_action_sets_header() {
+    let server = MockServer::start().await;
+    Mock::given(method("PUT"))
+        .and(path("/test/no-content"))
+        .and(header("x-dfns-useraction", "token-abc"))
+        .respond_with(ResponseTemplate::new(204))
+        .mount(&server)
+        .await;
+
+    client(&server, None)
+        .request_no_content_with_user_action(Method::PUT, "/test/no-content", None, "token-abc")
+        .await
+        .unwrap();
+}
+
+#[tokio::test]
 async fn requires_signature_signer_error() {
     let server = MockServer::start().await;
     Mock::given(method("POST"))
