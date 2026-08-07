@@ -334,6 +334,33 @@ pub struct LogoutResponse {
     pub message: String,
 }
 
+/// Complete OIDC Login
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct CompleteOidcLoginRequest {
+    #[serde(rename = "code")]
+    pub code: String,
+    #[serde(rename = "state")]
+    pub state: String,
+}
+
+/// Initiate OIDC Login
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct InitiateOidcLoginRequest {
+    #[serde(rename = "orgId", default, skip_serializing_if = "Option::is_none")]
+    pub org_id: Option<String>,
+    #[serde(rename = "tenantId", default, skip_serializing_if = "Option::is_none")]
+    pub tenant_id: Option<String>,
+    #[serde(rename = "redirectUri")]
+    pub redirect_uri: String,
+}
+
+/// Initiate OIDC Login
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct InitiateOidcLoginResponse {
+    #[serde(rename = "redirectUrl")]
+    pub redirect_url: String,
+}
+
 /// Send Login Code
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct SendLoginCodeRequest {

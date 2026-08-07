@@ -163,6 +163,81 @@ impl Client {
         Ok(())
     }
 
+    /// Returns the challenge to sign for (method, path, body). The request must later
+    /// be issued with the same (method, path, body).
+    pub async fn create_user_action_challenge(
+        &self,
+        method: Method,
+        path: &str,
+        body: Option<&serde_json::Value>,
+    ) -> Result<UserActionChallenge, Error> {
+        let payload: Vec<u8> = match body {
+            Some(b) => serde_json::to_vec(b)?,
+            None => Vec::new(),
+        };
+        self.init_user_action_challenge(&method, path, &payload)
+            .await
+    }
+
+    /// Submits an externally-signed assertion and returns the user action token.
+    pub async fn complete_user_action_signing(
+        &self,
+        challenge_identifier: String,
+        assertion: &CredentialAssertion,
+    ) -> Result<String, Error> {
+        let complete = CompleteRequest {
+            challenge_identifier,
+            first_factor: assertion,
+        };
+        let resp: CompleteResponse = self.post_json("/auth/action", &complete).await?;
+        Ok(resp.user_action)
+    }
+
+    /// Performs a request with an already obtained user action token.
+    pub async fn request_with_user_action<R: DeserializeOwned>(
+        &self,
+        method: Method,
+        path: &str,
+        body: Option<&serde_json::Value>,
+        user_action_token: &str,
+    ) -> Result<R, Error> {
+        let payload: Vec<u8> = match body {
+            Some(b) => serde_json::to_vec(b)?,
+            None => Vec::new(),
+        };
+        let bytes = self
+            .dispatch(
+                method,
+                path,
+                body.is_some().then_some(payload),
+                Some(user_action_token),
+            )
+            .await?;
+        Ok(serde_json::from_slice(&bytes)?)
+    }
+
+    /// Same but without decoding a response body.
+    pub async fn request_no_content_with_user_action(
+        &self,
+        method: Method,
+        path: &str,
+        body: Option<&serde_json::Value>,
+        user_action_token: &str,
+    ) -> Result<(), Error> {
+        let payload: Vec<u8> = match body {
+            Some(b) => serde_json::to_vec(b)?,
+            None => Vec::new(),
+        };
+        self.dispatch(
+            method,
+            path,
+            body.is_some().then_some(payload),
+            Some(user_action_token),
+        )
+        .await?;
+        Ok(())
+    }
+
     async fn send(
         &self,
         method: Method,
@@ -177,23 +252,40 @@ impl Client {
             None => Vec::new(),
         };
 
+        let token = if requires_user_action {
+            Some(self.user_action_token(&method, path, &payload).await?)
+        } else {
+            None
+        };
+
+        self.dispatch(
+            method,
+            path,
+            body.is_some().then_some(payload),
+            token.as_deref(),
+        )
+        .await
+    }
+
+    async fn dispatch(
+        &self,
+        method: Method,
+        path: &str,
+        payload: Option<Vec<u8>>,
+        user_action_token: Option<&str>,
+    ) -> Result<Vec<u8>, Error> {
         let url = format!("{}{}", self.inner.base_url, path);
         let mut req = self
             .inner
             .http
-            .request(method.clone(), &url)
+            .request(method, &url)
             .bearer_auth(&self.inner.auth_token);
-        if body.is_some() {
-            req = req
-                .header(CONTENT_TYPE, "application/json")
-                .body(payload.clone());
+        if let Some(payload) = payload {
+            req = req.header(CONTENT_TYPE, "application/json").body(payload);
         }
-
-        if requires_user_action {
-            let token = self.user_action_token(&method, path, &payload).await?;
+        if let Some(token) = user_action_token {
             req = req.header("X-DFNS-USERACTION", token);
         }
-
         Self::handle_response(req.send().await?).await
     }
 
@@ -252,23 +344,27 @@ impl Client {
         payload: &[u8],
     ) -> Result<String, Error> {
         let signer = self.inner.signer.as_ref().ok_or(Error::SignerRequired)?;
+        let challenge = self
+            .init_user_action_challenge(method, path, payload)
+            .await?;
+        let assertion = signer.sign(&challenge).await?;
+        self.complete_user_action_signing(challenge.challenge_identifier, &assertion)
+            .await
+    }
 
+    async fn init_user_action_challenge(
+        &self,
+        method: &Method,
+        path: &str,
+        payload: &[u8],
+    ) -> Result<UserActionChallenge, Error> {
         let init = InitRequest {
             user_action_payload: String::from_utf8_lossy(payload).into_owned(),
             user_action_http_method: method.as_str().to_string(),
             user_action_http_path: canonical_request_path(path),
             user_action_server_kind: "Api".to_string(),
         };
-        let challenge: UserActionChallenge = self.post_json("/auth/action/init", &init).await?;
-
-        let assertion = signer.sign(&challenge).await?;
-
-        let complete = CompleteRequest {
-            challenge_identifier: challenge.challenge_identifier,
-            first_factor: &assertion,
-        };
-        let resp: CompleteResponse = self.post_json("/auth/action", &complete).await?;
-        Ok(resp.user_action)
+        self.post_json("/auth/action/init", &init).await
     }
 
     /// POST a JSON body and decode a typed response, without user-action signing.
