@@ -75,3 +75,54 @@ impl DfnsClient {
         })
     }
 }
+
+/// Same as DfnsClient but signed operations are init/complete pairs, no signer needed.
+#[derive(Clone)]
+pub struct DfnsDelegatedClient {
+    pub address_watches: address_watches::delegated::DelegatedAddressWatchesClient,
+    pub agreements: agreements::delegated::DelegatedAgreementsClient,
+    pub allocations: allocations::delegated::DelegatedAllocationsClient,
+    pub auth: auth::delegated::DelegatedAuthClient,
+    pub exchanges: exchanges::delegated::DelegatedExchangesClient,
+    pub fee_sponsors: fee_sponsors::delegated::DelegatedFeeSponsorsClient,
+    pub keys: keys::delegated::DelegatedKeysClient,
+    pub networks: networks::delegated::DelegatedNetworksClient,
+    pub payins: payins::delegated::DelegatedPayinsClient,
+    pub payouts: payouts::delegated::DelegatedPayoutsClient,
+    pub permissions: permissions::delegated::DelegatedPermissionsClient,
+    pub policies: policies::delegated::DelegatedPoliciesClient,
+    pub signers: signers::delegated::DelegatedSignersClient,
+    pub staking: staking::delegated::DelegatedStakingClient,
+    pub swaps: swaps::delegated::DelegatedSwapsClient,
+    pub vaults: vaults::delegated::DelegatedVaultsClient,
+    pub wallets: wallets::delegated::DelegatedWalletsClient,
+    pub webhooks: webhooks::delegated::DelegatedWebhooksClient,
+}
+
+impl DfnsDelegatedClient {
+    pub fn new(options: Options) -> Result<Self, Error> {
+        let client = Client::new(options)?;
+        Ok(DfnsDelegatedClient {
+            address_watches: address_watches::delegated::DelegatedAddressWatchesClient::new(
+                client.clone(),
+            ),
+            agreements: agreements::delegated::DelegatedAgreementsClient::new(client.clone()),
+            allocations: allocations::delegated::DelegatedAllocationsClient::new(client.clone()),
+            auth: auth::delegated::DelegatedAuthClient::new(client.clone()),
+            exchanges: exchanges::delegated::DelegatedExchangesClient::new(client.clone()),
+            fee_sponsors: fee_sponsors::delegated::DelegatedFeeSponsorsClient::new(client.clone()),
+            keys: keys::delegated::DelegatedKeysClient::new(client.clone()),
+            networks: networks::delegated::DelegatedNetworksClient::new(client.clone()),
+            payins: payins::delegated::DelegatedPayinsClient::new(client.clone()),
+            payouts: payouts::delegated::DelegatedPayoutsClient::new(client.clone()),
+            permissions: permissions::delegated::DelegatedPermissionsClient::new(client.clone()),
+            policies: policies::delegated::DelegatedPoliciesClient::new(client.clone()),
+            signers: signers::delegated::DelegatedSignersClient::new(client.clone()),
+            staking: staking::delegated::DelegatedStakingClient::new(client.clone()),
+            swaps: swaps::delegated::DelegatedSwapsClient::new(client.clone()),
+            vaults: vaults::delegated::DelegatedVaultsClient::new(client.clone()),
+            wallets: wallets::delegated::DelegatedWalletsClient::new(client.clone()),
+            webhooks: webhooks::delegated::DelegatedWebhooksClient::new(client.clone()),
+        })
+    }
+}

@@ -86,6 +86,88 @@ pub struct CreateVaultAddressResponse {
     pub address: String,
 }
 
+/// List Vault Locks
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct ListVaultLocksResponse {
+    #[serde(rename = "items")]
+    pub items: Vec<crate::types::VaultLock>,
+    #[serde(
+        rename = "nextPageToken",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub next_page_token: Option<String>,
+}
+
+/// Query parameters for the ListVaultLocksQuery operation.
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct ListVaultLocksQuery {
+    #[serde(rename = "limit", default, skip_serializing_if = "Option::is_none")]
+    pub limit: Option<i64>,
+    #[serde(
+        rename = "paginationToken",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub pagination_token: Option<String>,
+    #[serde(rename = "network", default, skip_serializing_if = "Option::is_none")]
+    pub network: Option<String>,
+    #[serde(rename = "tid", default, skip_serializing_if = "Option::is_none")]
+    pub tid: Option<String>,
+}
+
+/// Create Vault Lock
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct CreateVaultLockRequest {
+    #[serde(rename = "network")]
+    pub network: String,
+    #[serde(rename = "tid")]
+    pub tid: String,
+    #[serde(rename = "amount")]
+    pub amount: String,
+    #[serde(
+        rename = "externalId",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub external_id: Option<String>,
+    #[serde(rename = "reason", default, skip_serializing_if = "Option::is_none")]
+    pub reason: Option<String>,
+}
+
+/// Create Vault Lock
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct CreateVaultLockResponse {
+    #[serde(rename = "id")]
+    pub id: String,
+    #[serde(rename = "vaultId")]
+    pub vault_id: String,
+    #[serde(rename = "network")]
+    pub network: String,
+    #[serde(rename = "tid")]
+    pub tid: String,
+    #[serde(rename = "amount")]
+    pub amount: String,
+    #[serde(rename = "owner")]
+    pub owner: String,
+    #[serde(
+        rename = "externalId",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub external_id: Option<String>,
+    #[serde(rename = "reason", default, skip_serializing_if = "Option::is_none")]
+    pub reason: Option<String>,
+    #[serde(rename = "dateCreated")]
+    pub date_created: String,
+    #[serde(
+        rename = "dateDeleted",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub date_deleted: Option<String>,
+}
+
 /// Create Vault Transfer
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct CreateVaultTransferRequest {
@@ -176,6 +258,72 @@ pub struct CreateVaultTransferResponse {
     pub details: Option<
         std::collections::HashMap<String, std::collections::HashMap<String, serde_json::Value>>,
     >,
+}
+
+/// Get Vault Lock
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct GetVaultLockResponse {
+    #[serde(rename = "id")]
+    pub id: String,
+    #[serde(rename = "vaultId")]
+    pub vault_id: String,
+    #[serde(rename = "network")]
+    pub network: String,
+    #[serde(rename = "tid")]
+    pub tid: String,
+    #[serde(rename = "amount")]
+    pub amount: String,
+    #[serde(rename = "owner")]
+    pub owner: String,
+    #[serde(
+        rename = "externalId",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub external_id: Option<String>,
+    #[serde(rename = "reason", default, skip_serializing_if = "Option::is_none")]
+    pub reason: Option<String>,
+    #[serde(rename = "dateCreated")]
+    pub date_created: String,
+    #[serde(
+        rename = "dateDeleted",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub date_deleted: Option<String>,
+}
+
+/// Delete Vault Lock
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct DeleteVaultLockResponse {
+    #[serde(rename = "id")]
+    pub id: String,
+    #[serde(rename = "vaultId")]
+    pub vault_id: String,
+    #[serde(rename = "network")]
+    pub network: String,
+    #[serde(rename = "tid")]
+    pub tid: String,
+    #[serde(rename = "amount")]
+    pub amount: String,
+    #[serde(rename = "owner")]
+    pub owner: String,
+    #[serde(
+        rename = "externalId",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub external_id: Option<String>,
+    #[serde(rename = "reason", default, skip_serializing_if = "Option::is_none")]
+    pub reason: Option<String>,
+    #[serde(rename = "dateCreated")]
+    pub date_created: String,
+    #[serde(
+        rename = "dateDeleted",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub date_deleted: Option<String>,
 }
 
 /// Get Vault
