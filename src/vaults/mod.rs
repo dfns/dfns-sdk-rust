@@ -56,7 +56,7 @@ impl VaultsClient {
             .await
     }
 
-    /// Creates a vault address (managed wallet) on an EVM or Bitcoin network.
+    /// Creates a vault address (managed wallet) on a network that supports vaults.
     pub async fn create_vault_address(
         &self,
         vault_id: String,

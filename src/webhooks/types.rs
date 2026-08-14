@@ -159,8 +159,7 @@ pub struct GetWebhookEventResponse {
     #[serde(rename = "kind")]
     pub kind: String,
     #[serde(rename = "data")]
-    pub data:
-        std::collections::HashMap<String, std::collections::HashMap<String, serde_json::Value>>,
+    pub data: std::collections::HashMap<String, serde_json::Value>,
     #[serde(rename = "status")]
     pub status: String,
     #[serde(rename = "error", default, skip_serializing_if = "Option::is_none")]

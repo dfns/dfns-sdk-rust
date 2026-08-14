@@ -409,9 +409,7 @@ pub struct GenerateSignatureResponse {
     )]
     pub external_id: Option<String>,
     #[serde(rename = "details", default, skip_serializing_if = "Option::is_none")]
-    pub details: Option<
-        std::collections::HashMap<String, std::collections::HashMap<String, serde_json::Value>>,
-    >,
+    pub details: Option<std::collections::HashMap<String, serde_json::Value>>,
 }
 
 /// Get Signature
@@ -482,9 +480,7 @@ pub struct GetSignatureResponse {
     )]
     pub external_id: Option<String>,
     #[serde(rename = "details", default, skip_serializing_if = "Option::is_none")]
-    pub details: Option<
-        std::collections::HashMap<String, std::collections::HashMap<String, serde_json::Value>>,
-    >,
+    pub details: Option<std::collections::HashMap<String, serde_json::Value>>,
 }
 
 /// Import Key
