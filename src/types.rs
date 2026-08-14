@@ -92,6 +92,10 @@ pub enum AddressWatchNetwork {
     SeiAtlantic2,
     #[serde(rename = "SeiPacific1")]
     SeiPacific1,
+    #[serde(rename = "Solana")]
+    Solana,
+    #[serde(rename = "SolanaDevnet")]
+    SolanaDevnet,
     #[serde(rename = "Sonic")]
     Sonic,
     #[serde(rename = "SonicTestnet")]
@@ -161,6 +165,8 @@ impl std::fmt::Display for AddressWatchNetwork {
             AddressWatchNetwork::RobinhoodSepolia => "RobinhoodSepolia",
             AddressWatchNetwork::SeiAtlantic2 => "SeiAtlantic2",
             AddressWatchNetwork::SeiPacific1 => "SeiPacific1",
+            AddressWatchNetwork::Solana => "Solana",
+            AddressWatchNetwork::SolanaDevnet => "SolanaDevnet",
             AddressWatchNetwork::Sonic => "Sonic",
             AddressWatchNetwork::SonicTestnet => "SonicTestnet",
             AddressWatchNetwork::Tempo => "Tempo",
@@ -774,6 +780,43 @@ pub struct Requester {
     pub user_id: String,
     #[serde(rename = "tokenId", default, skip_serializing_if = "Option::is_none")]
     pub token_id: Option<String>,
+}
+
+/// Request to release quarantined funds into the available balance. Executed immediately unless a policy requires approval, in which case it stays Pending until the approval resolves.
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct VaultReleaseQuarantineRequest {
+    #[serde(rename = "id")]
+    pub id: String,
+    #[serde(rename = "vaultId")]
+    pub vault_id: String,
+    #[serde(rename = "quarantineId")]
+    pub quarantine_id: String,
+    #[serde(rename = "network")]
+    pub network: String,
+    #[serde(rename = "transactionHash")]
+    pub transaction_hash: String,
+    #[serde(rename = "kytResult", default, skip_serializing_if = "Option::is_none")]
+    pub kyt_result: Option<serde_json::Value>,
+    #[serde(rename = "requester")]
+    pub requester: serde_json::Value,
+    #[serde(rename = "reason", default, skip_serializing_if = "Option::is_none")]
+    pub reason: Option<String>,
+    #[serde(
+        rename = "rejectionReason",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub rejection_reason: Option<String>,
+    #[serde(rename = "status")]
+    pub status: String,
+    #[serde(
+        rename = "approvalId",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub approval_id: Option<String>,
+    #[serde(rename = "dateCreated")]
+    pub date_created: String,
 }
 
 /// Vault balance entry object.
