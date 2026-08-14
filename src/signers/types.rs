@@ -90,6 +90,8 @@ pub struct CreateGenesisInputRequest {
     pub kind: String,
     #[serde(rename = "numProvisioners")]
     pub num_provisioners: i64,
+    #[serde(rename = "numOperational")]
+    pub num_operational: i64,
     #[serde(rename = "numSecp256k1")]
     pub num_secp256k1: i64,
     #[serde(rename = "numEd25519")]
@@ -113,9 +115,7 @@ pub struct CreateGenesisInputRequest {
         default,
         skip_serializing_if = "Option::is_none"
     )]
-    pub debug_options: Option<
-        std::collections::HashMap<String, std::collections::HashMap<String, serde_json::Value>>,
-    >,
+    pub debug_options: Option<std::collections::HashMap<String, serde_json::Value>>,
 }
 
 /// Create Key Harvest Input

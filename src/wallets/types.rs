@@ -62,9 +62,7 @@ pub struct AbortTransactionResponse {
     )]
     pub replacement_id: Option<String>,
     #[serde(rename = "details", default, skip_serializing_if = "Option::is_none")]
-    pub details: Option<
-        std::collections::HashMap<String, std::collections::HashMap<String, serde_json::Value>>,
-    >,
+    pub details: Option<std::collections::HashMap<String, serde_json::Value>>,
 }
 
 /// Abort Transfer
@@ -135,9 +133,7 @@ pub struct AbortTransferResponse {
     )]
     pub replacement_id: Option<String>,
     #[serde(rename = "details", default, skip_serializing_if = "Option::is_none")]
-    pub details: Option<
-        std::collections::HashMap<String, std::collections::HashMap<String, serde_json::Value>>,
-    >,
+    pub details: Option<std::collections::HashMap<String, serde_json::Value>>,
 }
 
 /// Request body for the activateWallet operation.
@@ -203,9 +199,7 @@ pub struct ActivateWalletResponse {
     )]
     pub replacement_id: Option<String>,
     #[serde(rename = "details", default, skip_serializing_if = "Option::is_none")]
-    pub details: Option<
-        std::collections::HashMap<String, std::collections::HashMap<String, serde_json::Value>>,
-    >,
+    pub details: Option<std::collections::HashMap<String, serde_json::Value>>,
 }
 
 /// List Transactions
@@ -299,9 +293,7 @@ pub struct SignAndBroadcastTransactionResponse {
     )]
     pub replacement_id: Option<String>,
     #[serde(rename = "details", default, skip_serializing_if = "Option::is_none")]
-    pub details: Option<
-        std::collections::HashMap<String, std::collections::HashMap<String, serde_json::Value>>,
-    >,
+    pub details: Option<std::collections::HashMap<String, serde_json::Value>>,
 }
 
 /// Cancel Transaction
@@ -364,9 +356,7 @@ pub struct CancelTransactionResponse {
     )]
     pub replacement_id: Option<String>,
     #[serde(rename = "details", default, skip_serializing_if = "Option::is_none")]
-    pub details: Option<
-        std::collections::HashMap<String, std::collections::HashMap<String, serde_json::Value>>,
-    >,
+    pub details: Option<std::collections::HashMap<String, serde_json::Value>>,
 }
 
 /// Cancel Transfer
@@ -429,9 +419,7 @@ pub struct CancelTransferResponse {
     )]
     pub replacement_id: Option<String>,
     #[serde(rename = "details", default, skip_serializing_if = "Option::is_none")]
-    pub details: Option<
-        std::collections::HashMap<String, std::collections::HashMap<String, serde_json::Value>>,
-    >,
+    pub details: Option<std::collections::HashMap<String, serde_json::Value>>,
 }
 
 /// Proxy a request to the Canton Ledger API
@@ -505,9 +493,7 @@ pub struct SpeedUpTransactionResponse {
     )]
     pub replacement_id: Option<String>,
     #[serde(rename = "details", default, skip_serializing_if = "Option::is_none")]
-    pub details: Option<
-        std::collections::HashMap<String, std::collections::HashMap<String, serde_json::Value>>,
-    >,
+    pub details: Option<std::collections::HashMap<String, serde_json::Value>>,
 }
 
 /// Speed Up Transfer
@@ -570,9 +556,7 @@ pub struct SpeedUpTransferResponse {
     )]
     pub replacement_id: Option<String>,
     #[serde(rename = "details", default, skip_serializing_if = "Option::is_none")]
-    pub details: Option<
-        std::collections::HashMap<String, std::collections::HashMap<String, serde_json::Value>>,
-    >,
+    pub details: Option<std::collections::HashMap<String, serde_json::Value>>,
 }
 
 /// List Wallets
@@ -747,9 +731,7 @@ pub struct GetTransactionResponse {
     )]
     pub replacement_id: Option<String>,
     #[serde(rename = "details", default, skip_serializing_if = "Option::is_none")]
-    pub details: Option<
-        std::collections::HashMap<String, std::collections::HashMap<String, serde_json::Value>>,
-    >,
+    pub details: Option<std::collections::HashMap<String, serde_json::Value>>,
 }
 
 /// Get Transfer
@@ -820,9 +802,7 @@ pub struct GetTransferResponse {
     )]
     pub replacement_id: Option<String>,
     #[serde(rename = "details", default, skip_serializing_if = "Option::is_none")]
-    pub details: Option<
-        std::collections::HashMap<String, std::collections::HashMap<String, serde_json::Value>>,
-    >,
+    pub details: Option<std::collections::HashMap<String, serde_json::Value>>,
 }
 
 /// Get Wallet
@@ -1150,9 +1130,7 @@ pub struct TransferAssetResponse {
     )]
     pub replacement_id: Option<String>,
     #[serde(rename = "details", default, skip_serializing_if = "Option::is_none")]
-    pub details: Option<
-        std::collections::HashMap<String, std::collections::HashMap<String, serde_json::Value>>,
-    >,
+    pub details: Option<std::collections::HashMap<String, serde_json::Value>>,
 }
 
 /// Tag Wallet

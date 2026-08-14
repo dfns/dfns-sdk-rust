@@ -72,7 +72,7 @@ pub struct CreateVaultResponse {
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct CreateVaultAddressRequest {
     #[serde(rename = "network")]
-    pub network: serde_json::Value,
+    pub network: String,
 }
 
 /// Create Vault Address
@@ -172,7 +172,7 @@ pub struct CreateVaultLockResponse {
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct CreateVaultTransferRequest {
     #[serde(rename = "network")]
-    pub network: serde_json::Value,
+    pub network: String,
     #[serde(rename = "tid")]
     pub tid: String,
     #[serde(rename = "to")]
@@ -255,9 +255,7 @@ pub struct CreateVaultTransferResponse {
     )]
     pub replacement_id: Option<String>,
     #[serde(rename = "details", default, skip_serializing_if = "Option::is_none")]
-    pub details: Option<
-        std::collections::HashMap<String, std::collections::HashMap<String, serde_json::Value>>,
-    >,
+    pub details: Option<std::collections::HashMap<String, serde_json::Value>>,
 }
 
 /// Get Vault Lock
@@ -453,8 +451,38 @@ pub struct ReleaseQuarantineRequest {
 /// Release Quarantine
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct ReleaseQuarantineResponse {
+    #[serde(rename = "id")]
+    pub id: String,
+    #[serde(rename = "vaultId")]
+    pub vault_id: String,
+    #[serde(rename = "quarantineId")]
+    pub quarantine_id: String,
+    #[serde(rename = "network")]
+    pub network: String,
+    #[serde(rename = "transactionHash")]
+    pub transaction_hash: String,
+    #[serde(rename = "kytResult", default, skip_serializing_if = "Option::is_none")]
+    pub kyt_result: Option<serde_json::Value>,
+    #[serde(rename = "requester")]
+    pub requester: serde_json::Value,
+    #[serde(rename = "reason", default, skip_serializing_if = "Option::is_none")]
+    pub reason: Option<String>,
+    #[serde(
+        rename = "rejectionReason",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub rejection_reason: Option<String>,
     #[serde(rename = "status")]
     pub status: String,
+    #[serde(
+        rename = "approvalId",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub approval_id: Option<String>,
+    #[serde(rename = "dateCreated")]
+    pub date_created: String,
 }
 
 /// Tag Vault
