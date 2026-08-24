@@ -103,7 +103,7 @@ impl VaultsClient {
             .await
     }
 
-    /// Locks funds from the vault's available balance for off-chain settlement or escrow.
+    /// Requests locking funds from the vault's available balance for off-chain settlement or escrow. Executed immediately unless a policy requires approval.
     pub async fn create_vault_lock(
         &self,
         vault_id: String,

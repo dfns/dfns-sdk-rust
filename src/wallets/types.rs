@@ -669,6 +669,8 @@ pub struct CreateWalletResponse {
         skip_serializing_if = "Option::is_none"
     )]
     pub validator_id: Option<String>,
+    #[serde(rename = "vaultId", default, skip_serializing_if = "Option::is_none")]
+    pub vault_id: Option<String>,
 }
 
 /// Get Transaction
@@ -844,6 +846,8 @@ pub struct GetWalletResponse {
         skip_serializing_if = "Option::is_none"
     )]
     pub validator_id: Option<String>,
+    #[serde(rename = "vaultId", default, skip_serializing_if = "Option::is_none")]
+    pub vault_id: Option<String>,
 }
 
 /// Update Wallet
@@ -898,6 +902,8 @@ pub struct UpdateWalletResponse {
         skip_serializing_if = "Option::is_none"
     )]
     pub validator_id: Option<String>,
+    #[serde(rename = "vaultId", default, skip_serializing_if = "Option::is_none")]
+    pub vault_id: Option<String>,
 }
 
 /// Get Wallet Assets
@@ -1029,6 +1035,8 @@ pub struct ImportWalletResponse {
         skip_serializing_if = "Option::is_none"
     )]
     pub validator_id: Option<String>,
+    #[serde(rename = "vaultId", default, skip_serializing_if = "Option::is_none")]
+    pub vault_id: Option<String>,
 }
 
 /// List Transfers

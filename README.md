@@ -159,7 +159,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 The client provides access to the following API domains:
 
-- `client.address_watches` - Address watch operations (6 endpoints)
+- `client.address_watches` - Address watch operations (7 endpoints)
 - `client.agreements` - Agreement management (2 endpoints)
 - `client.allocations` - Allocation management (6 endpoints)
 - `client.auth` - Authentication and user management (58 endpoints)
