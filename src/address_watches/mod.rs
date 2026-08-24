@@ -47,6 +47,7 @@ impl AddressWatchesClient {
     /// Registers an on chain address to watch. An address watch is not controlled by Dfns: it holds no key, it cannot sign or move funds. The indexer matches on chain activity touching the address and sends the corresponding webhooks.
     ///
     /// The address must already exist on chain and is normalized to the form the indexer matches on (lowercase for EVM networks). Only networks that support address watches are accepted. A given address can only be watched once per network within an organization while the watch is Active.
+    ///
     pub async fn create_address_watch(
         &self,
         body: CreateAddressWatchRequest,
@@ -69,6 +70,20 @@ impl AddressWatchesClient {
         );
         self.client
             .request::<GetAddressWatchResponse>(reqwest::Method::GET, &path, None, false)
+            .await
+    }
+
+    /// Deletes an address watch. Once deleted, the address is not watched anymore, no webhook is sent for it, and it won't count in your overall organisation wallet count. Watching the same address again on the same network re-activates this watch, with the same ID and the same history.
+    pub async fn delete_address_watch(
+        &self,
+        address_watch_id: String,
+    ) -> Result<DeleteAddressWatchResponse, crate::error::Error> {
+        let path = format!(
+            "/address-watches/{}",
+            urlencoding::encode(&address_watch_id)
+        );
+        self.client
+            .request::<DeleteAddressWatchResponse>(reqwest::Method::DELETE, &path, None, true)
             .await
     }
 

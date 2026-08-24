@@ -43,8 +43,6 @@ pub struct CreateAddressWatchRequest {
         skip_serializing_if = "Option::is_none"
     )]
     pub external_id: Option<String>,
-    #[serde(rename = "tags", default, skip_serializing_if = "Option::is_none")]
-    pub tags: Option<Vec<String>>,
 }
 
 /// Create Address Watch
@@ -64,8 +62,6 @@ pub struct CreateAddressWatchResponse {
         skip_serializing_if = "Option::is_none"
     )]
     pub external_id: Option<String>,
-    #[serde(rename = "tags")]
-    pub tags: Vec<String>,
     #[serde(rename = "status")]
     pub status: String,
     #[serde(rename = "dateCreated")]
@@ -95,8 +91,35 @@ pub struct GetAddressWatchResponse {
         skip_serializing_if = "Option::is_none"
     )]
     pub external_id: Option<String>,
-    #[serde(rename = "tags")]
-    pub tags: Vec<String>,
+    #[serde(rename = "status")]
+    pub status: String,
+    #[serde(rename = "dateCreated")]
+    pub date_created: String,
+    #[serde(
+        rename = "dateDeleted",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub date_deleted: Option<String>,
+}
+
+/// Delete Address Watch
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct DeleteAddressWatchResponse {
+    #[serde(rename = "id")]
+    pub id: String,
+    #[serde(rename = "network")]
+    pub network: crate::types::AddressWatchNetwork,
+    #[serde(rename = "address")]
+    pub address: String,
+    #[serde(rename = "name", default, skip_serializing_if = "Option::is_none")]
+    pub name: Option<String>,
+    #[serde(
+        rename = "externalId",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub external_id: Option<String>,
     #[serde(rename = "status")]
     pub status: String,
     #[serde(rename = "dateCreated")]

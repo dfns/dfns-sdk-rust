@@ -93,6 +93,47 @@ impl DelegatedAddressWatchesClient {
             .await
     }
 
+    /// Starts delegated signing for deleteAddressWatch: returns the challenge to sign.
+    /// Pass the signed assertion to delete_address_watch_complete with the same arguments.
+    pub async fn delete_address_watch_init(
+        &self,
+        address_watch_id: String,
+    ) -> Result<crate::signer::UserActionChallenge, crate::error::Error> {
+        let path = format!(
+            "/address-watches/{}",
+            urlencoding::encode(&address_watch_id)
+        );
+        self.client
+            .create_user_action_challenge(reqwest::Method::DELETE, &path, None)
+            .await
+    }
+
+    /// Finishes delegated signing for deleteAddressWatch: submits the signed challenge
+    /// and issues the request.
+    pub async fn delete_address_watch_complete(
+        &self,
+        address_watch_id: String,
+        challenge_identifier: String,
+        assertion: crate::signer::CredentialAssertion,
+    ) -> Result<DeleteAddressWatchResponse, crate::error::Error> {
+        let path = format!(
+            "/address-watches/{}",
+            urlencoding::encode(&address_watch_id)
+        );
+        let user_action = self
+            .client
+            .complete_user_action_signing(challenge_identifier, &assertion)
+            .await?;
+        self.client
+            .request_with_user_action::<DeleteAddressWatchResponse>(
+                reqwest::Method::DELETE,
+                &path,
+                None,
+                &user_action,
+            )
+            .await
+    }
+
     /// Retrieves the list of assets held by the address watch, as tracked by the indexer. Balances are tracked from the moment the watch is created.
     pub async fn get_address_watch_assets(
         &self,

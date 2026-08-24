@@ -148,8 +148,6 @@ pub struct CreateVaultLockResponse {
     pub tid: String,
     #[serde(rename = "amount")]
     pub amount: String,
-    #[serde(rename = "owner")]
-    pub owner: String,
     #[serde(
         rename = "externalId",
         default,
@@ -158,14 +156,26 @@ pub struct CreateVaultLockResponse {
     pub external_id: Option<String>,
     #[serde(rename = "reason", default, skip_serializing_if = "Option::is_none")]
     pub reason: Option<String>,
-    #[serde(rename = "dateCreated")]
-    pub date_created: String,
+    #[serde(rename = "requester")]
+    pub requester: serde_json::Value,
     #[serde(
-        rename = "dateDeleted",
+        rename = "rejectionReason",
         default,
         skip_serializing_if = "Option::is_none"
     )]
-    pub date_deleted: Option<String>,
+    pub rejection_reason: Option<String>,
+    #[serde(rename = "status")]
+    pub status: String,
+    #[serde(
+        rename = "approvalId",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub approval_id: Option<String>,
+    #[serde(rename = "lockId", default, skip_serializing_if = "Option::is_none")]
+    pub lock_id: Option<String>,
+    #[serde(rename = "dateCreated")]
+    pub date_created: String,
 }
 
 /// Create Vault Transfer
