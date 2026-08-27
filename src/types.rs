@@ -953,49 +953,6 @@ pub struct TransferRequest {
     pub details: Option<std::collections::HashMap<String, serde_json::Value>>,
 }
 
-/// Request to lock vault funds. Executed immediately unless a policy requires approval, in which case it stays Pending until the approval resolves.
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-pub struct VaultLockRequest {
-    #[serde(rename = "id")]
-    pub id: String,
-    #[serde(rename = "vaultId")]
-    pub vault_id: String,
-    #[serde(rename = "network")]
-    pub network: String,
-    #[serde(rename = "tid")]
-    pub tid: String,
-    #[serde(rename = "amount")]
-    pub amount: String,
-    #[serde(
-        rename = "externalId",
-        default,
-        skip_serializing_if = "Option::is_none"
-    )]
-    pub external_id: Option<String>,
-    #[serde(rename = "reason", default, skip_serializing_if = "Option::is_none")]
-    pub reason: Option<String>,
-    #[serde(rename = "requester")]
-    pub requester: serde_json::Value,
-    #[serde(
-        rename = "rejectionReason",
-        default,
-        skip_serializing_if = "Option::is_none"
-    )]
-    pub rejection_reason: Option<String>,
-    #[serde(rename = "status")]
-    pub status: String,
-    #[serde(
-        rename = "approvalId",
-        default,
-        skip_serializing_if = "Option::is_none"
-    )]
-    pub approval_id: Option<String>,
-    #[serde(rename = "lockId", default, skip_serializing_if = "Option::is_none")]
-    pub lock_id: Option<String>,
-    #[serde(rename = "dateCreated")]
-    pub date_created: String,
-}
-
 /// Vault lock object: funds manually locked for off-chain settlement or escrow.
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct VaultLock {

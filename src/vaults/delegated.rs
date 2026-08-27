@@ -230,67 +230,6 @@ impl DelegatedVaultsClient {
             .await
     }
 
-    /// Retrieves a vault lock by its ID.
-    pub async fn get_vault_lock(
-        &self,
-        vault_id: String,
-        lock_id: String,
-    ) -> Result<GetVaultLockResponse, crate::error::Error> {
-        let path = format!(
-            "/vaults/{}/locks/{}",
-            urlencoding::encode(&vault_id),
-            urlencoding::encode(&lock_id)
-        );
-        self.client
-            .request::<GetVaultLockResponse>(reqwest::Method::GET, &path, None, false)
-            .await
-    }
-
-    /// Starts delegated signing for deleteVaultLock: returns the challenge to sign.
-    /// Pass the signed assertion to delete_vault_lock_complete with the same arguments.
-    pub async fn delete_vault_lock_init(
-        &self,
-        vault_id: String,
-        lock_id: String,
-    ) -> Result<crate::signer::UserActionChallenge, crate::error::Error> {
-        let path = format!(
-            "/vaults/{}/locks/{}",
-            urlencoding::encode(&vault_id),
-            urlencoding::encode(&lock_id)
-        );
-        self.client
-            .create_user_action_challenge(reqwest::Method::DELETE, &path, None)
-            .await
-    }
-
-    /// Finishes delegated signing for deleteVaultLock: submits the signed challenge
-    /// and issues the request.
-    pub async fn delete_vault_lock_complete(
-        &self,
-        vault_id: String,
-        lock_id: String,
-        challenge_identifier: String,
-        assertion: crate::signer::CredentialAssertion,
-    ) -> Result<DeleteVaultLockResponse, crate::error::Error> {
-        let path = format!(
-            "/vaults/{}/locks/{}",
-            urlencoding::encode(&vault_id),
-            urlencoding::encode(&lock_id)
-        );
-        let user_action = self
-            .client
-            .complete_user_action_signing(challenge_identifier, &assertion)
-            .await?;
-        self.client
-            .request_with_user_action::<DeleteVaultLockResponse>(
-                reqwest::Method::DELETE,
-                &path,
-                None,
-                &user_action,
-            )
-            .await
-    }
-
     /// Retrieves a Vault by its ID.
     pub async fn get_vault(
         &self,
@@ -338,6 +277,22 @@ impl DelegatedVaultsClient {
                 Some(&body),
                 &user_action,
             )
+            .await
+    }
+
+    /// Retrieves a vault lock by its ID.
+    pub async fn get_vault_lock(
+        &self,
+        vault_id: String,
+        lock_id: String,
+    ) -> Result<GetVaultLockResponse, crate::error::Error> {
+        let path = format!(
+            "/vaults/{}/locks/{}",
+            urlencoding::encode(&vault_id),
+            urlencoding::encode(&lock_id)
+        );
+        self.client
+            .request::<GetVaultLockResponse>(reqwest::Method::GET, &path, None, false)
             .await
     }
 
@@ -450,6 +405,51 @@ impl DelegatedVaultsClient {
                 reqwest::Method::POST,
                 &path,
                 Some(&body),
+                &user_action,
+            )
+            .await
+    }
+
+    /// Starts delegated signing for releaseVaultLock: returns the challenge to sign.
+    /// Pass the signed assertion to release_vault_lock_complete with the same arguments.
+    pub async fn release_vault_lock_init(
+        &self,
+        vault_id: String,
+        lock_id: String,
+    ) -> Result<crate::signer::UserActionChallenge, crate::error::Error> {
+        let path = format!(
+            "/vaults/{}/locks/{}/release",
+            urlencoding::encode(&vault_id),
+            urlencoding::encode(&lock_id)
+        );
+        self.client
+            .create_user_action_challenge(reqwest::Method::POST, &path, None)
+            .await
+    }
+
+    /// Finishes delegated signing for releaseVaultLock: submits the signed challenge
+    /// and issues the request.
+    pub async fn release_vault_lock_complete(
+        &self,
+        vault_id: String,
+        lock_id: String,
+        challenge_identifier: String,
+        assertion: crate::signer::CredentialAssertion,
+    ) -> Result<ReleaseVaultLockResponse, crate::error::Error> {
+        let path = format!(
+            "/vaults/{}/locks/{}/release",
+            urlencoding::encode(&vault_id),
+            urlencoding::encode(&lock_id)
+        );
+        let user_action = self
+            .client
+            .complete_user_action_signing(challenge_identifier, &assertion)
+            .await?;
+        self.client
+            .request_with_user_action::<ReleaseVaultLockResponse>(
+                reqwest::Method::POST,
+                &path,
+                None,
                 &user_action,
             )
             .await

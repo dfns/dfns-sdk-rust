@@ -103,7 +103,7 @@ impl VaultsClient {
             .await
     }
 
-    /// Requests locking funds from the vault's available balance for off-chain settlement or escrow. Executed immediately unless a policy requires approval.
+    /// Requests locking funds from the vault's available balance for off-chain settlement or escrow. Returns the created lock (200), or the pending lock request (202) when a policy requires approval.
     pub async fn create_vault_lock(
         &self,
         vault_id: String,
@@ -129,38 +129,6 @@ impl VaultsClient {
             .await
     }
 
-    /// Retrieves a vault lock by its ID.
-    pub async fn get_vault_lock(
-        &self,
-        vault_id: String,
-        lock_id: String,
-    ) -> Result<GetVaultLockResponse, crate::error::Error> {
-        let path = format!(
-            "/vaults/{}/locks/{}",
-            urlencoding::encode(&vault_id),
-            urlencoding::encode(&lock_id)
-        );
-        self.client
-            .request::<GetVaultLockResponse>(reqwest::Method::GET, &path, None, false)
-            .await
-    }
-
-    /// Releases a lock, returning the locked funds to the vault's available balance. Owner only.
-    pub async fn delete_vault_lock(
-        &self,
-        vault_id: String,
-        lock_id: String,
-    ) -> Result<DeleteVaultLockResponse, crate::error::Error> {
-        let path = format!(
-            "/vaults/{}/locks/{}",
-            urlencoding::encode(&vault_id),
-            urlencoding::encode(&lock_id)
-        );
-        self.client
-            .request::<DeleteVaultLockResponse>(reqwest::Method::DELETE, &path, None, true)
-            .await
-    }
-
     /// Retrieves a Vault by its ID.
     pub async fn get_vault(
         &self,
@@ -182,6 +150,22 @@ impl VaultsClient {
         let body = serde_json::to_value(&body)?;
         self.client
             .request::<UpdateVaultResponse>(reqwest::Method::PUT, &path, Some(&body), true)
+            .await
+    }
+
+    /// Retrieves a vault lock by its ID.
+    pub async fn get_vault_lock(
+        &self,
+        vault_id: String,
+        lock_id: String,
+    ) -> Result<GetVaultLockResponse, crate::error::Error> {
+        let path = format!(
+            "/vaults/{}/locks/{}",
+            urlencoding::encode(&vault_id),
+            urlencoding::encode(&lock_id)
+        );
+        self.client
+            .request::<GetVaultLockResponse>(reqwest::Method::GET, &path, None, false)
             .await
     }
 
@@ -265,6 +249,22 @@ impl VaultsClient {
         let body = serde_json::to_value(&body)?;
         self.client
             .request::<ReleaseQuarantineResponse>(reqwest::Method::POST, &path, Some(&body), true)
+            .await
+    }
+
+    /// Releases a lock, returning the locked funds to the vault's available balance. Owner only.
+    pub async fn release_vault_lock(
+        &self,
+        vault_id: String,
+        lock_id: String,
+    ) -> Result<ReleaseVaultLockResponse, crate::error::Error> {
+        let path = format!(
+            "/vaults/{}/locks/{}/release",
+            urlencoding::encode(&vault_id),
+            urlencoding::encode(&lock_id)
+        );
+        self.client
+            .request::<ReleaseVaultLockResponse>(reqwest::Method::POST, &path, None, true)
             .await
     }
 
