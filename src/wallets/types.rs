@@ -202,6 +202,141 @@ pub struct ActivateWalletResponse {
     pub details: Option<std::collections::HashMap<String, serde_json::Value>>,
 }
 
+/// List Bulk Wallet Jobs
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct ListBulkWalletJobsResponse {
+    #[serde(rename = "items")]
+    pub items: Vec<crate::types::BulkWalletCreationJob>,
+    #[serde(
+        rename = "nextPageToken",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub next_page_token: Option<String>,
+}
+
+/// Query parameters for the ListBulkWalletJobsQuery operation.
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct ListBulkWalletJobsQuery {
+    #[serde(rename = "limit", default, skip_serializing_if = "Option::is_none")]
+    pub limit: Option<i64>,
+    #[serde(
+        rename = "paginationToken",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub pagination_token: Option<String>,
+    #[serde(rename = "status", default, skip_serializing_if = "Option::is_none")]
+    pub status: Option<String>,
+}
+
+/// Bulk Create Wallets
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct BulkCreateWalletsRequest {
+    #[serde(rename = "network")]
+    pub network: crate::types::BulkWalletNetwork,
+    #[serde(rename = "count")]
+    pub count: i64,
+    #[serde(rename = "name")]
+    pub name: String,
+    #[serde(rename = "tags", default, skip_serializing_if = "Option::is_none")]
+    pub tags: Option<Vec<String>>,
+    #[serde(
+        rename = "keystoreId",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub keystore_id: Option<String>,
+}
+
+/// Bulk Create Wallets
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct BulkCreateWalletsResponse {
+    #[serde(rename = "id")]
+    pub id: String,
+    #[serde(rename = "status")]
+    pub status: String,
+}
+
+/// Get Bulk Wallet Job
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct GetBulkWalletJobResponse {
+    #[serde(rename = "id")]
+    pub id: String,
+    #[serde(rename = "orgId")]
+    pub org_id: String,
+    #[serde(rename = "status")]
+    pub status: String,
+    #[serde(rename = "network")]
+    pub network: crate::types::Network,
+    #[serde(rename = "namePrefix")]
+    pub name_prefix: String,
+    #[serde(rename = "tags")]
+    pub tags: Vec<String>,
+    #[serde(rename = "totalCount")]
+    pub total_count: i64,
+    #[serde(rename = "completedCount")]
+    pub completed_count: i64,
+    #[serde(rename = "keystoreId")]
+    pub keystore_id: String,
+    #[serde(
+        rename = "masterKeyId",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub master_key_id: Option<String>,
+    #[serde(rename = "reason", default, skip_serializing_if = "Option::is_none")]
+    pub reason: Option<String>,
+    #[serde(
+        rename = "nextRetryDate",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub next_retry_date: Option<String>,
+    #[serde(
+        rename = "nextRetryAttempt",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub next_retry_attempt: Option<i64>,
+    #[serde(rename = "dateCreated")]
+    pub date_created: String,
+    #[serde(rename = "dateUpdated")]
+    pub date_updated: String,
+    #[serde(
+        rename = "dateCompleted",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub date_completed: Option<String>,
+}
+
+/// List Bulk Wallet Job Wallets
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct ListBulkWalletJobWalletsResponse {
+    #[serde(rename = "items")]
+    pub items: Vec<crate::types::Wallet>,
+    #[serde(
+        rename = "nextPageToken",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub next_page_token: Option<String>,
+}
+
+/// Query parameters for the ListBulkWalletJobWalletsQuery operation.
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct ListBulkWalletJobWalletsQuery {
+    #[serde(rename = "limit", default, skip_serializing_if = "Option::is_none")]
+    pub limit: Option<i64>,
+    #[serde(
+        rename = "paginationToken",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub pagination_token: Option<String>,
+}
+
 /// List Transactions
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct ListTransactionsResponse {

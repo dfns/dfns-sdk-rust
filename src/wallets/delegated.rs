@@ -144,6 +144,115 @@ impl DelegatedWalletsClient {
             .await
     }
 
+    /// List the org bulk wallet creation jobs, most recent first, with progress and status.
+    pub async fn list_bulk_wallet_jobs(
+        &self,
+        query: Option<ListBulkWalletJobsQuery>,
+    ) -> Result<ListBulkWalletJobsResponse, crate::error::Error> {
+        let mut path = String::from("/wallets/bulk-create");
+        if let Some(query) = &query {
+            let mut q: Vec<String> = Vec::new();
+            if let Some(v) = &query.limit {
+                q.push(format!("limit={}", urlencoding::encode(&v.to_string())));
+            }
+            if let Some(v) = &query.pagination_token {
+                q.push(format!(
+                    "paginationToken={}",
+                    urlencoding::encode(&v.to_string())
+                ));
+            }
+            if let Some(v) = &query.status {
+                q.push(format!("status={}", urlencoding::encode(&v.to_string())));
+            }
+            if !q.is_empty() {
+                path.push('?');
+                path.push_str(&q.join("&"));
+            }
+        }
+        self.client
+            .request::<ListBulkWalletJobsResponse>(reqwest::Method::GET, &path, None, false)
+            .await
+    }
+
+    /// Starts delegated signing for bulkCreateWallets: returns the challenge to sign.
+    /// Pass the signed assertion to bulk_create_wallets_complete with the same arguments.
+    pub async fn bulk_create_wallets_init(
+        &self,
+        body: BulkCreateWalletsRequest,
+    ) -> Result<crate::signer::UserActionChallenge, crate::error::Error> {
+        let path = String::from("/wallets/bulk-create");
+        let body = serde_json::to_value(&body)?;
+        self.client
+            .create_user_action_challenge(reqwest::Method::POST, &path, Some(&body))
+            .await
+    }
+
+    /// Finishes delegated signing for bulkCreateWallets: submits the signed challenge
+    /// and issues the request.
+    pub async fn bulk_create_wallets_complete(
+        &self,
+        body: BulkCreateWalletsRequest,
+        challenge_identifier: String,
+        assertion: crate::signer::CredentialAssertion,
+    ) -> Result<BulkCreateWalletsResponse, crate::error::Error> {
+        let path = String::from("/wallets/bulk-create");
+        let body = serde_json::to_value(&body)?;
+        let user_action = self
+            .client
+            .complete_user_action_signing(challenge_identifier, &assertion)
+            .await?;
+        self.client
+            .request_with_user_action::<BulkCreateWalletsResponse>(
+                reqwest::Method::POST,
+                &path,
+                Some(&body),
+                &user_action,
+            )
+            .await
+    }
+
+    /// Retrieve a single bulk wallet creation job by its ID, with progress and status.
+    pub async fn get_bulk_wallet_job(
+        &self,
+        job_id: String,
+    ) -> Result<GetBulkWalletJobResponse, crate::error::Error> {
+        let path = format!("/wallets/bulk-create/{}", urlencoding::encode(&job_id));
+        self.client
+            .request::<GetBulkWalletJobResponse>(reqwest::Method::GET, &path, None, false)
+            .await
+    }
+
+    /// List every wallet created by a bulk wallet creation job, ordered by wallet ID and paginated. Only available once the job has completed.
+    pub async fn list_bulk_wallet_job_wallets(
+        &self,
+        job_id: String,
+        query: Option<ListBulkWalletJobWalletsQuery>,
+    ) -> Result<ListBulkWalletJobWalletsResponse, crate::error::Error> {
+        let mut path = format!(
+            "/wallets/bulk-create/{}/wallets",
+            urlencoding::encode(&job_id)
+        );
+        if let Some(query) = &query {
+            let mut q: Vec<String> = Vec::new();
+            if let Some(v) = &query.limit {
+                q.push(format!("limit={}", urlencoding::encode(&v.to_string())));
+            }
+            if let Some(v) = &query.pagination_token {
+                q.push(format!(
+                    "paginationToken={}",
+                    urlencoding::encode(&v.to_string())
+                ));
+            }
+            if !q.is_empty() {
+                path.push('?');
+                path.push_str(&q.join("&"));
+            }
+        }
+        self.client
+            .request::<ListBulkWalletJobWalletsResponse>(reqwest::Method::GET, &path, None, false)
+            .await
+    }
+
     /// Retrieves a list of transactions requests for the specified wallet.
     pub async fn list_transactions(
         &self,

@@ -167,7 +167,7 @@ The client provides access to the following API domains:
 - `client.fee_sponsors` - Fee sponsor management (7 endpoints)
 - `client.keys` - Key management (12 endpoints)
 - `client.networks` - Network information (7 endpoints)
-- `client.payins` - Payin operations (6 endpoints)
+- `client.payins` - Payin operations (10 endpoints)
 - `client.payouts` - Payout operations (5 endpoints)
 - `client.permissions` - Permission management (8 endpoints)
 - `client.policies` - Policy management (8 endpoints)
@@ -175,7 +175,7 @@ The client provides access to the following API domains:
 - `client.staking` - Staking operations (6 endpoints)
 - `client.swaps` - Token swap operations (5 endpoints)
 - `client.vaults` - Vault operations (15 endpoints)
-- `client.wallets` - Wallet operations (29 endpoints)
+- `client.wallets` - Wallet operations (33 endpoints)
 - `client.webhooks` - Webhook subscriptions (8 endpoints)
 
 Each domain provides typed methods for all available API endpoints.

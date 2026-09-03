@@ -95,6 +95,18 @@ impl DelegatedPayinsClient {
             .await
     }
 
+    /// Request a quote from a given provider for a payin. Returns the stablecoin amount to be delivered and the fees.
+    pub async fn request_payin_quote(
+        &self,
+        body: RequestPayinQuoteRequest,
+    ) -> Result<RequestPayinQuoteResponse, crate::error::Error> {
+        let path = String::from("/payins/quote");
+        let body = serde_json::to_value(&body)?;
+        self.client
+            .request::<RequestPayinQuoteResponse>(reqwest::Method::POST, &path, Some(&body), false)
+            .await
+    }
+
     /// Check whether a wallet's address is registered (and approved) as an payin recipient with the provider.
     pub async fn get_payin_recipient(
         &self,
@@ -173,6 +185,28 @@ impl DelegatedPayinsClient {
             .await
     }
 
+    /// List the provider accounts, with their registered wallet addresses per asset. An account is created on the provider platform (e.g. the Borderless dashboard) and its registered addresses serve both directions: a payin delivers to — and a payout is funded from — a wallet whose address is registered on the account.
+    pub async fn list_payin_accounts(
+        &self,
+        query: Option<ListPayinAccountsQuery>,
+    ) -> Result<ListPayinAccountsResponse, crate::error::Error> {
+        let mut path = String::from("/payins/accounts");
+        if let Some(query) = &query {
+            let mut q: Vec<String> = Vec::new();
+            q.push(format!(
+                "provider={}",
+                urlencoding::encode(&query.provider.to_string())
+            ));
+            if !q.is_empty() {
+                path.push('?');
+                path.push_str(&q.join("&"));
+            }
+        }
+        self.client
+            .request::<ListPayinAccountsResponse>(reqwest::Method::GET, &path, None, false)
+            .await
+    }
+
     /// The organisation's available balance at the payin provider, one entry per currency —
     ///     the funds payins can deliver on-chain.
     pub async fn list_payin_balances(
@@ -193,6 +227,65 @@ impl DelegatedPayinsClient {
         }
         self.client
             .request::<ListPayinBalancesResponse>(reqwest::Method::GET, &path, None, false)
+            .await
+    }
+
+    /// List the currently available payin options — deliverable assets and fiat currency/payment-method/country combinations — as covered by the active provider institutions.
+    pub async fn list_payin_options(
+        &self,
+        query: Option<ListPayinOptionsQuery>,
+    ) -> Result<ListPayinOptionsResponse, crate::error::Error> {
+        let mut path = String::from("/payins/options");
+        if let Some(query) = &query {
+            let mut q: Vec<String> = Vec::new();
+            q.push(format!(
+                "provider={}",
+                urlencoding::encode(&query.provider.to_string())
+            ));
+            if !q.is_empty() {
+                path.push('?');
+                path.push_str(&q.join("&"));
+            }
+        }
+        self.client
+            .request::<ListPayinOptionsResponse>(reqwest::Method::GET, &path, None, false)
+            .await
+    }
+
+    /// Starts delegated signing for registerPayinAccountAsset: returns the challenge to sign.
+    /// Pass the signed assertion to register_payin_account_asset_complete with the same arguments.
+    pub async fn register_payin_account_asset_init(
+        &self,
+        body: RegisterPayinAccountAssetRequest,
+    ) -> Result<crate::signer::UserActionChallenge, crate::error::Error> {
+        let path = String::from("/payins/accounts/assets");
+        let body = serde_json::to_value(&body)?;
+        self.client
+            .create_user_action_challenge(reqwest::Method::POST, &path, Some(&body))
+            .await
+    }
+
+    /// Finishes delegated signing for registerPayinAccountAsset: submits the signed challenge
+    /// and issues the request.
+    pub async fn register_payin_account_asset_complete(
+        &self,
+        body: RegisterPayinAccountAssetRequest,
+        challenge_identifier: String,
+        assertion: crate::signer::CredentialAssertion,
+    ) -> Result<RegisterPayinAccountAssetResponse, crate::error::Error> {
+        let path = String::from("/payins/accounts/assets");
+        let body = serde_json::to_value(&body)?;
+        let user_action = self
+            .client
+            .complete_user_action_signing(challenge_identifier, &assertion)
+            .await?;
+        self.client
+            .request_with_user_action::<RegisterPayinAccountAssetResponse>(
+                reqwest::Method::POST,
+                &path,
+                Some(&body),
+                &user_action,
+            )
             .await
     }
 }

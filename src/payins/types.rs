@@ -37,6 +37,26 @@ pub struct ListPayinsQuery {
 /// Request body for the createPayin operation.
 pub type CreatePayinRequest = serde_json::Value;
 
+/// Request body for the requestPayinQuote operation.
+pub type RequestPayinQuoteRequest = serde_json::Value;
+
+/// Request Payin Quote
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct RequestPayinQuoteResponse {
+    #[serde(rename = "provider")]
+    pub provider: String,
+    #[serde(rename = "currency")]
+    pub currency: String,
+    #[serde(rename = "network")]
+    pub network: crate::types::Network,
+    #[serde(rename = "tid")]
+    pub tid: String,
+    #[serde(rename = "timestamp")]
+    pub timestamp: String,
+    #[serde(rename = "quotes")]
+    pub quotes: Vec<serde_json::Value>,
+}
+
 /// Get Payin Recipient
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct GetPayinRecipientResponse {
@@ -89,6 +109,20 @@ pub struct RegisterPayinRecipientResponse {
     pub recipient_address_id: Option<String>,
 }
 
+/// List Payin Accounts
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct ListPayinAccountsResponse {
+    #[serde(rename = "items")]
+    pub items: Vec<serde_json::Value>,
+}
+
+/// Query parameters for the ListPayinAccountsQuery operation.
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct ListPayinAccountsQuery {
+    #[serde(rename = "provider")]
+    pub provider: String,
+}
+
 /// List Payin Balances
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct ListPayinBalancesResponse {
@@ -101,4 +135,34 @@ pub struct ListPayinBalancesResponse {
 pub struct ListPayinBalancesQuery {
     #[serde(rename = "provider")]
     pub provider: String,
+}
+
+/// List Payin Options
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct ListPayinOptionsResponse {
+    #[serde(rename = "assets")]
+    pub assets: Vec<String>,
+    #[serde(rename = "currencies")]
+    pub currencies: Vec<serde_json::Value>,
+}
+
+/// Query parameters for the ListPayinOptionsQuery operation.
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct ListPayinOptionsQuery {
+    #[serde(rename = "provider")]
+    pub provider: String,
+}
+
+/// Request body for the registerPayinAccountAsset operation.
+pub type RegisterPayinAccountAssetRequest = serde_json::Value;
+
+/// Register Payin Account Asset
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct RegisterPayinAccountAssetResponse {
+    #[serde(rename = "accountId")]
+    pub account_id: String,
+    #[serde(rename = "name", default, skip_serializing_if = "Option::is_none")]
+    pub name: Option<String>,
+    #[serde(rename = "assets")]
+    pub assets: Vec<serde_json::Value>,
 }
