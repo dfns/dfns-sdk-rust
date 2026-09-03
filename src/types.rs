@@ -600,6 +600,65 @@ impl std::fmt::Display for KeyCurve {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+pub enum BulkWalletNetwork {
+    #[serde(rename = "Ethereum")]
+    Ethereum,
+    #[serde(rename = "EthereumSepolia")]
+    EthereumSepolia,
+    #[serde(rename = "EthereumHolesky")]
+    EthereumHolesky,
+    #[serde(rename = "EthereumHoodi")]
+    EthereumHoodi,
+    #[serde(rename = "Bsc")]
+    Bsc,
+    #[serde(rename = "BscTestnet")]
+    BscTestnet,
+    #[serde(rename = "Base")]
+    Base,
+    #[serde(rename = "BaseSepolia")]
+    BaseSepolia,
+    #[serde(rename = "ArbitrumOne")]
+    ArbitrumOne,
+    #[serde(rename = "ArbitrumSepolia")]
+    ArbitrumSepolia,
+    #[serde(rename = "Optimism")]
+    Optimism,
+    #[serde(rename = "OptimismSepolia")]
+    OptimismSepolia,
+    #[serde(rename = "Tron")]
+    Tron,
+    #[serde(rename = "TronNile")]
+    TronNile,
+    #[serde(rename = "Solana")]
+    Solana,
+    #[serde(rename = "SolanaDevnet")]
+    SolanaDevnet,
+}
+
+impl std::fmt::Display for BulkWalletNetwork {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(match self {
+            BulkWalletNetwork::Ethereum => "Ethereum",
+            BulkWalletNetwork::EthereumSepolia => "EthereumSepolia",
+            BulkWalletNetwork::EthereumHolesky => "EthereumHolesky",
+            BulkWalletNetwork::EthereumHoodi => "EthereumHoodi",
+            BulkWalletNetwork::Bsc => "Bsc",
+            BulkWalletNetwork::BscTestnet => "BscTestnet",
+            BulkWalletNetwork::Base => "Base",
+            BulkWalletNetwork::BaseSepolia => "BaseSepolia",
+            BulkWalletNetwork::ArbitrumOne => "ArbitrumOne",
+            BulkWalletNetwork::ArbitrumSepolia => "ArbitrumSepolia",
+            BulkWalletNetwork::Optimism => "Optimism",
+            BulkWalletNetwork::OptimismSepolia => "OptimismSepolia",
+            BulkWalletNetwork::Tron => "Tron",
+            BulkWalletNetwork::TronNile => "TronNile",
+            BulkWalletNetwork::Solana => "Solana",
+            BulkWalletNetwork::SolanaDevnet => "SolanaDevnet",
+        })
+    }
+}
+
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct WebhookEvent {
     #[serde(rename = "id")]
@@ -706,6 +765,66 @@ pub struct Offer {
         skip_serializing_if = "Option::is_none"
     )]
     pub date_settled: Option<String>,
+}
+
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct BulkWalletCreationJobHandle {
+    #[serde(rename = "id")]
+    pub id: String,
+    #[serde(rename = "status")]
+    pub status: String,
+}
+
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct BulkWalletCreationJob {
+    #[serde(rename = "id")]
+    pub id: String,
+    #[serde(rename = "orgId")]
+    pub org_id: String,
+    #[serde(rename = "status")]
+    pub status: String,
+    #[serde(rename = "network")]
+    pub network: crate::types::Network,
+    #[serde(rename = "namePrefix")]
+    pub name_prefix: String,
+    #[serde(rename = "tags")]
+    pub tags: Vec<String>,
+    #[serde(rename = "totalCount")]
+    pub total_count: i64,
+    #[serde(rename = "completedCount")]
+    pub completed_count: i64,
+    #[serde(rename = "keystoreId")]
+    pub keystore_id: String,
+    #[serde(
+        rename = "masterKeyId",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub master_key_id: Option<String>,
+    #[serde(rename = "reason", default, skip_serializing_if = "Option::is_none")]
+    pub reason: Option<String>,
+    #[serde(
+        rename = "nextRetryDate",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub next_retry_date: Option<String>,
+    #[serde(
+        rename = "nextRetryAttempt",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub next_retry_attempt: Option<i64>,
+    #[serde(rename = "dateCreated")]
+    pub date_created: String,
+    #[serde(rename = "dateUpdated")]
+    pub date_updated: String,
+    #[serde(
+        rename = "dateCompleted",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub date_completed: Option<String>,
 }
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
@@ -1528,6 +1647,14 @@ pub struct AuditLog {
     pub username: serde_json::Value,
     #[serde(rename = "datePerformed")]
     pub date_performed: String,
+    #[serde(rename = "dateSigned")]
+    pub date_signed: String,
+    #[serde(rename = "dateResolved")]
+    pub date_resolved: String,
+    #[serde(rename = "responseStatus")]
+    pub response_status: serde_json::Value,
+    #[serde(rename = "responseError")]
+    pub response_error: serde_json::Value,
     #[serde(rename = "firstFactorCredential")]
     pub first_factor_credential: serde_json::Value,
 }

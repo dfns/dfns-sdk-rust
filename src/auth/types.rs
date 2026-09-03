@@ -88,6 +88,14 @@ pub struct GetAuditLogResponse {
     pub username: serde_json::Value,
     #[serde(rename = "datePerformed")]
     pub date_performed: String,
+    #[serde(rename = "dateSigned")]
+    pub date_signed: String,
+    #[serde(rename = "dateResolved")]
+    pub date_resolved: String,
+    #[serde(rename = "responseStatus")]
+    pub response_status: serde_json::Value,
+    #[serde(rename = "responseError")]
+    pub response_error: serde_json::Value,
     #[serde(rename = "firstFactorCredential")]
     pub first_factor_credential: serde_json::Value,
 }
