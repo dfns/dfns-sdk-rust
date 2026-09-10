@@ -2,7 +2,7 @@
 name = "dfns-sdk-rust"
 version = "0.3.0"
 edition = "2021"
-rust-version = "1.75"
+rust-version = "1.88"
 description = "Dfns API SDK for Rust"
 license = "MIT"
 repository = "https://github.com/dfns/dfns-sdk-rust"
