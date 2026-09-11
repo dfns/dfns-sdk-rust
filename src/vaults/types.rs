@@ -158,6 +158,18 @@ pub struct CreateVaultLockResponse {
     pub external_id: Option<String>,
     #[serde(rename = "reason", default, skip_serializing_if = "Option::is_none")]
     pub reason: Option<String>,
+    #[serde(
+        rename = "replacesLockId",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub replaces_lock_id: Option<String>,
+    #[serde(
+        rename = "replacedByLockId",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub replaced_by_lock_id: Option<String>,
     #[serde(rename = "dateCreated")]
     pub date_created: String,
     #[serde(
@@ -344,6 +356,18 @@ pub struct GetVaultLockResponse {
     pub external_id: Option<String>,
     #[serde(rename = "reason", default, skip_serializing_if = "Option::is_none")]
     pub reason: Option<String>,
+    #[serde(
+        rename = "replacesLockId",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub replaces_lock_id: Option<String>,
+    #[serde(
+        rename = "replacedByLockId",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub replaced_by_lock_id: Option<String>,
     #[serde(rename = "dateCreated")]
     pub date_created: String,
     #[serde(
@@ -475,6 +499,18 @@ pub struct ReleaseVaultLockResponse {
     pub external_id: Option<String>,
     #[serde(rename = "reason", default, skip_serializing_if = "Option::is_none")]
     pub reason: Option<String>,
+    #[serde(
+        rename = "replacesLockId",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub replaces_lock_id: Option<String>,
+    #[serde(
+        rename = "replacedByLockId",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub replaced_by_lock_id: Option<String>,
     #[serde(rename = "dateCreated")]
     pub date_created: String,
     #[serde(
@@ -506,3 +542,57 @@ pub struct UntagVaultRequest {
 /// Untag Vault
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct UntagVaultResponse {}
+
+/// Replace Vault Lock
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct ReplaceVaultLockRequest {
+    #[serde(rename = "amount")]
+    pub amount: String,
+    #[serde(rename = "reason", default, skip_serializing_if = "Option::is_none")]
+    pub reason: Option<String>,
+}
+
+/// Replace Vault Lock
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct ReplaceVaultLockResponse {
+    #[serde(rename = "id")]
+    pub id: String,
+    #[serde(rename = "vaultId")]
+    pub vault_id: String,
+    #[serde(rename = "network")]
+    pub network: String,
+    #[serde(rename = "tid")]
+    pub tid: String,
+    #[serde(rename = "amount")]
+    pub amount: String,
+    #[serde(rename = "owner")]
+    pub owner: String,
+    #[serde(
+        rename = "externalId",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub external_id: Option<String>,
+    #[serde(rename = "reason", default, skip_serializing_if = "Option::is_none")]
+    pub reason: Option<String>,
+    #[serde(
+        rename = "replacesLockId",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub replaces_lock_id: Option<String>,
+    #[serde(
+        rename = "replacedByLockId",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub replaced_by_lock_id: Option<String>,
+    #[serde(rename = "dateCreated")]
+    pub date_created: String,
+    #[serde(
+        rename = "dateDeleted",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub date_deleted: Option<String>,
+}

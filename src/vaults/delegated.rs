@@ -532,4 +532,53 @@ impl DelegatedVaultsClient {
             )
             .await
     }
+
+    /// Starts delegated signing for replaceVaultLock: returns the challenge to sign.
+    /// Pass the signed assertion to replace_vault_lock_complete with the same arguments.
+    pub async fn replace_vault_lock_init(
+        &self,
+        vault_id: String,
+        lock_id: String,
+        body: ReplaceVaultLockRequest,
+    ) -> Result<crate::signer::UserActionChallenge, crate::error::Error> {
+        let path = format!(
+            "/vaults/{}/locks/{}/replace",
+            urlencoding::encode(&vault_id),
+            urlencoding::encode(&lock_id)
+        );
+        let body = serde_json::to_value(&body)?;
+        self.client
+            .create_user_action_challenge(reqwest::Method::POST, &path, Some(&body))
+            .await
+    }
+
+    /// Finishes delegated signing for replaceVaultLock: submits the signed challenge
+    /// and issues the request.
+    pub async fn replace_vault_lock_complete(
+        &self,
+        vault_id: String,
+        lock_id: String,
+        body: ReplaceVaultLockRequest,
+        challenge_identifier: String,
+        assertion: crate::signer::CredentialAssertion,
+    ) -> Result<ReplaceVaultLockResponse, crate::error::Error> {
+        let path = format!(
+            "/vaults/{}/locks/{}/replace",
+            urlencoding::encode(&vault_id),
+            urlencoding::encode(&lock_id)
+        );
+        let body = serde_json::to_value(&body)?;
+        let user_action = self
+            .client
+            .complete_user_action_signing(challenge_identifier, &assertion)
+            .await?;
+        self.client
+            .request_with_user_action::<ReplaceVaultLockResponse>(
+                reqwest::Method::POST,
+                &path,
+                Some(&body),
+                &user_action,
+            )
+            .await
+    }
 }
