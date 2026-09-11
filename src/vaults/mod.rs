@@ -56,7 +56,7 @@ impl VaultsClient {
             .await
     }
 
-    /// Creates a vault address (managed wallet) on a network that supports vaults.
+    /// Creates a vault address (managed wallet) on a network that supports vaults — EVM networks, Bitcoin, and Solana (native SOL and SPL/Token-2022 tokens). Add one network per call.
     pub async fn create_vault_address(
         &self,
         vault_id: String,
@@ -291,6 +291,24 @@ impl VaultsClient {
         let body = serde_json::to_value(&body)?;
         self.client
             .request::<UntagVaultResponse>(reqwest::Method::DELETE, &path, Some(&body), true)
+            .await
+    }
+
+    /// Requests replacing a lock with a new lock at a new total amount. Owner only. Executed immediately unless a policy requires approval. On execution the lock is released, a new lock is created at the new amount (carrying over the owner, externalId and reason), and the new lock is returned. If a policy requires approval, responds 202 with the pending replace request instead.
+    pub async fn replace_vault_lock(
+        &self,
+        vault_id: String,
+        lock_id: String,
+        body: ReplaceVaultLockRequest,
+    ) -> Result<ReplaceVaultLockResponse, crate::error::Error> {
+        let path = format!(
+            "/vaults/{}/locks/{}/replace",
+            urlencoding::encode(&vault_id),
+            urlencoding::encode(&lock_id)
+        );
+        let body = serde_json::to_value(&body)?;
+        self.client
+            .request::<ReplaceVaultLockResponse>(reqwest::Method::POST, &path, Some(&body), true)
             .await
     }
 }

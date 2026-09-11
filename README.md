@@ -6,7 +6,7 @@
 [![Rust Build](https://github.com/dfns/dfns-sdk-rust/actions/workflows/build.yaml/badge.svg)](https://github.com/dfns/dfns-sdk-rust/actions/workflows/build.yaml)
 [![lint](https://github.com/dfns/dfns-sdk-rust/actions/workflows/lint.yaml/badge.svg)](https://github.com/dfns/dfns-sdk-rust/actions/workflows/lint.yaml)
 [![Coverage](https://codecov.io/github/dfns/dfns-sdk-rust/graph/badge.svg)](https://codecov.io/github/dfns/dfns-sdk-rust)
-[![MSRV](https://img.shields.io/badge/MSRV-1.88-blue)](https://github.com/dfns/dfns-sdk-rust)
+[![MSRV](https://img.shields.io/badge/MSRV-1.75-blue)](https://github.com/dfns/dfns-sdk-rust)
 [![License: MIT](https://img.shields.io/crates/l/dfns-sdk-rust.svg)](https://github.com/dfns/dfns-sdk-rust/blob/main/LICENSE)
 
 Welcome, builders. This repo holds the Dfns Rust SDK. Useful links:
@@ -174,7 +174,7 @@ The client provides access to the following API domains:
 - `client.signers` - Signer management (17 endpoints)
 - `client.staking` - Staking operations (6 endpoints)
 - `client.swaps` - Token swap operations (5 endpoints)
-- `client.vaults` - Vault operations (15 endpoints)
+- `client.vaults` - Vault operations (16 endpoints)
 - `client.wallets` - Wallet operations (33 endpoints)
 - `client.webhooks` - Webhook subscriptions (8 endpoints)
 

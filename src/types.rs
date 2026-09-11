@@ -10,6 +10,8 @@ pub enum AddressWatchNetwork {
     ArbitrumSepolia,
     #[serde(rename = "ArcTestnet")]
     ArcTestnet,
+    #[serde(rename = "Areum")]
+    Areum,
     #[serde(rename = "AvalancheC")]
     AvalancheC,
     #[serde(rename = "AvalancheCFuji")]
@@ -76,10 +78,6 @@ pub enum AddressWatchNetwork {
     Polygon,
     #[serde(rename = "PolygonAmoy")]
     PolygonAmoy,
-    #[serde(rename = "Race")]
-    Race,
-    #[serde(rename = "RaceSepolia")]
-    RaceSepolia,
     #[serde(rename = "Rayls")]
     Rayls,
     #[serde(rename = "RaylsTestnet")]
@@ -124,6 +122,7 @@ impl std::fmt::Display for AddressWatchNetwork {
             AddressWatchNetwork::ArbitrumOne => "ArbitrumOne",
             AddressWatchNetwork::ArbitrumSepolia => "ArbitrumSepolia",
             AddressWatchNetwork::ArcTestnet => "ArcTestnet",
+            AddressWatchNetwork::Areum => "Areum",
             AddressWatchNetwork::AvalancheC => "AvalancheC",
             AddressWatchNetwork::AvalancheCFuji => "AvalancheCFuji",
             AddressWatchNetwork::Base => "Base",
@@ -157,8 +156,6 @@ impl std::fmt::Display for AddressWatchNetwork {
             AddressWatchNetwork::PlumeSepolia => "PlumeSepolia",
             AddressWatchNetwork::Polygon => "Polygon",
             AddressWatchNetwork::PolygonAmoy => "PolygonAmoy",
-            AddressWatchNetwork::Race => "Race",
-            AddressWatchNetwork::RaceSepolia => "RaceSepolia",
             AddressWatchNetwork::Rayls => "Rayls",
             AddressWatchNetwork::RaylsTestnet => "RaylsTestnet",
             AddressWatchNetwork::Robinhood => "Robinhood",
@@ -197,14 +194,12 @@ pub enum Network {
     ArbitrumSepolia,
     #[serde(rename = "ArcTestnet")]
     ArcTestnet,
+    #[serde(rename = "Areum")]
+    Areum,
     #[serde(rename = "AvalancheC")]
     AvalancheC,
     #[serde(rename = "AvalancheCFuji")]
     AvalancheCFuji,
-    #[serde(rename = "BabylonGenesis")]
-    BabylonGenesis,
-    #[serde(rename = "BabylonTestnet5")]
-    BabylonTestnet5,
     #[serde(rename = "Base")]
     Base,
     #[serde(rename = "BaseSepolia")]
@@ -339,10 +334,6 @@ pub enum Network {
     Polymesh,
     #[serde(rename = "PolymeshTestnet")]
     PolymeshTestnet,
-    #[serde(rename = "Race")]
-    Race,
-    #[serde(rename = "RaceSepolia")]
-    RaceSepolia,
     #[serde(rename = "Rayls")]
     Rayls,
     #[serde(rename = "RaylsTestnet")]
@@ -377,8 +368,6 @@ pub enum Network {
     SuiTestnet,
     #[serde(rename = "Tezos")]
     Tezos,
-    #[serde(rename = "TezosGhostnet")]
-    TezosGhostnet,
     #[serde(rename = "TezosShadownet")]
     TezosShadownet,
     #[serde(rename = "Tempo")]
@@ -425,10 +414,9 @@ impl std::fmt::Display for Network {
             Network::ArbitrumOne => "ArbitrumOne",
             Network::ArbitrumSepolia => "ArbitrumSepolia",
             Network::ArcTestnet => "ArcTestnet",
+            Network::Areum => "Areum",
             Network::AvalancheC => "AvalancheC",
             Network::AvalancheCFuji => "AvalancheCFuji",
-            Network::BabylonGenesis => "BabylonGenesis",
-            Network::BabylonTestnet5 => "BabylonTestnet5",
             Network::Base => "Base",
             Network::BaseSepolia => "BaseSepolia",
             Network::Berachain => "Berachain",
@@ -496,8 +484,6 @@ impl std::fmt::Display for Network {
             Network::PolygonAmoy => "PolygonAmoy",
             Network::Polymesh => "Polymesh",
             Network::PolymeshTestnet => "PolymeshTestnet",
-            Network::Race => "Race",
-            Network::RaceSepolia => "RaceSepolia",
             Network::Rayls => "Rayls",
             Network::RaylsTestnet => "RaylsTestnet",
             Network::Robinhood => "Robinhood",
@@ -515,7 +501,6 @@ impl std::fmt::Display for Network {
             Network::Sui => "Sui",
             Network::SuiTestnet => "SuiTestnet",
             Network::Tezos => "Tezos",
-            Network::TezosGhostnet => "TezosGhostnet",
             Network::TezosShadownet => "TezosShadownet",
             Network::Tempo => "Tempo",
             Network::TempoModerato => "TempoModerato",
@@ -1095,6 +1080,18 @@ pub struct VaultLock {
     pub external_id: Option<String>,
     #[serde(rename = "reason", default, skip_serializing_if = "Option::is_none")]
     pub reason: Option<String>,
+    #[serde(
+        rename = "replacesLockId",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub replaces_lock_id: Option<String>,
+    #[serde(
+        rename = "replacedByLockId",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub replaced_by_lock_id: Option<String>,
     #[serde(rename = "dateCreated")]
     pub date_created: String,
     #[serde(
