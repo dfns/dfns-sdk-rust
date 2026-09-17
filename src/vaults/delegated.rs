@@ -533,6 +533,55 @@ impl DelegatedVaultsClient {
             .await
     }
 
+    /// Starts delegated signing for transferVaultLock: returns the challenge to sign.
+    /// Pass the signed assertion to transfer_vault_lock_complete with the same arguments.
+    pub async fn transfer_vault_lock_init(
+        &self,
+        vault_id: String,
+        lock_id: String,
+        body: TransferVaultLockRequest,
+    ) -> Result<crate::signer::UserActionChallenge, crate::error::Error> {
+        let path = format!(
+            "/vaults/{}/locks/{}/transfer",
+            urlencoding::encode(&vault_id),
+            urlencoding::encode(&lock_id)
+        );
+        let body = serde_json::to_value(&body)?;
+        self.client
+            .create_user_action_challenge(reqwest::Method::POST, &path, Some(&body))
+            .await
+    }
+
+    /// Finishes delegated signing for transferVaultLock: submits the signed challenge
+    /// and issues the request.
+    pub async fn transfer_vault_lock_complete(
+        &self,
+        vault_id: String,
+        lock_id: String,
+        body: TransferVaultLockRequest,
+        challenge_identifier: String,
+        assertion: crate::signer::CredentialAssertion,
+    ) -> Result<TransferVaultLockResponse, crate::error::Error> {
+        let path = format!(
+            "/vaults/{}/locks/{}/transfer",
+            urlencoding::encode(&vault_id),
+            urlencoding::encode(&lock_id)
+        );
+        let body = serde_json::to_value(&body)?;
+        let user_action = self
+            .client
+            .complete_user_action_signing(challenge_identifier, &assertion)
+            .await?;
+        self.client
+            .request_with_user_action::<TransferVaultLockResponse>(
+                reqwest::Method::POST,
+                &path,
+                Some(&body),
+                &user_action,
+            )
+            .await
+    }
+
     /// Starts delegated signing for replaceVaultLock: returns the challenge to sign.
     /// Pass the signed assertion to replace_vault_lock_complete with the same arguments.
     pub async fn replace_vault_lock_init(

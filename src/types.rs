@@ -8,6 +8,8 @@ pub enum AddressWatchNetwork {
     ArbitrumOne,
     #[serde(rename = "ArbitrumSepolia")]
     ArbitrumSepolia,
+    #[serde(rename = "Arc")]
+    Arc,
     #[serde(rename = "ArcTestnet")]
     ArcTestnet,
     #[serde(rename = "Areum")]
@@ -121,6 +123,7 @@ impl std::fmt::Display for AddressWatchNetwork {
         f.write_str(match self {
             AddressWatchNetwork::ArbitrumOne => "ArbitrumOne",
             AddressWatchNetwork::ArbitrumSepolia => "ArbitrumSepolia",
+            AddressWatchNetwork::Arc => "Arc",
             AddressWatchNetwork::ArcTestnet => "ArcTestnet",
             AddressWatchNetwork::Areum => "Areum",
             AddressWatchNetwork::AvalancheC => "AvalancheC",
@@ -192,6 +195,8 @@ pub enum Network {
     ArbitrumOne,
     #[serde(rename = "ArbitrumSepolia")]
     ArbitrumSepolia,
+    #[serde(rename = "Arc")]
+    Arc,
     #[serde(rename = "ArcTestnet")]
     ArcTestnet,
     #[serde(rename = "Areum")]
@@ -413,6 +418,7 @@ impl std::fmt::Display for Network {
             Network::AptosTestnet => "AptosTestnet",
             Network::ArbitrumOne => "ArbitrumOne",
             Network::ArbitrumSepolia => "ArbitrumSepolia",
+            Network::Arc => "Arc",
             Network::ArcTestnet => "ArcTestnet",
             Network::Areum => "Areum",
             Network::AvalancheC => "AvalancheC",
@@ -1057,7 +1063,7 @@ pub struct TransferRequest {
     pub details: Option<std::collections::HashMap<String, serde_json::Value>>,
 }
 
-/// Vault lock object: funds manually locked for off-chain settlement or escrow.
+/// Vault lock object: funds manually locked for off-chain settlement or escrow. The owner can release them back to the vault or transfer them to the beneficiary.
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct VaultLock {
     #[serde(rename = "id")]
@@ -1080,6 +1086,24 @@ pub struct VaultLock {
     pub external_id: Option<String>,
     #[serde(rename = "reason", default, skip_serializing_if = "Option::is_none")]
     pub reason: Option<String>,
+    #[serde(
+        rename = "beneficiary",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub beneficiary: Option<String>,
+    #[serde(
+        rename = "transferId",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub transfer_id: Option<String>,
+    #[serde(
+        rename = "transferAmount",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub transfer_amount: Option<String>,
     #[serde(
         rename = "replacesLockId",
         default,

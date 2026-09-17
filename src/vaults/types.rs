@@ -133,6 +133,12 @@ pub struct CreateVaultLockRequest {
     pub external_id: Option<String>,
     #[serde(rename = "reason", default, skip_serializing_if = "Option::is_none")]
     pub reason: Option<String>,
+    #[serde(
+        rename = "beneficiary",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub beneficiary: Option<String>,
 }
 
 /// Create Vault Lock
@@ -158,6 +164,24 @@ pub struct CreateVaultLockResponse {
     pub external_id: Option<String>,
     #[serde(rename = "reason", default, skip_serializing_if = "Option::is_none")]
     pub reason: Option<String>,
+    #[serde(
+        rename = "beneficiary",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub beneficiary: Option<String>,
+    #[serde(
+        rename = "transferId",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub transfer_id: Option<String>,
+    #[serde(
+        rename = "transferAmount",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub transfer_amount: Option<String>,
     #[serde(
         rename = "replacesLockId",
         default,
@@ -357,6 +381,24 @@ pub struct GetVaultLockResponse {
     #[serde(rename = "reason", default, skip_serializing_if = "Option::is_none")]
     pub reason: Option<String>,
     #[serde(
+        rename = "beneficiary",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub beneficiary: Option<String>,
+    #[serde(
+        rename = "transferId",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub transfer_id: Option<String>,
+    #[serde(
+        rename = "transferAmount",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub transfer_amount: Option<String>,
+    #[serde(
         rename = "replacesLockId",
         default,
         skip_serializing_if = "Option::is_none"
@@ -500,6 +542,24 @@ pub struct ReleaseVaultLockResponse {
     #[serde(rename = "reason", default, skip_serializing_if = "Option::is_none")]
     pub reason: Option<String>,
     #[serde(
+        rename = "beneficiary",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub beneficiary: Option<String>,
+    #[serde(
+        rename = "transferId",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub transfer_id: Option<String>,
+    #[serde(
+        rename = "transferAmount",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub transfer_amount: Option<String>,
+    #[serde(
         rename = "replacesLockId",
         default,
         skip_serializing_if = "Option::is_none"
@@ -543,6 +603,84 @@ pub struct UntagVaultRequest {
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct UntagVaultResponse {}
 
+/// Transfer Vault Lock
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct TransferVaultLockRequest {
+    #[serde(rename = "amount")]
+    pub amount: String,
+}
+
+/// Transfer Vault Lock
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct TransferVaultLockResponse {
+    #[serde(rename = "id")]
+    pub id: String,
+    #[serde(rename = "walletId")]
+    pub wallet_id: String,
+    #[serde(rename = "network")]
+    pub network: crate::types::Network,
+    #[serde(rename = "requester")]
+    pub requester: crate::types::Requester,
+    #[serde(rename = "requestBody")]
+    pub request_body: serde_json::Value,
+    #[serde(rename = "metadata")]
+    pub metadata: serde_json::Value,
+    #[serde(rename = "status")]
+    pub status: String,
+    #[serde(rename = "reason", default, skip_serializing_if = "Option::is_none")]
+    pub reason: Option<String>,
+    #[serde(rename = "txHash", default, skip_serializing_if = "Option::is_none")]
+    pub tx_hash: Option<String>,
+    #[serde(rename = "fee", default, skip_serializing_if = "Option::is_none")]
+    pub fee: Option<String>,
+    #[serde(rename = "dateRequested")]
+    pub date_requested: String,
+    #[serde(
+        rename = "datePolicyResolved",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub date_policy_resolved: Option<String>,
+    #[serde(
+        rename = "dateBroadcasted",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub date_broadcasted: Option<String>,
+    #[serde(
+        rename = "dateConfirmed",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub date_confirmed: Option<String>,
+    #[serde(
+        rename = "approvalId",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub approval_id: Option<String>,
+    #[serde(
+        rename = "externalId",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub external_id: Option<String>,
+    #[serde(
+        rename = "feeSponsorId",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub fee_sponsor_id: Option<String>,
+    #[serde(
+        rename = "replacementId",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub replacement_id: Option<String>,
+    #[serde(rename = "details", default, skip_serializing_if = "Option::is_none")]
+    pub details: Option<std::collections::HashMap<String, serde_json::Value>>,
+}
+
 /// Replace Vault Lock
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct ReplaceVaultLockRequest {
@@ -575,6 +713,24 @@ pub struct ReplaceVaultLockResponse {
     pub external_id: Option<String>,
     #[serde(rename = "reason", default, skip_serializing_if = "Option::is_none")]
     pub reason: Option<String>,
+    #[serde(
+        rename = "beneficiary",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub beneficiary: Option<String>,
+    #[serde(
+        rename = "transferId",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub transfer_id: Option<String>,
+    #[serde(
+        rename = "transferAmount",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub transfer_amount: Option<String>,
     #[serde(
         rename = "replacesLockId",
         default,

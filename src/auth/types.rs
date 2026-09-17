@@ -1324,7 +1324,7 @@ pub struct ListUsersQuery {
     )]
     pub pagination_token: Option<String>,
     #[serde(rename = "kind", default, skip_serializing_if = "Option::is_none")]
-    pub kind: Option<String>,
+    pub kind: Option<serde_json::Value>,
 }
 
 /// Create User
