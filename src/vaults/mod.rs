@@ -294,6 +294,24 @@ impl VaultsClient {
             .await
     }
 
+    /// Sends part or all of the locked amount to the lock's beneficiary, paying the network fee from the vault's available balance. Owner only, not subject to policies. Returns the outgoing transfer. The funds stay locked while it is in flight; once confirmed the lock is deleted and any unsent remainder returns to the available balance. If the transfer fails the lock stays in place and can be transferred again.
+    pub async fn transfer_vault_lock(
+        &self,
+        vault_id: String,
+        lock_id: String,
+        body: TransferVaultLockRequest,
+    ) -> Result<TransferVaultLockResponse, crate::error::Error> {
+        let path = format!(
+            "/vaults/{}/locks/{}/transfer",
+            urlencoding::encode(&vault_id),
+            urlencoding::encode(&lock_id)
+        );
+        let body = serde_json::to_value(&body)?;
+        self.client
+            .request::<TransferVaultLockResponse>(reqwest::Method::POST, &path, Some(&body), true)
+            .await
+    }
+
     /// Requests replacing a lock with a new lock at a new total amount. Owner only. Executed immediately unless a policy requires approval. On execution the lock is released, a new lock is created at the new amount (carrying over the owner, externalId and reason), and the new lock is returned. If a policy requires approval, responds 202 with the pending replace request instead.
     pub async fn replace_vault_lock(
         &self,
