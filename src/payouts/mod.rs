@@ -85,7 +85,7 @@ impl PayoutsClient {
     }
 
     /// Retrieve the current status of a payout by its ID.
-    pub async fn get_payout_status(
+    pub async fn get_payout(
         &self,
         payout_id: String,
     ) -> Result<serde_json::Value, crate::error::Error> {
@@ -93,6 +93,15 @@ impl PayoutsClient {
         self.client
             .request::<serde_json::Value>(reqwest::Method::GET, &path, None, false)
             .await
+    }
+
+    /// Deprecated: use `get_payout` instead.
+    #[deprecated(note = "use `get_payout` instead")]
+    pub async fn get_payout_status(
+        &self,
+        payout_id: String,
+    ) -> Result<serde_json::Value, crate::error::Error> {
+        self.get_payout(payout_id).await
     }
 
     /// Perform an action on a payout, such as confirming or canceling.

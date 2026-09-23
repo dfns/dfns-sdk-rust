@@ -420,6 +420,29 @@ pub struct GetVaultLockResponse {
     pub date_deleted: Option<String>,
 }
 
+/// Get Vault Quarantine
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct GetVaultQuarantineResponse {
+    #[serde(rename = "id")]
+    pub id: String,
+    #[serde(rename = "vaultId")]
+    pub vault_id: String,
+    #[serde(rename = "network")]
+    pub network: String,
+    #[serde(rename = "transactionHash")]
+    pub transaction_hash: String,
+    #[serde(rename = "kytResult", default, skip_serializing_if = "Option::is_none")]
+    pub kyt_result: Option<serde_json::Value>,
+    #[serde(
+        rename = "dateReleased",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub date_released: Option<String>,
+    #[serde(rename = "dateCreated")]
+    pub date_created: String,
+}
+
 /// List Vault Assets
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct ListVaultAssetsResponse {
@@ -472,6 +495,34 @@ pub struct ListVaultBalancesQuery {
     pub network: Option<String>,
     #[serde(rename = "tid", default, skip_serializing_if = "Option::is_none")]
     pub tid: Option<String>,
+}
+
+/// List Vault Quarantines
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct ListVaultQuarantinesResponse {
+    #[serde(rename = "items")]
+    pub items: Vec<crate::types::VaultQuarantine>,
+    #[serde(
+        rename = "nextPageToken",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub next_page_token: Option<String>,
+}
+
+/// Query parameters for the ListVaultQuarantinesQuery operation.
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct ListVaultQuarantinesQuery {
+    #[serde(rename = "limit", default, skip_serializing_if = "Option::is_none")]
+    pub limit: Option<i64>,
+    #[serde(
+        rename = "paginationToken",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub pagination_token: Option<String>,
+    #[serde(rename = "network", default, skip_serializing_if = "Option::is_none")]
+    pub network: Option<String>,
 }
 
 /// Release Quarantine

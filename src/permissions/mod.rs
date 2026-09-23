@@ -34,11 +34,11 @@ impl PermissionsClient {
     }
 
     /// Lists all permission (role) assignments for a given permission.
-    pub async fn list_permission_assignments(
+    pub async fn list_assignments(
         &self,
         permission_id: String,
-        query: Option<ListPermissionAssignmentsQuery>,
-    ) -> Result<ListPermissionAssignmentsResponse, crate::error::Error> {
+        query: Option<ListAssignmentsQuery>,
+    ) -> Result<ListAssignmentsResponse, crate::error::Error> {
         let mut path = format!(
             "/permissions/{}/assignments",
             urlencoding::encode(&permission_id)
@@ -60,8 +60,18 @@ impl PermissionsClient {
             }
         }
         self.client
-            .request::<ListPermissionAssignmentsResponse>(reqwest::Method::GET, &path, None, false)
+            .request::<ListAssignmentsResponse>(reqwest::Method::GET, &path, None, false)
             .await
+    }
+
+    /// Deprecated: use `list_assignments` instead.
+    #[deprecated(note = "use `list_assignments` instead")]
+    pub async fn list_permission_assignments(
+        &self,
+        permission_id: String,
+        query: Option<ListAssignmentsQuery>,
+    ) -> Result<ListAssignmentsResponse, crate::error::Error> {
+        self.list_assignments(permission_id, query).await
     }
 
     /// Assigns a permission (role) to an identity (user, PAT or service account), granting it access to the operations defined in the permission. Returns the assignment on success (200), or a pending change request if approval is required (202).

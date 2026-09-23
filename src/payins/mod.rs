@@ -73,15 +73,24 @@ impl PayinsClient {
     }
 
     /// Request a quote from a given provider for a payin. Returns the stablecoin amount to be delivered and the fees.
-    pub async fn request_payin_quote(
+    pub async fn create_payin_quote(
         &self,
-        body: RequestPayinQuoteRequest,
-    ) -> Result<RequestPayinQuoteResponse, crate::error::Error> {
+        body: CreatePayinQuoteRequest,
+    ) -> Result<CreatePayinQuoteResponse, crate::error::Error> {
         let path = String::from("/payins/quote");
         let body = serde_json::to_value(&body)?;
         self.client
-            .request::<RequestPayinQuoteResponse>(reqwest::Method::POST, &path, Some(&body), false)
+            .request::<CreatePayinQuoteResponse>(reqwest::Method::POST, &path, Some(&body), false)
             .await
+    }
+
+    /// Deprecated: use `create_payin_quote` instead.
+    #[deprecated(note = "use `create_payin_quote` instead")]
+    pub async fn request_payin_quote(
+        &self,
+        body: CreatePayinQuoteRequest,
+    ) -> Result<CreatePayinQuoteResponse, crate::error::Error> {
+        self.create_payin_quote(body).await
     }
 
     /// Check whether a wallet's address is registered (and approved) as an payin recipient with the provider.
@@ -117,14 +126,14 @@ impl PayinsClient {
     /// Register a wallet's address as an payin recipient with the provider. The registration then needs
     ///     to be approved on the provider's side (for Circle Mint: by an administrator in the Mint Console)
     ///     before payins to that wallet can be created.
-    pub async fn register_payin_recipient(
+    pub async fn create_payin_recipient(
         &self,
-        body: RegisterPayinRecipientRequest,
-    ) -> Result<RegisterPayinRecipientResponse, crate::error::Error> {
+        body: CreatePayinRecipientRequest,
+    ) -> Result<CreatePayinRecipientResponse, crate::error::Error> {
         let path = String::from("/payins/recipients");
         let body = serde_json::to_value(&body)?;
         self.client
-            .request::<RegisterPayinRecipientResponse>(
+            .request::<CreatePayinRecipientResponse>(
                 reqwest::Method::POST,
                 &path,
                 Some(&body),
@@ -133,8 +142,17 @@ impl PayinsClient {
             .await
     }
 
+    /// Deprecated: use `create_payin_recipient` instead.
+    #[deprecated(note = "use `create_payin_recipient` instead")]
+    pub async fn register_payin_recipient(
+        &self,
+        body: CreatePayinRecipientRequest,
+    ) -> Result<CreatePayinRecipientResponse, crate::error::Error> {
+        self.create_payin_recipient(body).await
+    }
+
     /// Retrieve the current status of an payin by its ID.
-    pub async fn get_payin_status(
+    pub async fn get_payin(
         &self,
         payin_id: String,
     ) -> Result<serde_json::Value, crate::error::Error> {
@@ -142,6 +160,15 @@ impl PayinsClient {
         self.client
             .request::<serde_json::Value>(reqwest::Method::GET, &path, None, false)
             .await
+    }
+
+    /// Deprecated: use `get_payin` instead.
+    #[deprecated(note = "use `get_payin` instead")]
+    pub async fn get_payin_status(
+        &self,
+        payin_id: String,
+    ) -> Result<serde_json::Value, crate::error::Error> {
+        self.get_payin(payin_id).await
     }
 
     /// List the provider accounts, with their registered wallet addresses per asset. An account is created on the provider platform (e.g. the Borderless dashboard) and its registered addresses serve both directions: a payin delivers to — and a payout is funded from — a wallet whose address is registered on the account.
