@@ -204,62 +204,94 @@ impl DelegatedExchangesClient {
             .await
     }
 
-    /// Starts delegated signing for createExchangeDeposit: returns the challenge to sign.
-    /// Pass the signed assertion to create_exchange_deposit_complete with the same arguments.
+    /// Starts delegated signing for createDeposit: returns the challenge to sign.
+    /// Pass the signed assertion to create_deposit_complete with the same arguments.
+    pub async fn create_deposit_init(
+        &self,
+        exchange_id: String,
+        account_id: String,
+        body: CreateDepositRequest,
+    ) -> Result<crate::signer::UserActionChallenge, crate::error::Error> {
+        let path = format!(
+            "/exchanges/{}/accounts/{}/deposits",
+            urlencoding::encode(&exchange_id),
+            urlencoding::encode(&account_id)
+        );
+        let body = serde_json::to_value(&body)?;
+        self.client
+            .create_user_action_challenge(reqwest::Method::POST, &path, Some(&body))
+            .await
+    }
+
+    /// Deprecated: use `create_deposit_init` instead.
+    #[deprecated(note = "use `create_deposit_init` instead")]
     pub async fn create_exchange_deposit_init(
         &self,
         exchange_id: String,
         account_id: String,
-        body: CreateExchangeDepositRequest,
+        body: CreateDepositRequest,
     ) -> Result<crate::signer::UserActionChallenge, crate::error::Error> {
+        self.create_deposit_init(exchange_id, account_id, body)
+            .await
+    }
+
+    /// Finishes delegated signing for createDeposit: submits the signed challenge
+    /// and issues the request.
+    pub async fn create_deposit_complete(
+        &self,
+        exchange_id: String,
+        account_id: String,
+        body: CreateDepositRequest,
+        challenge_identifier: String,
+        assertion: crate::signer::CredentialAssertion,
+    ) -> Result<CreateDepositResponse, crate::error::Error> {
         let path = format!(
             "/exchanges/{}/accounts/{}/deposits",
             urlencoding::encode(&exchange_id),
             urlencoding::encode(&account_id)
         );
         let body = serde_json::to_value(&body)?;
+        let user_action = self
+            .client
+            .complete_user_action_signing(challenge_identifier, &assertion)
+            .await?;
         self.client
-            .create_user_action_challenge(reqwest::Method::POST, &path, Some(&body))
+            .request_with_user_action::<CreateDepositResponse>(
+                reqwest::Method::POST,
+                &path,
+                Some(&body),
+                &user_action,
+            )
             .await
     }
 
-    /// Finishes delegated signing for createExchangeDeposit: submits the signed challenge
-    /// and issues the request.
+    /// Deprecated: use `create_deposit_complete` instead.
+    #[deprecated(note = "use `create_deposit_complete` instead")]
     pub async fn create_exchange_deposit_complete(
         &self,
         exchange_id: String,
         account_id: String,
-        body: CreateExchangeDepositRequest,
+        body: CreateDepositRequest,
         challenge_identifier: String,
         assertion: crate::signer::CredentialAssertion,
-    ) -> Result<CreateExchangeDepositResponse, crate::error::Error> {
-        let path = format!(
-            "/exchanges/{}/accounts/{}/deposits",
-            urlencoding::encode(&exchange_id),
-            urlencoding::encode(&account_id)
-        );
-        let body = serde_json::to_value(&body)?;
-        let user_action = self
-            .client
-            .complete_user_action_signing(challenge_identifier, &assertion)
-            .await?;
-        self.client
-            .request_with_user_action::<CreateExchangeDepositResponse>(
-                reqwest::Method::POST,
-                &path,
-                Some(&body),
-                &user_action,
-            )
-            .await
+    ) -> Result<CreateDepositResponse, crate::error::Error> {
+        self.create_deposit_complete(
+            exchange_id,
+            account_id,
+            body,
+            challenge_identifier,
+            assertion,
+        )
+        .await
     }
 
-    /// Starts delegated signing for createExchangeWithdrawal: returns the challenge to sign.
-    /// Pass the signed assertion to create_exchange_withdrawal_complete with the same arguments.
-    pub async fn create_exchange_withdrawal_init(
+    /// Starts delegated signing for createWithdrawal: returns the challenge to sign.
+    /// Pass the signed assertion to create_withdrawal_complete with the same arguments.
+    pub async fn create_withdrawal_init(
         &self,
         exchange_id: String,
         account_id: String,
-        body: CreateExchangeWithdrawalRequest,
+        body: CreateWithdrawalRequest,
     ) -> Result<crate::signer::UserActionChallenge, crate::error::Error> {
         let path = format!(
             "/exchanges/{}/accounts/{}/withdrawals",
@@ -272,16 +304,28 @@ impl DelegatedExchangesClient {
             .await
     }
 
-    /// Finishes delegated signing for createExchangeWithdrawal: submits the signed challenge
-    /// and issues the request.
-    pub async fn create_exchange_withdrawal_complete(
+    /// Deprecated: use `create_withdrawal_init` instead.
+    #[deprecated(note = "use `create_withdrawal_init` instead")]
+    pub async fn create_exchange_withdrawal_init(
         &self,
         exchange_id: String,
         account_id: String,
-        body: CreateExchangeWithdrawalRequest,
+        body: CreateWithdrawalRequest,
+    ) -> Result<crate::signer::UserActionChallenge, crate::error::Error> {
+        self.create_withdrawal_init(exchange_id, account_id, body)
+            .await
+    }
+
+    /// Finishes delegated signing for createWithdrawal: submits the signed challenge
+    /// and issues the request.
+    pub async fn create_withdrawal_complete(
+        &self,
+        exchange_id: String,
+        account_id: String,
+        body: CreateWithdrawalRequest,
         challenge_identifier: String,
         assertion: crate::signer::CredentialAssertion,
-    ) -> Result<CreateExchangeWithdrawalResponse, crate::error::Error> {
+    ) -> Result<CreateWithdrawalResponse, crate::error::Error> {
         let path = format!(
             "/exchanges/{}/accounts/{}/withdrawals",
             urlencoding::encode(&exchange_id),
@@ -293,12 +337,32 @@ impl DelegatedExchangesClient {
             .complete_user_action_signing(challenge_identifier, &assertion)
             .await?;
         self.client
-            .request_with_user_action::<CreateExchangeWithdrawalResponse>(
+            .request_with_user_action::<CreateWithdrawalResponse>(
                 reqwest::Method::POST,
                 &path,
                 Some(&body),
                 &user_action,
             )
             .await
+    }
+
+    /// Deprecated: use `create_withdrawal_complete` instead.
+    #[deprecated(note = "use `create_withdrawal_complete` instead")]
+    pub async fn create_exchange_withdrawal_complete(
+        &self,
+        exchange_id: String,
+        account_id: String,
+        body: CreateWithdrawalRequest,
+        challenge_identifier: String,
+        assertion: crate::signer::CredentialAssertion,
+    ) -> Result<CreateWithdrawalResponse, crate::error::Error> {
+        self.create_withdrawal_complete(
+            exchange_id,
+            account_id,
+            body,
+            challenge_identifier,
+            assertion,
+        )
+        .await
     }
 }

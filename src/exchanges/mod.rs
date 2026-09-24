@@ -158,12 +158,12 @@ impl ExchangesClient {
     }
 
     /// Creates a new exchange deposit transaction.
-    pub async fn create_exchange_deposit(
+    pub async fn create_deposit(
         &self,
         exchange_id: String,
         account_id: String,
-        body: CreateExchangeDepositRequest,
-    ) -> Result<CreateExchangeDepositResponse, crate::error::Error> {
+        body: CreateDepositRequest,
+    ) -> Result<CreateDepositResponse, crate::error::Error> {
         let path = format!(
             "/exchanges/{}/accounts/{}/deposits",
             urlencoding::encode(&exchange_id),
@@ -171,22 +171,28 @@ impl ExchangesClient {
         );
         let body = serde_json::to_value(&body)?;
         self.client
-            .request::<CreateExchangeDepositResponse>(
-                reqwest::Method::POST,
-                &path,
-                Some(&body),
-                true,
-            )
+            .request::<CreateDepositResponse>(reqwest::Method::POST, &path, Some(&body), true)
             .await
     }
 
-    /// Creates a new exchange withdrawal transaction.
-    pub async fn create_exchange_withdrawal(
+    /// Deprecated: use `create_deposit` instead.
+    #[deprecated(note = "use `create_deposit` instead")]
+    pub async fn create_exchange_deposit(
         &self,
         exchange_id: String,
         account_id: String,
-        body: CreateExchangeWithdrawalRequest,
-    ) -> Result<CreateExchangeWithdrawalResponse, crate::error::Error> {
+        body: CreateDepositRequest,
+    ) -> Result<CreateDepositResponse, crate::error::Error> {
+        self.create_deposit(exchange_id, account_id, body).await
+    }
+
+    /// Creates a new exchange withdrawal transaction.
+    pub async fn create_withdrawal(
+        &self,
+        exchange_id: String,
+        account_id: String,
+        body: CreateWithdrawalRequest,
+    ) -> Result<CreateWithdrawalResponse, crate::error::Error> {
         let path = format!(
             "/exchanges/{}/accounts/{}/withdrawals",
             urlencoding::encode(&exchange_id),
@@ -194,12 +200,18 @@ impl ExchangesClient {
         );
         let body = serde_json::to_value(&body)?;
         self.client
-            .request::<CreateExchangeWithdrawalResponse>(
-                reqwest::Method::POST,
-                &path,
-                Some(&body),
-                true,
-            )
+            .request::<CreateWithdrawalResponse>(reqwest::Method::POST, &path, Some(&body), true)
             .await
+    }
+
+    /// Deprecated: use `create_withdrawal` instead.
+    #[deprecated(note = "use `create_withdrawal` instead")]
+    pub async fn create_exchange_withdrawal(
+        &self,
+        exchange_id: String,
+        account_id: String,
+        body: CreateWithdrawalRequest,
+    ) -> Result<CreateWithdrawalResponse, crate::error::Error> {
+        self.create_withdrawal(exchange_id, account_id, body).await
     }
 }
