@@ -559,7 +559,7 @@ pub struct CancelTransferResponse {
 
 /// Proxy a request to the Canton Ledger API
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-pub struct ProxyARequestToTheCantonLedgerApiRequest {
+pub struct CantonLedgerApiProxyRequest {
     #[serde(rename = "requestMethod")]
     pub request_method: String,
     #[serde(rename = "resource")]
@@ -1475,3 +1475,7 @@ pub struct ListOrgWalletHistoryQuery {
     #[serde(rename = "endTime")]
     pub end_time: String,
 }
+
+/// Deprecated: use `CantonLedgerApiProxyRequest` instead.
+#[deprecated(note = "use `CantonLedgerApiProxyRequest` instead")]
+pub type ProxyARequestToTheCantonLedgerApiRequest = CantonLedgerApiProxyRequest;

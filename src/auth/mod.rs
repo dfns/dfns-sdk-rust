@@ -292,15 +292,24 @@ impl AuthClient {
     ///
     /// The type of credentials used to login is determined by the `kind` field in the nested objects (`firstFactor` and `secondFactor`). Supported credential kinds are:
     /// * `Fido2`: Login challenge is signed by a user's signing device using `WebAuthn`.
-    pub async fn complete_user_login(
+    pub async fn login(
         &self,
-        body: CompleteUserLoginRequest,
+        body: LoginRequest,
     ) -> Result<serde_json::Value, crate::error::Error> {
         let path = String::from("/auth/login");
         let body = serde_json::to_value(&body)?;
         self.client
             .request::<serde_json::Value>(reqwest::Method::POST, &path, Some(&body), false)
             .await
+    }
+
+    /// Deprecated: use `login` instead.
+    #[deprecated(note = "use `login` instead")]
+    pub async fn complete_user_login(
+        &self,
+        body: LoginRequest,
+    ) -> Result<serde_json::Value, crate::error::Error> {
+        self.login(body).await
     }
 
     /// Completes the user logout process.
@@ -313,9 +322,9 @@ impl AuthClient {
     }
 
     /// Completes the OIDC login process by exchanging the authorization code obtained from the identity provider. If the verified user has no active first-factor credential yet, it returns a registration challenge to complete via [Complete User Registration](/api-reference/auth/complete-user-registration); otherwise it returns the user's authentication token.
-    pub async fn complete_oidc_login(
+    pub async fn oidc_login(
         &self,
-        body: CompleteOidcLoginRequest,
+        body: OidcLoginRequest,
     ) -> Result<serde_json::Value, crate::error::Error> {
         let path = String::from("/auth/login/oidc");
         let body = serde_json::to_value(&body)?;
@@ -324,16 +333,34 @@ impl AuthClient {
             .await
     }
 
-    /// Initialize the OIDC login process by returning the identity provider authorization URL to redirect the user to.
-    pub async fn initiate_oidc_login(
+    /// Deprecated: use `oidc_login` instead.
+    #[deprecated(note = "use `oidc_login` instead")]
+    pub async fn complete_oidc_login(
         &self,
-        body: InitiateOidcLoginRequest,
-    ) -> Result<InitiateOidcLoginResponse, crate::error::Error> {
+        body: OidcLoginRequest,
+    ) -> Result<serde_json::Value, crate::error::Error> {
+        self.oidc_login(body).await
+    }
+
+    /// Initialize the OIDC login process by returning the identity provider authorization URL to redirect the user to.
+    pub async fn oidc_login_init(
+        &self,
+        body: OidcLoginInitRequest,
+    ) -> Result<OidcLoginInitResponse, crate::error::Error> {
         let path = String::from("/auth/login/oidc/init");
         let body = serde_json::to_value(&body)?;
         self.client
-            .request::<InitiateOidcLoginResponse>(reqwest::Method::POST, &path, Some(&body), false)
+            .request::<OidcLoginInitResponse>(reqwest::Method::POST, &path, Some(&body), false)
             .await
+    }
+
+    /// Deprecated: use `oidc_login_init` instead.
+    #[deprecated(note = "use `oidc_login_init` instead")]
+    pub async fn initiate_oidc_login(
+        &self,
+        body: OidcLoginInitRequest,
+    ) -> Result<OidcLoginInitResponse, crate::error::Error> {
+        self.oidc_login_init(body).await
     }
 
     /// Sends a temporary one time code to the user that can be used during login flow.
@@ -363,27 +390,45 @@ impl AuthClient {
     }
 
     /// Completes the SSO login process by exchanging the authorization code obtained from the identity provider for the user's authentication token.
-    pub async fn complete_sso_login(
+    pub async fn sso_login(
         &self,
-        body: CompleteSsoLoginRequest,
-    ) -> Result<CompleteSsoLoginResponse, crate::error::Error> {
+        body: SsoLoginRequest,
+    ) -> Result<SsoLoginResponse, crate::error::Error> {
         let path = String::from("/auth/login/sso");
         let body = serde_json::to_value(&body)?;
         self.client
-            .request::<CompleteSsoLoginResponse>(reqwest::Method::POST, &path, Some(&body), false)
+            .request::<SsoLoginResponse>(reqwest::Method::POST, &path, Some(&body), false)
             .await
     }
 
-    /// Initialize the login process with SSO by returning the IdP URL to call.
-    pub async fn initiate_sso_login(
+    /// Deprecated: use `sso_login` instead.
+    #[deprecated(note = "use `sso_login` instead")]
+    pub async fn complete_sso_login(
         &self,
-        body: InitiateSsoLoginRequest,
-    ) -> Result<InitiateSsoLoginResponse, crate::error::Error> {
+        body: SsoLoginRequest,
+    ) -> Result<SsoLoginResponse, crate::error::Error> {
+        self.sso_login(body).await
+    }
+
+    /// Initialize the login process with SSO by returning the IdP URL to call.
+    pub async fn sso_login_init(
+        &self,
+        body: SsoLoginInitRequest,
+    ) -> Result<SsoLoginInitResponse, crate::error::Error> {
         let path = String::from("/auth/login/sso/init");
         let body = serde_json::to_value(&body)?;
         self.client
-            .request::<InitiateSsoLoginResponse>(reqwest::Method::POST, &path, Some(&body), false)
+            .request::<SsoLoginInitResponse>(reqwest::Method::POST, &path, Some(&body), false)
             .await
+    }
+
+    /// Deprecated: use `sso_login_init` instead.
+    #[deprecated(note = "use `sso_login_init` instead")]
+    pub async fn initiate_sso_login(
+        &self,
+        body: SsoLoginInitRequest,
+    ) -> Result<SsoLoginInitResponse, crate::error::Error> {
+        self.sso_login_init(body).await
     }
 
     /// Only for TenantUsers - Exchanges the current user access token, for an org-bound or tenant-bound token. The user must have access to the target org / tenant. The new access token expiration won't exceed the current token's one.
@@ -526,15 +571,24 @@ impl AuthClient {
     ///
     /// This flow requires cryptographic validation of newly created credential(s) using a recovery credential. The `recovery.credentialAssertion.clientData` field's challenge must be the _base64url-encoded_ representation of the `newCredential` object.
     ///
-    pub async fn recover_user(
+    pub async fn recover(
         &self,
-        body: RecoverUserRequest,
-    ) -> Result<RecoverUserResponse, crate::error::Error> {
+        body: RecoverRequest,
+    ) -> Result<RecoverResponse, crate::error::Error> {
         let path = String::from("/auth/recover/user");
         let body = serde_json::to_value(&body)?;
         self.client
-            .request::<RecoverUserResponse>(reqwest::Method::POST, &path, Some(&body), false)
+            .request::<RecoverResponse>(reqwest::Method::POST, &path, Some(&body), false)
             .await
+    }
+
+    /// Deprecated: use `recover` instead.
+    #[deprecated(note = "use `recover` instead")]
+    pub async fn recover_user(
+        &self,
+        body: RecoverRequest,
+    ) -> Result<RecoverResponse, crate::error::Error> {
+        self.recover(body).await
     }
 
     /// Starts a user recovery session, returning a challenge that will be used to verify the user's identity.
@@ -555,20 +609,24 @@ impl AuthClient {
     }
 
     /// Send the user a recovery verification code. This code is used as a second factor to verify the user initiated the recovery request.
-    pub async fn send_recovery_code_email(
+    pub async fn send_recovery_code(
         &self,
-        body: SendRecoveryCodeEmailRequest,
-    ) -> Result<SendRecoveryCodeEmailResponse, crate::error::Error> {
+        body: SendRecoveryCodeRequest,
+    ) -> Result<SendRecoveryCodeResponse, crate::error::Error> {
         let path = String::from("/auth/recover/user/code");
         let body = serde_json::to_value(&body)?;
         self.client
-            .request::<SendRecoveryCodeEmailResponse>(
-                reqwest::Method::POST,
-                &path,
-                Some(&body),
-                false,
-            )
+            .request::<SendRecoveryCodeResponse>(reqwest::Method::POST, &path, Some(&body), false)
             .await
+    }
+
+    /// Deprecated: use `send_recovery_code` instead.
+    #[deprecated(note = "use `send_recovery_code` instead")]
+    pub async fn send_recovery_code_email(
+        &self,
+        body: SendRecoveryCodeRequest,
+    ) -> Result<SendRecoveryCodeResponse, crate::error::Error> {
+        self.send_recovery_code(body).await
     }
 
     /// <Warning>
@@ -629,40 +687,48 @@ impl AuthClient {
     ///
     /// All credentials submitted in this call (`firstFactorCredential`, `secondFactorCredential`, `recoveryCredential`) sign the same challenge returned by the registration init endpoint ([Create Registration Challenge](https://docs.dfns.co/api-reference/auth/create-registration-challenge), [Create Delegated Registration Challenge](https://docs.dfns.co/api-reference/auth/create-delegated-registration-challenge), or [Create Social Registration Challenge](https://docs.dfns.co/api-reference/auth/create-social-registration-challenge)).
     ///
-    pub async fn complete_user_registration(
+    pub async fn register(
         &self,
-        body: CompleteUserRegistrationRequest,
-    ) -> Result<CompleteUserRegistrationResponse, crate::error::Error> {
+        body: RegisterRequest,
+    ) -> Result<RegisterResponse, crate::error::Error> {
         let path = String::from("/auth/registration");
         let body = serde_json::to_value(&body)?;
         self.client
-            .request::<CompleteUserRegistrationResponse>(
-                reqwest::Method::POST,
-                &path,
-                Some(&body),
-                false,
-            )
+            .request::<RegisterResponse>(reqwest::Method::POST, &path, Some(&body), false)
             .await
+    }
+
+    /// Deprecated: use `register` instead.
+    #[deprecated(note = "use `register` instead")]
+    pub async fn complete_user_registration(
+        &self,
+        body: RegisterRequest,
+    ) -> Result<RegisterResponse, crate::error::Error> {
+        self.register(body).await
     }
 
     /// Completes the end user registration process and creates the user's initial credentials along with delegated wallets for the new end user.
     ///
     /// All credentials submitted in this call (`firstFactorCredential`, `secondFactorCredential`, `recoveryCredential`) sign the same challenge returned by the registration init endpoint ([Create Delegated Registration Challenge](https://docs.dfns.co/api-reference/auth/create-delegated-registration-challenge) or [Create Social Registration Challenge](https://docs.dfns.co/api-reference/auth/create-social-registration-challenge)).
     ///
-    pub async fn complete_end_user_registration_with_wallets(
+    pub async fn register_end_user(
         &self,
-        body: CompleteEndUserRegistrationWithWalletsRequest,
-    ) -> Result<CompleteEndUserRegistrationWithWalletsResponse, crate::error::Error> {
+        body: RegisterEndUserRequest,
+    ) -> Result<RegisterEndUserResponse, crate::error::Error> {
         let path = String::from("/auth/registration/enduser");
         let body = serde_json::to_value(&body)?;
         self.client
-            .request::<CompleteEndUserRegistrationWithWalletsResponse>(
-                reqwest::Method::POST,
-                &path,
-                Some(&body),
-                false,
-            )
+            .request::<RegisterEndUserResponse>(reqwest::Method::POST, &path, Some(&body), false)
             .await
+    }
+
+    /// Deprecated: use `register_end_user` instead.
+    #[deprecated(note = "use `register_end_user` instead")]
+    pub async fn complete_end_user_registration_with_wallets(
+        &self,
+        body: RegisterEndUserRequest,
+    ) -> Result<RegisterEndUserResponse, crate::error::Error> {
+        self.register_end_user(body).await
     }
 
     /// Sends the user a new registration code. The previous registration code will be marked invalid. If the user has already completed their registration no action will be taken.
