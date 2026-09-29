@@ -36,8 +36,8 @@ pub enum AddressWatchNetwork {
     BscTestnet,
     #[serde(rename = "Celo")]
     Celo,
-    #[serde(rename = "CeloAlfajores")]
-    CeloAlfajores,
+    #[serde(rename = "CeloSepolia")]
+    CeloSepolia,
     #[serde(rename = "Codex")]
     Codex,
     #[serde(rename = "CodexSepolia")]
@@ -137,7 +137,7 @@ impl std::fmt::Display for AddressWatchNetwork {
             AddressWatchNetwork::Bsc => "Bsc",
             AddressWatchNetwork::BscTestnet => "BscTestnet",
             AddressWatchNetwork::Celo => "Celo",
-            AddressWatchNetwork::CeloAlfajores => "CeloAlfajores",
+            AddressWatchNetwork::CeloSepolia => "CeloSepolia",
             AddressWatchNetwork::Codex => "Codex",
             AddressWatchNetwork::CodexSepolia => "CodexSepolia",
             AddressWatchNetwork::Ethereum => "Ethereum",
@@ -243,8 +243,8 @@ pub enum Network {
     ConcordiumTestnet,
     #[serde(rename = "Celo")]
     Celo,
-    #[serde(rename = "CeloAlfajores")]
-    CeloAlfajores,
+    #[serde(rename = "CeloSepolia")]
+    CeloSepolia,
     #[serde(rename = "Codex")]
     Codex,
     #[serde(rename = "CodexSepolia")]
@@ -442,7 +442,7 @@ impl std::fmt::Display for Network {
             Network::Concordium => "Concordium",
             Network::ConcordiumTestnet => "ConcordiumTestnet",
             Network::Celo => "Celo",
-            Network::CeloAlfajores => "CeloAlfajores",
+            Network::CeloSepolia => "CeloSepolia",
             Network::Codex => "Codex",
             Network::CodexSepolia => "CodexSepolia",
             Network::CosmosHub4 => "CosmosHub4",
@@ -991,6 +991,29 @@ pub struct VaultAsset {
     pub locked_balance: String,
     #[serde(rename = "quotes", default, skip_serializing_if = "Option::is_none")]
     pub quotes: Option<serde_json::Value>,
+}
+
+/// Vault quarantine object: an incoming deposit held out of the available balance until released.
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct VaultQuarantine {
+    #[serde(rename = "id")]
+    pub id: String,
+    #[serde(rename = "vaultId")]
+    pub vault_id: String,
+    #[serde(rename = "network")]
+    pub network: String,
+    #[serde(rename = "transactionHash")]
+    pub transaction_hash: String,
+    #[serde(rename = "kytResult", default, skip_serializing_if = "Option::is_none")]
+    pub kyt_result: Option<serde_json::Value>,
+    #[serde(
+        rename = "dateReleased",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub date_released: Option<String>,
+    #[serde(rename = "dateCreated")]
+    pub date_created: String,
 }
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]

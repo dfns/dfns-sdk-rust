@@ -32,7 +32,7 @@ pub struct ArchivePermissionResponse {
 
 /// List Permission Assignments
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-pub struct ListPermissionAssignmentsResponse {
+pub struct ListAssignmentsResponse {
     #[serde(rename = "items")]
     pub items: Vec<serde_json::Value>,
     #[serde(
@@ -43,9 +43,9 @@ pub struct ListPermissionAssignmentsResponse {
     pub next_page_token: Option<String>,
 }
 
-/// Query parameters for the ListPermissionAssignmentsQuery operation.
+/// Query parameters for the ListAssignmentsQuery operation.
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-pub struct ListPermissionAssignmentsQuery {
+pub struct ListAssignmentsQuery {
     #[serde(rename = "limit", default, skip_serializing_if = "Option::is_none")]
     pub limit: Option<i64>,
     #[serde(
@@ -203,3 +203,11 @@ pub struct UpdatePermissionResponse {
     #[serde(rename = "dateUpdated")]
     pub date_updated: String,
 }
+
+/// Deprecated: use `ListAssignmentsResponse` instead.
+#[deprecated(note = "use `ListAssignmentsResponse` instead")]
+pub type ListPermissionAssignmentsResponse = ListAssignmentsResponse;
+
+/// Deprecated: use `ListAssignmentsQuery` instead.
+#[deprecated(note = "use `ListAssignmentsQuery` instead")]
+pub type ListPermissionAssignmentsQuery = ListAssignmentsQuery;

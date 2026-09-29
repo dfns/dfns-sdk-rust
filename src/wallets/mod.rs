@@ -243,10 +243,10 @@ impl WalletsClient {
     }
 
     /// Proxies a request to the Canton Ledger API associated with this wallet, using the validator's OAuth2 credentials. Restricted to a curated allow-list of read-style resources. Used to satisfy the Canton WalletConnect `canton_ledgerApi` method.
-    pub async fn proxy_arequest_to_the_canton_ledger_api(
+    pub async fn canton_ledger_api_proxy(
         &self,
         wallet_id: String,
-        body: ProxyARequestToTheCantonLedgerApiRequest,
+        body: CantonLedgerApiProxyRequest,
     ) -> Result<serde_json::Value, crate::error::Error> {
         let path = format!(
             "/wallets/{}/canton/ledger-api",
@@ -256,6 +256,16 @@ impl WalletsClient {
         self.client
             .request::<serde_json::Value>(reqwest::Method::POST, &path, Some(&body), false)
             .await
+    }
+
+    /// Deprecated: use `canton_ledger_api_proxy` instead.
+    #[deprecated(note = "use `canton_ledger_api_proxy` instead")]
+    pub async fn proxy_arequest_to_the_canton_ledger_api(
+        &self,
+        wallet_id: String,
+        body: CantonLedgerApiProxyRequest,
+    ) -> Result<serde_json::Value, crate::error::Error> {
+        self.canton_ledger_api_proxy(wallet_id, body).await
     }
 
     /// Speeds up a transaction by creating a replacement transaction with the same parameters but higher gas fees.

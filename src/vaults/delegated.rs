@@ -296,6 +296,22 @@ impl DelegatedVaultsClient {
             .await
     }
 
+    /// Retrieves a vault quarantine by its ID.
+    pub async fn get_vault_quarantine(
+        &self,
+        vault_id: String,
+        quarantine_id: String,
+    ) -> Result<GetVaultQuarantineResponse, crate::error::Error> {
+        let path = format!(
+            "/vaults/{}/quarantines/{}",
+            urlencoding::encode(&vault_id),
+            urlencoding::encode(&quarantine_id)
+        );
+        self.client
+            .request::<GetVaultQuarantineResponse>(reqwest::Method::GET, &path, None, false)
+            .await
+    }
+
     /// Lists a vault's assets with balances (available/quarantined/locked) and USD valuation.
     pub async fn list_vault_assets(
         &self,
@@ -358,6 +374,37 @@ impl DelegatedVaultsClient {
         }
         self.client
             .request::<ListVaultBalancesResponse>(reqwest::Method::GET, &path, None, false)
+            .await
+    }
+
+    /// Lists a vault's quarantines, active and released.
+    pub async fn list_vault_quarantines(
+        &self,
+        vault_id: String,
+        query: Option<ListVaultQuarantinesQuery>,
+    ) -> Result<ListVaultQuarantinesResponse, crate::error::Error> {
+        let mut path = format!("/vaults/{}/quarantines", urlencoding::encode(&vault_id));
+        if let Some(query) = &query {
+            let mut q: Vec<String> = Vec::new();
+            if let Some(v) = &query.limit {
+                q.push(format!("limit={}", urlencoding::encode(&v.to_string())));
+            }
+            if let Some(v) = &query.pagination_token {
+                q.push(format!(
+                    "paginationToken={}",
+                    urlencoding::encode(&v.to_string())
+                ));
+            }
+            if let Some(v) = &query.network {
+                q.push(format!("network={}", urlencoding::encode(&v.to_string())));
+            }
+            if !q.is_empty() {
+                path.push('?');
+                path.push_str(&q.join("&"));
+            }
+        }
+        self.client
+            .request::<ListVaultQuarantinesResponse>(reqwest::Method::GET, &path, None, false)
             .await
     }
 

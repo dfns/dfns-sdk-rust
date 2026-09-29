@@ -126,12 +126,12 @@ pub struct ListAccountAssetsQuery {
     pub pagination_token: Option<String>,
 }
 
-/// Request body for the createExchangeDeposit operation.
-pub type CreateExchangeDepositRequest = serde_json::Value;
+/// Request body for the createDeposit operation.
+pub type CreateDepositRequest = serde_json::Value;
 
 /// Create Exchange Deposit
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-pub struct CreateExchangeDepositResponse {
+pub struct CreateDepositResponse {
     #[serde(rename = "id")]
     pub id: String,
     #[serde(rename = "exchangeId")]
@@ -162,12 +162,12 @@ pub struct CreateExchangeDepositResponse {
     pub date_created: String,
 }
 
-/// Request body for the createExchangeWithdrawal operation.
-pub type CreateExchangeWithdrawalRequest = serde_json::Value;
+/// Request body for the createWithdrawal operation.
+pub type CreateWithdrawalRequest = serde_json::Value;
 
 /// Create Exchange Withdrawal
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-pub struct CreateExchangeWithdrawalResponse {
+pub struct CreateWithdrawalResponse {
     #[serde(rename = "id")]
     pub id: String,
     #[serde(rename = "exchangeId")]
@@ -197,3 +197,19 @@ pub struct CreateExchangeWithdrawalResponse {
     #[serde(rename = "dateCreated")]
     pub date_created: String,
 }
+
+/// Deprecated: use `CreateDepositRequest` instead.
+#[deprecated(note = "use `CreateDepositRequest` instead")]
+pub type CreateExchangeDepositRequest = CreateDepositRequest;
+
+/// Deprecated: use `CreateDepositResponse` instead.
+#[deprecated(note = "use `CreateDepositResponse` instead")]
+pub type CreateExchangeDepositResponse = CreateDepositResponse;
+
+/// Deprecated: use `CreateWithdrawalRequest` instead.
+#[deprecated(note = "use `CreateWithdrawalRequest` instead")]
+pub type CreateExchangeWithdrawalRequest = CreateWithdrawalRequest;
+
+/// Deprecated: use `CreateWithdrawalResponse` instead.
+#[deprecated(note = "use `CreateWithdrawalResponse` instead")]
+pub type CreateExchangeWithdrawalResponse = CreateWithdrawalResponse;

@@ -96,15 +96,24 @@ impl DelegatedPayinsClient {
     }
 
     /// Request a quote from a given provider for a payin. Returns the stablecoin amount to be delivered and the fees.
-    pub async fn request_payin_quote(
+    pub async fn create_payin_quote(
         &self,
-        body: RequestPayinQuoteRequest,
-    ) -> Result<RequestPayinQuoteResponse, crate::error::Error> {
+        body: CreatePayinQuoteRequest,
+    ) -> Result<CreatePayinQuoteResponse, crate::error::Error> {
         let path = String::from("/payins/quote");
         let body = serde_json::to_value(&body)?;
         self.client
-            .request::<RequestPayinQuoteResponse>(reqwest::Method::POST, &path, Some(&body), false)
+            .request::<CreatePayinQuoteResponse>(reqwest::Method::POST, &path, Some(&body), false)
             .await
+    }
+
+    /// Deprecated: use `create_payin_quote` instead.
+    #[deprecated(note = "use `create_payin_quote` instead")]
+    pub async fn request_payin_quote(
+        &self,
+        body: CreatePayinQuoteRequest,
+    ) -> Result<CreatePayinQuoteResponse, crate::error::Error> {
+        self.create_payin_quote(body).await
     }
 
     /// Check whether a wallet's address is registered (and approved) as an payin recipient with the provider.
@@ -137,11 +146,11 @@ impl DelegatedPayinsClient {
             .await
     }
 
-    /// Starts delegated signing for registerPayinRecipient: returns the challenge to sign.
-    /// Pass the signed assertion to register_payin_recipient_complete with the same arguments.
-    pub async fn register_payin_recipient_init(
+    /// Starts delegated signing for createPayinRecipient: returns the challenge to sign.
+    /// Pass the signed assertion to create_payin_recipient_complete with the same arguments.
+    pub async fn create_payin_recipient_init(
         &self,
-        body: RegisterPayinRecipientRequest,
+        body: CreatePayinRecipientRequest,
     ) -> Result<crate::signer::UserActionChallenge, crate::error::Error> {
         let path = String::from("/payins/recipients");
         let body = serde_json::to_value(&body)?;
@@ -150,14 +159,23 @@ impl DelegatedPayinsClient {
             .await
     }
 
-    /// Finishes delegated signing for registerPayinRecipient: submits the signed challenge
-    /// and issues the request.
-    pub async fn register_payin_recipient_complete(
+    /// Deprecated: use `create_payin_recipient_init` instead.
+    #[deprecated(note = "use `create_payin_recipient_init` instead")]
+    pub async fn register_payin_recipient_init(
         &self,
-        body: RegisterPayinRecipientRequest,
+        body: CreatePayinRecipientRequest,
+    ) -> Result<crate::signer::UserActionChallenge, crate::error::Error> {
+        self.create_payin_recipient_init(body).await
+    }
+
+    /// Finishes delegated signing for createPayinRecipient: submits the signed challenge
+    /// and issues the request.
+    pub async fn create_payin_recipient_complete(
+        &self,
+        body: CreatePayinRecipientRequest,
         challenge_identifier: String,
         assertion: crate::signer::CredentialAssertion,
-    ) -> Result<RegisterPayinRecipientResponse, crate::error::Error> {
+    ) -> Result<CreatePayinRecipientResponse, crate::error::Error> {
         let path = String::from("/payins/recipients");
         let body = serde_json::to_value(&body)?;
         let user_action = self
@@ -165,7 +183,7 @@ impl DelegatedPayinsClient {
             .complete_user_action_signing(challenge_identifier, &assertion)
             .await?;
         self.client
-            .request_with_user_action::<RegisterPayinRecipientResponse>(
+            .request_with_user_action::<CreatePayinRecipientResponse>(
                 reqwest::Method::POST,
                 &path,
                 Some(&body),
@@ -174,8 +192,20 @@ impl DelegatedPayinsClient {
             .await
     }
 
+    /// Deprecated: use `create_payin_recipient_complete` instead.
+    #[deprecated(note = "use `create_payin_recipient_complete` instead")]
+    pub async fn register_payin_recipient_complete(
+        &self,
+        body: CreatePayinRecipientRequest,
+        challenge_identifier: String,
+        assertion: crate::signer::CredentialAssertion,
+    ) -> Result<CreatePayinRecipientResponse, crate::error::Error> {
+        self.create_payin_recipient_complete(body, challenge_identifier, assertion)
+            .await
+    }
+
     /// Retrieve the current status of an payin by its ID.
-    pub async fn get_payin_status(
+    pub async fn get_payin(
         &self,
         payin_id: String,
     ) -> Result<serde_json::Value, crate::error::Error> {
@@ -183,6 +213,15 @@ impl DelegatedPayinsClient {
         self.client
             .request::<serde_json::Value>(reqwest::Method::GET, &path, None, false)
             .await
+    }
+
+    /// Deprecated: use `get_payin` instead.
+    #[deprecated(note = "use `get_payin` instead")]
+    pub async fn get_payin_status(
+        &self,
+        payin_id: String,
+    ) -> Result<serde_json::Value, crate::error::Error> {
+        self.get_payin(payin_id).await
     }
 
     /// List the provider accounts, with their registered wallet addresses per asset. An account is created on the provider platform (e.g. the Borderless dashboard) and its registered addresses serve both directions: a payin delivers to — and a payout is funded from — a wallet whose address is registered on the account.

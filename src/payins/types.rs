@@ -37,12 +37,12 @@ pub struct ListPayinsQuery {
 /// Request body for the createPayin operation.
 pub type CreatePayinRequest = serde_json::Value;
 
-/// Request body for the requestPayinQuote operation.
-pub type RequestPayinQuoteRequest = serde_json::Value;
+/// Request body for the createPayinQuote operation.
+pub type CreatePayinQuoteRequest = serde_json::Value;
 
 /// Request Payin Quote
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-pub struct RequestPayinQuoteResponse {
+pub struct CreatePayinQuoteResponse {
     #[serde(rename = "provider")]
     pub provider: String,
     #[serde(rename = "currency")]
@@ -87,12 +87,12 @@ pub struct GetPayinRecipientQuery {
     pub currency: String,
 }
 
-/// Request body for the registerPayinRecipient operation.
-pub type RegisterPayinRecipientRequest = serde_json::Value;
+/// Request body for the createPayinRecipient operation.
+pub type CreatePayinRecipientRequest = serde_json::Value;
 
 /// Register Payin Recipient
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-pub struct RegisterPayinRecipientResponse {
+pub struct CreatePayinRecipientResponse {
     #[serde(rename = "provider")]
     pub provider: String,
     #[serde(rename = "walletId")]
@@ -166,3 +166,19 @@ pub struct RegisterPayinAccountAssetResponse {
     #[serde(rename = "assets")]
     pub assets: Vec<serde_json::Value>,
 }
+
+/// Deprecated: use `CreatePayinQuoteRequest` instead.
+#[deprecated(note = "use `CreatePayinQuoteRequest` instead")]
+pub type RequestPayinQuoteRequest = CreatePayinQuoteRequest;
+
+/// Deprecated: use `CreatePayinQuoteResponse` instead.
+#[deprecated(note = "use `CreatePayinQuoteResponse` instead")]
+pub type RequestPayinQuoteResponse = CreatePayinQuoteResponse;
+
+/// Deprecated: use `CreatePayinRecipientRequest` instead.
+#[deprecated(note = "use `CreatePayinRecipientRequest` instead")]
+pub type RegisterPayinRecipientRequest = CreatePayinRecipientRequest;
+
+/// Deprecated: use `CreatePayinRecipientResponse` instead.
+#[deprecated(note = "use `CreatePayinRecipientResponse` instead")]
+pub type RegisterPayinRecipientResponse = CreatePayinRecipientResponse;

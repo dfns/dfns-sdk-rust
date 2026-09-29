@@ -311,7 +311,7 @@ pub struct DelegatedLoginResponse {
 
 /// Complete User Login
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-pub struct CompleteUserLoginRequest {
+pub struct LoginRequest {
     #[serde(rename = "challengeIdentifier")]
     pub challenge_identifier: String,
     #[serde(rename = "firstFactor")]
@@ -344,7 +344,7 @@ pub struct LogoutResponse {
 
 /// Complete OIDC Login
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-pub struct CompleteOidcLoginRequest {
+pub struct OidcLoginRequest {
     #[serde(rename = "code")]
     pub code: String,
     #[serde(rename = "state")]
@@ -353,7 +353,7 @@ pub struct CompleteOidcLoginRequest {
 
 /// Initiate OIDC Login
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-pub struct InitiateOidcLoginRequest {
+pub struct OidcLoginInitRequest {
     #[serde(rename = "orgId", default, skip_serializing_if = "Option::is_none")]
     pub org_id: Option<String>,
     #[serde(rename = "tenantId", default, skip_serializing_if = "Option::is_none")]
@@ -364,7 +364,7 @@ pub struct InitiateOidcLoginRequest {
 
 /// Initiate OIDC Login
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-pub struct InitiateOidcLoginResponse {
+pub struct OidcLoginInitResponse {
     #[serde(rename = "redirectUrl")]
     pub redirect_url: String,
 }
@@ -407,7 +407,7 @@ pub struct SocialLoginResponse {
 
 /// Complete SSO Login
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-pub struct CompleteSsoLoginRequest {
+pub struct SsoLoginRequest {
     #[serde(rename = "code")]
     pub code: String,
     #[serde(rename = "state")]
@@ -416,14 +416,14 @@ pub struct CompleteSsoLoginRequest {
 
 /// Complete SSO Login
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-pub struct CompleteSsoLoginResponse {
+pub struct SsoLoginResponse {
     #[serde(rename = "token")]
     pub token: String,
 }
 
 /// Initiate SSO Login
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-pub struct InitiateSsoLoginRequest {
+pub struct SsoLoginInitRequest {
     #[serde(rename = "orgId", default, skip_serializing_if = "Option::is_none")]
     pub org_id: Option<String>,
     #[serde(rename = "tenantId", default, skip_serializing_if = "Option::is_none")]
@@ -436,7 +436,7 @@ pub struct InitiateSsoLoginRequest {
 
 /// Initiate SSO Login
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-pub struct InitiateSsoLoginResponse {
+pub struct SsoLoginInitResponse {
     #[serde(rename = "ssoRedirectUrl")]
     pub sso_redirect_url: String,
 }
@@ -736,7 +736,7 @@ pub struct CreateDelegatedRecoveryChallengeResponse {
 
 /// Recover User
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-pub struct RecoverUserRequest {
+pub struct RecoverRequest {
     #[serde(rename = "recovery")]
     pub recovery: serde_json::Value,
     #[serde(rename = "newCredentials")]
@@ -745,7 +745,7 @@ pub struct RecoverUserRequest {
 
 /// Recover User
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-pub struct RecoverUserResponse {
+pub struct RecoverResponse {
     #[serde(rename = "credential")]
     pub credential: serde_json::Value,
     #[serde(rename = "user")]
@@ -796,7 +796,7 @@ pub struct CreateRecoveryChallengeResponse {
 
 /// Send Recovery Code Email
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-pub struct SendRecoveryCodeEmailRequest {
+pub struct SendRecoveryCodeRequest {
     #[serde(rename = "username")]
     pub username: String,
     #[serde(rename = "orgId", default, skip_serializing_if = "Option::is_none")]
@@ -807,7 +807,7 @@ pub struct SendRecoveryCodeEmailRequest {
 
 /// Send Recovery Code Email
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-pub struct SendRecoveryCodeEmailResponse {
+pub struct SendRecoveryCodeResponse {
     #[serde(rename = "message")]
     pub message: String,
 }
@@ -928,7 +928,7 @@ pub struct CreateSocialRegistrationChallengeResponse {
 
 /// Complete User Registration
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-pub struct CompleteUserRegistrationRequest {
+pub struct RegisterRequest {
     #[serde(rename = "firstFactorCredential")]
     pub first_factor_credential: serde_json::Value,
     #[serde(
@@ -947,7 +947,7 @@ pub struct CompleteUserRegistrationRequest {
 
 /// Complete User Registration
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-pub struct CompleteUserRegistrationResponse {
+pub struct RegisterResponse {
     #[serde(rename = "credential")]
     pub credential: serde_json::Value,
     #[serde(rename = "user")]
@@ -956,7 +956,7 @@ pub struct CompleteUserRegistrationResponse {
 
 /// Complete End User Registration with Wallets
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-pub struct CompleteEndUserRegistrationWithWalletsRequest {
+pub struct RegisterEndUserRequest {
     #[serde(rename = "firstFactorCredential")]
     pub first_factor_credential: serde_json::Value,
     #[serde(
@@ -977,7 +977,7 @@ pub struct CompleteEndUserRegistrationWithWalletsRequest {
 
 /// Complete End User Registration with Wallets
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-pub struct CompleteEndUserRegistrationWithWalletsResponse {
+pub struct RegisterEndUserResponse {
     #[serde(rename = "credential")]
     pub credential: serde_json::Value,
     #[serde(rename = "user")]
@@ -1397,3 +1397,67 @@ pub struct InviteTenantUserRequest {
 /// Invite Tenant User
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct InviteTenantUserResponse {}
+
+/// Deprecated: use `LoginRequest` instead.
+#[deprecated(note = "use `LoginRequest` instead")]
+pub type CompleteUserLoginRequest = LoginRequest;
+
+/// Deprecated: use `OidcLoginRequest` instead.
+#[deprecated(note = "use `OidcLoginRequest` instead")]
+pub type CompleteOidcLoginRequest = OidcLoginRequest;
+
+/// Deprecated: use `OidcLoginInitRequest` instead.
+#[deprecated(note = "use `OidcLoginInitRequest` instead")]
+pub type InitiateOidcLoginRequest = OidcLoginInitRequest;
+
+/// Deprecated: use `OidcLoginInitResponse` instead.
+#[deprecated(note = "use `OidcLoginInitResponse` instead")]
+pub type InitiateOidcLoginResponse = OidcLoginInitResponse;
+
+/// Deprecated: use `SsoLoginRequest` instead.
+#[deprecated(note = "use `SsoLoginRequest` instead")]
+pub type CompleteSsoLoginRequest = SsoLoginRequest;
+
+/// Deprecated: use `SsoLoginResponse` instead.
+#[deprecated(note = "use `SsoLoginResponse` instead")]
+pub type CompleteSsoLoginResponse = SsoLoginResponse;
+
+/// Deprecated: use `SsoLoginInitRequest` instead.
+#[deprecated(note = "use `SsoLoginInitRequest` instead")]
+pub type InitiateSsoLoginRequest = SsoLoginInitRequest;
+
+/// Deprecated: use `SsoLoginInitResponse` instead.
+#[deprecated(note = "use `SsoLoginInitResponse` instead")]
+pub type InitiateSsoLoginResponse = SsoLoginInitResponse;
+
+/// Deprecated: use `RecoverRequest` instead.
+#[deprecated(note = "use `RecoverRequest` instead")]
+pub type RecoverUserRequest = RecoverRequest;
+
+/// Deprecated: use `RecoverResponse` instead.
+#[deprecated(note = "use `RecoverResponse` instead")]
+pub type RecoverUserResponse = RecoverResponse;
+
+/// Deprecated: use `SendRecoveryCodeRequest` instead.
+#[deprecated(note = "use `SendRecoveryCodeRequest` instead")]
+pub type SendRecoveryCodeEmailRequest = SendRecoveryCodeRequest;
+
+/// Deprecated: use `SendRecoveryCodeResponse` instead.
+#[deprecated(note = "use `SendRecoveryCodeResponse` instead")]
+pub type SendRecoveryCodeEmailResponse = SendRecoveryCodeResponse;
+
+/// Deprecated: use `RegisterRequest` instead.
+#[deprecated(note = "use `RegisterRequest` instead")]
+pub type CompleteUserRegistrationRequest = RegisterRequest;
+
+/// Deprecated: use `RegisterResponse` instead.
+#[deprecated(note = "use `RegisterResponse` instead")]
+pub type CompleteUserRegistrationResponse = RegisterResponse;
+
+/// Deprecated: use `RegisterEndUserRequest` instead.
+#[deprecated(note = "use `RegisterEndUserRequest` instead")]
+pub type CompleteEndUserRegistrationWithWalletsRequest = RegisterEndUserRequest;
+
+/// Deprecated: use `RegisterEndUserResponse` instead.
+#[deprecated(note = "use `RegisterEndUserResponse` instead")]
+pub type CompleteEndUserRegistrationWithWalletsResponse = RegisterEndUserResponse;
