@@ -1598,6 +1598,12 @@ pub struct Wallet {
         skip_serializing_if = "Option::is_none"
     )]
     pub validator_id: Option<String>,
+    #[serde(
+        rename = "networkInfo",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub network_info: Option<serde_json::Value>,
     #[serde(rename = "vaultId", default, skip_serializing_if = "Option::is_none")]
     pub vault_id: Option<String>,
 }

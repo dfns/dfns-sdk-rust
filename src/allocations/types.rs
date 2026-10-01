@@ -2,6 +2,40 @@
 
 #![allow(clippy::all)]
 
+/// Request 0fns Allocation Quote
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct CreateAllocationQuoteRequest {
+    #[serde(rename = "walletId")]
+    pub wallet_id: String,
+    #[serde(rename = "protocol")]
+    pub protocol: String,
+    #[serde(rename = "kind")]
+    pub kind: String,
+    #[serde(rename = "sourceAsset")]
+    pub source_asset: serde_json::Value,
+    #[serde(rename = "targetAsset")]
+    pub target_asset: serde_json::Value,
+}
+
+/// Request 0fns Allocation Quote
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct CreateAllocationQuoteResponse {
+    #[serde(rename = "walletId")]
+    pub wallet_id: String,
+    #[serde(rename = "protocol")]
+    pub protocol: String,
+    #[serde(rename = "kind")]
+    pub kind: String,
+    #[serde(rename = "sourceAsset")]
+    pub source_asset: serde_json::Value,
+    #[serde(rename = "targetAsset")]
+    pub target_asset: serde_json::Value,
+    #[serde(rename = "estFillTime")]
+    pub est_fill_time: i64,
+    #[serde(rename = "dateCreated")]
+    pub date_created: String,
+}
+
 /// List Allocations
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct ListAllocationsResponse {
@@ -160,4 +194,30 @@ pub struct GetAllocationsInfoResponse {
         skip_serializing_if = "Option::is_none"
     )]
     pub sentora_pyusd_main: Option<serde_json::Value>,
+}
+
+/// Cancel an unfilled 0fns order placement
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct Cancel0fnsOrderPlacementRequest {
+    #[serde(rename = "allocationActionId")]
+    pub allocation_action_id: String,
+    #[serde(
+        rename = "externalId",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub external_id: Option<String>,
+    #[serde(
+        rename = "feeSponsorId",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub fee_sponsor_id: Option<String>,
+}
+
+/// Cancel an unfilled 0fns order placement
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct Cancel0fnsOrderPlacementResponse {
+    #[serde(rename = "transactionId")]
+    pub transaction_id: String,
 }
