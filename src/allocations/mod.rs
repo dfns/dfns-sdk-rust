@@ -17,6 +17,23 @@ impl AllocationsClient {
         AllocationsClient { client }
     }
 
+    /// Get a price quote for a 0fns deposit or withdrawal at the current market rate.
+    pub async fn create_allocation_quote(
+        &self,
+        body: CreateAllocationQuoteRequest,
+    ) -> Result<CreateAllocationQuoteResponse, crate::error::Error> {
+        let path = String::from("/allocations/get-0fns-quote");
+        let body = serde_json::to_value(&body)?;
+        self.client
+            .request::<CreateAllocationQuoteResponse>(
+                reqwest::Method::POST,
+                &path,
+                Some(&body),
+                false,
+            )
+            .await
+    }
+
     /// Lists the allocations of your organization.
     pub async fn list_allocations(
         &self,
@@ -129,6 +146,23 @@ impl AllocationsClient {
         let path = String::from("/allocations/info");
         self.client
             .request::<GetAllocationsInfoResponse>(reqwest::Method::GET, &path, None, false)
+            .await
+    }
+
+    /// Craft and broadcast an on-chain cancelOrder to cancel a 0fns OrderBook order placement that was not filled, reclaiming its escrow. The escrowed input token is returned to the wallet that funded the order.
+    pub async fn cancel0fns_order_placement(
+        &self,
+        body: Cancel0fnsOrderPlacementRequest,
+    ) -> Result<Cancel0fnsOrderPlacementResponse, crate::error::Error> {
+        let path = String::from("/allocations/cancel-0fns-order-placement");
+        let body = serde_json::to_value(&body)?;
+        self.client
+            .request::<Cancel0fnsOrderPlacementResponse>(
+                reqwest::Method::POST,
+                &path,
+                Some(&body),
+                true,
+            )
             .await
     }
 }
