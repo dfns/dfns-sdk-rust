@@ -231,4 +231,49 @@ impl DelegatedNetworksClient {
             )
             .await
     }
+
+    /// Starts delegated signing for reindexTransaction: returns the challenge to sign.
+    /// Pass the signed assertion to reindex_transaction_complete with the same arguments.
+    pub async fn reindex_transaction_init(
+        &self,
+        network: String,
+        body: ReindexTransactionRequest,
+    ) -> Result<crate::signer::UserActionChallenge, crate::error::Error> {
+        let path = format!(
+            "/networks/{}/transactions/reindex",
+            urlencoding::encode(&network)
+        );
+        let body = serde_json::to_value(&body)?;
+        self.client
+            .create_user_action_challenge(reqwest::Method::POST, &path, Some(&body))
+            .await
+    }
+
+    /// Finishes delegated signing for reindexTransaction: submits the signed challenge
+    /// and issues the request.
+    pub async fn reindex_transaction_complete(
+        &self,
+        network: String,
+        body: ReindexTransactionRequest,
+        challenge_identifier: String,
+        assertion: crate::signer::CredentialAssertion,
+    ) -> Result<ReindexTransactionResponse, crate::error::Error> {
+        let path = format!(
+            "/networks/{}/transactions/reindex",
+            urlencoding::encode(&network)
+        );
+        let body = serde_json::to_value(&body)?;
+        let user_action = self
+            .client
+            .complete_user_action_signing(challenge_identifier, &assertion)
+            .await?;
+        self.client
+            .request_with_user_action::<ReindexTransactionResponse>(
+                reqwest::Method::POST,
+                &path,
+                Some(&body),
+                &user_action,
+            )
+            .await
+    }
 }

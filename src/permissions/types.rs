@@ -30,6 +30,71 @@ pub struct ArchivePermissionResponse {
     pub date_updated: String,
 }
 
+/// Get Permission
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct GetPermissionResponse {
+    #[serde(rename = "id")]
+    pub id: String,
+    #[serde(rename = "name")]
+    pub name: String,
+    #[serde(rename = "operations")]
+    pub operations: Vec<String>,
+    #[serde(rename = "status")]
+    pub status: String,
+    #[serde(rename = "isImmutable")]
+    pub is_immutable: bool,
+    #[serde(rename = "isArchived")]
+    pub is_archived: bool,
+    #[serde(rename = "dateCreated")]
+    pub date_created: String,
+    #[serde(rename = "dateUpdated")]
+    pub date_updated: String,
+    #[serde(
+        rename = "pendingChangeRequest",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub pending_change_request: Option<serde_json::Value>,
+}
+
+/// Update Permission
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct UpdatePermissionRequest {
+    #[serde(rename = "name", default, skip_serializing_if = "Option::is_none")]
+    pub name: Option<String>,
+    #[serde(
+        rename = "operations",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub operations: Option<Vec<serde_json::Value>>,
+}
+
+/// Update Permission
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct UpdatePermissionResponse {
+    #[serde(rename = "id")]
+    pub id: String,
+    #[serde(rename = "name")]
+    pub name: String,
+    #[serde(rename = "operations")]
+    pub operations: Vec<String>,
+    #[serde(rename = "status")]
+    pub status: String,
+    #[serde(rename = "isImmutable")]
+    pub is_immutable: bool,
+    #[serde(rename = "isArchived")]
+    pub is_archived: bool,
+    #[serde(rename = "dateCreated")]
+    pub date_created: String,
+    #[serde(rename = "dateUpdated")]
+    pub date_updated: String,
+}
+
+/// Delete Permission
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct DeletePermissionResponse {}
+
 /// List Permission Assignments
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct ListAssignmentsResponse {
@@ -141,67 +206,6 @@ pub struct CreatePermissionResponse {
 pub struct RevokePermissionQuery {
     #[serde(rename = "force", default, skip_serializing_if = "Option::is_none")]
     pub force: Option<bool>,
-}
-
-/// Get Permission
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-pub struct GetPermissionResponse {
-    #[serde(rename = "id")]
-    pub id: String,
-    #[serde(rename = "name")]
-    pub name: String,
-    #[serde(rename = "operations")]
-    pub operations: Vec<String>,
-    #[serde(rename = "status")]
-    pub status: String,
-    #[serde(rename = "isImmutable")]
-    pub is_immutable: bool,
-    #[serde(rename = "isArchived")]
-    pub is_archived: bool,
-    #[serde(rename = "dateCreated")]
-    pub date_created: String,
-    #[serde(rename = "dateUpdated")]
-    pub date_updated: String,
-    #[serde(
-        rename = "pendingChangeRequest",
-        default,
-        skip_serializing_if = "Option::is_none"
-    )]
-    pub pending_change_request: Option<serde_json::Value>,
-}
-
-/// Update Permission
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-pub struct UpdatePermissionRequest {
-    #[serde(rename = "name", default, skip_serializing_if = "Option::is_none")]
-    pub name: Option<String>,
-    #[serde(
-        rename = "operations",
-        default,
-        skip_serializing_if = "Option::is_none"
-    )]
-    pub operations: Option<Vec<serde_json::Value>>,
-}
-
-/// Update Permission
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-pub struct UpdatePermissionResponse {
-    #[serde(rename = "id")]
-    pub id: String,
-    #[serde(rename = "name")]
-    pub name: String,
-    #[serde(rename = "operations")]
-    pub operations: Vec<String>,
-    #[serde(rename = "status")]
-    pub status: String,
-    #[serde(rename = "isImmutable")]
-    pub is_immutable: bool,
-    #[serde(rename = "isArchived")]
-    pub is_archived: bool,
-    #[serde(rename = "dateCreated")]
-    pub date_created: String,
-    #[serde(rename = "dateUpdated")]
-    pub date_updated: String,
 }
 
 /// Deprecated: use `ListAssignmentsResponse` instead.

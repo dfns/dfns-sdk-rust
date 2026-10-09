@@ -162,4 +162,23 @@ impl NetworksClient {
             )
             .await
     }
+
+    /// Re-index a finalized transaction that is missing from your wallets' history. A transaction that is already indexed is not processed again.
+    ///
+    ///   <Note>
+    ///   Limited to 10 requests per organization per 10 minutes.
+    pub async fn reindex_transaction(
+        &self,
+        network: String,
+        body: ReindexTransactionRequest,
+    ) -> Result<ReindexTransactionResponse, crate::error::Error> {
+        let path = format!(
+            "/networks/{}/transactions/reindex",
+            urlencoding::encode(&network)
+        );
+        let body = serde_json::to_value(&body)?;
+        self.client
+            .request::<ReindexTransactionResponse>(reqwest::Method::POST, &path, Some(&body), true)
+            .await
+    }
 }

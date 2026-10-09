@@ -377,6 +377,43 @@ impl DelegatedVaultsClient {
             .await
     }
 
+    /// Lists a vault's history, most recent first: one item per incoming or outgoing transfer, carrying its current status, and one per lock creation or deletion.
+    pub async fn list_vault_history(
+        &self,
+        vault_id: String,
+        query: Option<ListVaultHistoryQuery>,
+    ) -> Result<ListVaultHistoryResponse, crate::error::Error> {
+        let mut path = format!("/vaults/{}/history", urlencoding::encode(&vault_id));
+        if let Some(query) = &query {
+            let mut q: Vec<String> = Vec::new();
+            if let Some(v) = &query.limit {
+                q.push(format!("limit={}", urlencoding::encode(&v.to_string())));
+            }
+            if let Some(v) = &query.pagination_token {
+                q.push(format!(
+                    "paginationToken={}",
+                    urlencoding::encode(&v.to_string())
+                ));
+            }
+            if let Some(v) = &query.network {
+                q.push(format!("network={}", urlencoding::encode(&v.to_string())));
+            }
+            if let Some(v) = &query.tid {
+                q.push(format!("tid={}", urlencoding::encode(&v.to_string())));
+            }
+            if let Some(v) = &query.kind {
+                q.push(format!("kind={}", urlencoding::encode(&v.to_string())));
+            }
+            if !q.is_empty() {
+                path.push('?');
+                path.push_str(&q.join("&"));
+            }
+        }
+        self.client
+            .request::<ListVaultHistoryResponse>(reqwest::Method::GET, &path, None, false)
+            .await
+    }
+
     /// Lists a vault's quarantines, active and released.
     pub async fn list_vault_quarantines(
         &self,

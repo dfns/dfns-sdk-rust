@@ -93,6 +93,21 @@ pub struct ListPoliciesQuery {
 /// Request body for the createPolicy operation.
 pub type CreatePolicyRequest = serde_json::Value;
 
+/// Get Sumsub Travel Rule public key
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct GetSumsubTravelRulePublicKeyResponse {
+    #[serde(rename = "kty")]
+    pub kty: String,
+    #[serde(rename = "kid")]
+    pub kid: String,
+    #[serde(rename = "n")]
+    pub n: String,
+    #[serde(rename = "e")]
+    pub e: String,
+    #[serde(rename = "use", default, skip_serializing_if = "Option::is_none")]
+    pub r#use: Option<String>,
+}
+
 /// Get Approval
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct GetApprovalResponse {

@@ -17,7 +17,8 @@ impl PermissionsClient {
         PermissionsClient { client }
     }
 
-    /// Archives or unarchives a permission (role). Archived permissions are effectively soft-deleted.
+    /// @deprecated in favor of "deletePermission".
+    /// Deletes a permission (aka "Role").
     pub async fn archive_permission(
         &self,
         permission_id: String,
@@ -30,6 +31,41 @@ impl PermissionsClient {
         let body = serde_json::to_value(&body)?;
         self.client
             .request::<ArchivePermissionResponse>(reqwest::Method::PUT, &path, Some(&body), true)
+            .await
+    }
+
+    /// Retrieves a permission (role) by ID, including any pending change request.
+    pub async fn get_permission(
+        &self,
+        permission_id: String,
+    ) -> Result<GetPermissionResponse, crate::error::Error> {
+        let path = format!("/permissions/{}", urlencoding::encode(&permission_id));
+        self.client
+            .request::<GetPermissionResponse>(reqwest::Method::GET, &path, None, false)
+            .await
+    }
+
+    /// Updates the name or operations of an existing permission (role).
+    pub async fn update_permission(
+        &self,
+        permission_id: String,
+        body: UpdatePermissionRequest,
+    ) -> Result<UpdatePermissionResponse, crate::error::Error> {
+        let path = format!("/permissions/{}", urlencoding::encode(&permission_id));
+        let body = serde_json::to_value(&body)?;
+        self.client
+            .request::<UpdatePermissionResponse>(reqwest::Method::PUT, &path, Some(&body), true)
+            .await
+    }
+
+    /// Deletes a permission (aka "Role").
+    pub async fn delete_permission(
+        &self,
+        permission_id: String,
+    ) -> Result<DeletePermissionResponse, crate::error::Error> {
+        let path = format!("/permissions/{}", urlencoding::encode(&permission_id));
+        self.client
+            .request::<DeletePermissionResponse>(reqwest::Method::DELETE, &path, None, true)
             .await
     }
 
@@ -153,30 +189,6 @@ impl PermissionsClient {
         }
         self.client
             .request_no_content(reqwest::Method::DELETE, &path, None, true)
-            .await
-    }
-
-    /// Retrieves a permission (role) by ID, including any pending change request.
-    pub async fn get_permission(
-        &self,
-        permission_id: String,
-    ) -> Result<GetPermissionResponse, crate::error::Error> {
-        let path = format!("/permissions/{}", urlencoding::encode(&permission_id));
-        self.client
-            .request::<GetPermissionResponse>(reqwest::Method::GET, &path, None, false)
-            .await
-    }
-
-    /// Updates the name or operations of an existing permission (role).
-    pub async fn update_permission(
-        &self,
-        permission_id: String,
-        body: UpdatePermissionRequest,
-    ) -> Result<UpdatePermissionResponse, crate::error::Error> {
-        let path = format!("/permissions/{}", urlencoding::encode(&permission_id));
-        let body = serde_json::to_value(&body)?;
-        self.client
-            .request::<UpdatePermissionResponse>(reqwest::Method::PUT, &path, Some(&body), true)
             .await
     }
 }

@@ -60,6 +60,91 @@ impl DelegatedPermissionsClient {
             .await
     }
 
+    /// Retrieves a permission (role) by ID, including any pending change request.
+    pub async fn get_permission(
+        &self,
+        permission_id: String,
+    ) -> Result<GetPermissionResponse, crate::error::Error> {
+        let path = format!("/permissions/{}", urlencoding::encode(&permission_id));
+        self.client
+            .request::<GetPermissionResponse>(reqwest::Method::GET, &path, None, false)
+            .await
+    }
+
+    /// Starts delegated signing for updatePermission: returns the challenge to sign.
+    /// Pass the signed assertion to update_permission_complete with the same arguments.
+    pub async fn update_permission_init(
+        &self,
+        permission_id: String,
+        body: UpdatePermissionRequest,
+    ) -> Result<crate::signer::UserActionChallenge, crate::error::Error> {
+        let path = format!("/permissions/{}", urlencoding::encode(&permission_id));
+        let body = serde_json::to_value(&body)?;
+        self.client
+            .create_user_action_challenge(reqwest::Method::PUT, &path, Some(&body))
+            .await
+    }
+
+    /// Finishes delegated signing for updatePermission: submits the signed challenge
+    /// and issues the request.
+    pub async fn update_permission_complete(
+        &self,
+        permission_id: String,
+        body: UpdatePermissionRequest,
+        challenge_identifier: String,
+        assertion: crate::signer::CredentialAssertion,
+    ) -> Result<UpdatePermissionResponse, crate::error::Error> {
+        let path = format!("/permissions/{}", urlencoding::encode(&permission_id));
+        let body = serde_json::to_value(&body)?;
+        let user_action = self
+            .client
+            .complete_user_action_signing(challenge_identifier, &assertion)
+            .await?;
+        self.client
+            .request_with_user_action::<UpdatePermissionResponse>(
+                reqwest::Method::PUT,
+                &path,
+                Some(&body),
+                &user_action,
+            )
+            .await
+    }
+
+    /// Starts delegated signing for deletePermission: returns the challenge to sign.
+    /// Pass the signed assertion to delete_permission_complete with the same arguments.
+    pub async fn delete_permission_init(
+        &self,
+        permission_id: String,
+    ) -> Result<crate::signer::UserActionChallenge, crate::error::Error> {
+        let path = format!("/permissions/{}", urlencoding::encode(&permission_id));
+        self.client
+            .create_user_action_challenge(reqwest::Method::DELETE, &path, None)
+            .await
+    }
+
+    /// Finishes delegated signing for deletePermission: submits the signed challenge
+    /// and issues the request.
+    pub async fn delete_permission_complete(
+        &self,
+        permission_id: String,
+        challenge_identifier: String,
+        assertion: crate::signer::CredentialAssertion,
+    ) -> Result<DeletePermissionResponse, crate::error::Error> {
+        let path = format!("/permissions/{}", urlencoding::encode(&permission_id));
+        let user_action = self
+            .client
+            .complete_user_action_signing(challenge_identifier, &assertion)
+            .await?;
+        self.client
+            .request_with_user_action::<DeletePermissionResponse>(
+                reqwest::Method::DELETE,
+                &path,
+                None,
+                &user_action,
+            )
+            .await
+    }
+
     /// Lists all permission (role) assignments for a given permission.
     pub async fn list_assignments(
         &self,
@@ -269,56 +354,6 @@ impl DelegatedPermissionsClient {
             .await?;
         self.client
             .request_no_content_with_user_action(reqwest::Method::DELETE, &path, None, &user_action)
-            .await
-    }
-
-    /// Retrieves a permission (role) by ID, including any pending change request.
-    pub async fn get_permission(
-        &self,
-        permission_id: String,
-    ) -> Result<GetPermissionResponse, crate::error::Error> {
-        let path = format!("/permissions/{}", urlencoding::encode(&permission_id));
-        self.client
-            .request::<GetPermissionResponse>(reqwest::Method::GET, &path, None, false)
-            .await
-    }
-
-    /// Starts delegated signing for updatePermission: returns the challenge to sign.
-    /// Pass the signed assertion to update_permission_complete with the same arguments.
-    pub async fn update_permission_init(
-        &self,
-        permission_id: String,
-        body: UpdatePermissionRequest,
-    ) -> Result<crate::signer::UserActionChallenge, crate::error::Error> {
-        let path = format!("/permissions/{}", urlencoding::encode(&permission_id));
-        let body = serde_json::to_value(&body)?;
-        self.client
-            .create_user_action_challenge(reqwest::Method::PUT, &path, Some(&body))
-            .await
-    }
-
-    /// Finishes delegated signing for updatePermission: submits the signed challenge
-    /// and issues the request.
-    pub async fn update_permission_complete(
-        &self,
-        permission_id: String,
-        body: UpdatePermissionRequest,
-        challenge_identifier: String,
-        assertion: crate::signer::CredentialAssertion,
-    ) -> Result<UpdatePermissionResponse, crate::error::Error> {
-        let path = format!("/permissions/{}", urlencoding::encode(&permission_id));
-        let body = serde_json::to_value(&body)?;
-        let user_action = self
-            .client
-            .complete_user_action_signing(challenge_identifier, &assertion)
-            .await?;
-        self.client
-            .request_with_user_action::<UpdatePermissionResponse>(
-                reqwest::Method::PUT,
-                &path,
-                Some(&body),
-                &user_action,
-            )
             .await
     }
 }
