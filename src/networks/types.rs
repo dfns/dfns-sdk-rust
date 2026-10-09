@@ -135,3 +135,17 @@ pub struct CreateCantonValidatorResponse {
     #[serde(rename = "partyHint")]
     pub party_hint: String,
 }
+
+/// Reindex Transaction
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct ReindexTransactionRequest {
+    #[serde(rename = "txHash")]
+    pub tx_hash: String,
+}
+
+/// Reindex Transaction
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct ReindexTransactionResponse {
+    #[serde(rename = "success")]
+    pub success: String,
+}

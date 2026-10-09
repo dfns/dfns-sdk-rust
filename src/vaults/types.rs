@@ -497,6 +497,38 @@ pub struct ListVaultBalancesQuery {
     pub tid: Option<String>,
 }
 
+/// List Vault History
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct ListVaultHistoryResponse {
+    #[serde(rename = "items")]
+    pub items: Vec<serde_json::Value>,
+    #[serde(
+        rename = "nextPageToken",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub next_page_token: Option<String>,
+}
+
+/// Query parameters for the ListVaultHistoryQuery operation.
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct ListVaultHistoryQuery {
+    #[serde(rename = "limit", default, skip_serializing_if = "Option::is_none")]
+    pub limit: Option<i64>,
+    #[serde(
+        rename = "paginationToken",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub pagination_token: Option<String>,
+    #[serde(rename = "network", default, skip_serializing_if = "Option::is_none")]
+    pub network: Option<serde_json::Value>,
+    #[serde(rename = "tid", default, skip_serializing_if = "Option::is_none")]
+    pub tid: Option<serde_json::Value>,
+    #[serde(rename = "kind", default, skip_serializing_if = "Option::is_none")]
+    pub kind: Option<serde_json::Value>,
+}
+
 /// List Vault Quarantines
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct ListVaultQuarantinesResponse {

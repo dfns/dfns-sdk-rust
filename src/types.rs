@@ -64,6 +64,10 @@ pub enum AddressWatchNetwork {
     Ink,
     #[serde(rename = "InkSepolia")]
     InkSepolia,
+    #[serde(rename = "Monad")]
+    Monad,
+    #[serde(rename = "MonadTestnet")]
+    MonadTestnet,
     #[serde(rename = "Optimism")]
     Optimism,
     #[serde(rename = "OptimismSepolia")]
@@ -151,6 +155,8 @@ impl std::fmt::Display for AddressWatchNetwork {
             AddressWatchNetwork::FlowEvmTestnet => "FlowEvmTestnet",
             AddressWatchNetwork::Ink => "Ink",
             AddressWatchNetwork::InkSepolia => "InkSepolia",
+            AddressWatchNetwork::Monad => "Monad",
+            AddressWatchNetwork::MonadTestnet => "MonadTestnet",
             AddressWatchNetwork::Optimism => "Optimism",
             AddressWatchNetwork::OptimismSepolia => "OptimismSepolia",
             AddressWatchNetwork::Plasma => "Plasma",
@@ -301,6 +307,10 @@ pub enum Network {
     Litecoin,
     #[serde(rename = "LitecoinTestnet")]
     LitecoinTestnet,
+    #[serde(rename = "Monad")]
+    Monad,
+    #[serde(rename = "MonadTestnet")]
+    MonadTestnet,
     #[serde(rename = "Movement")]
     Movement,
     #[serde(rename = "MovementTestnet")]
@@ -471,6 +481,8 @@ impl std::fmt::Display for Network {
             Network::KusamaAssetHub => "KusamaAssetHub",
             Network::Litecoin => "Litecoin",
             Network::LitecoinTestnet => "LitecoinTestnet",
+            Network::Monad => "Monad",
+            Network::MonadTestnet => "MonadTestnet",
             Network::Movement => "Movement",
             Network::MovementTestnet => "MovementTestnet",
             Network::Near => "Near",

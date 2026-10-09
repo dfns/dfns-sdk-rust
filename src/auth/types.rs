@@ -307,6 +307,10 @@ pub struct DelegatedLoginRequest {
 pub struct DelegatedLoginResponse {
     #[serde(rename = "token")]
     pub token: String,
+    #[serde(rename = "expiry", default, skip_serializing_if = "Option::is_none")]
+    pub expiry: Option<f64>,
+    #[serde(rename = "identity", default, skip_serializing_if = "Option::is_none")]
+    pub identity: Option<serde_json::Value>,
 }
 
 /// Complete User Login
@@ -403,6 +407,10 @@ pub struct SocialLoginRequest {
 pub struct SocialLoginResponse {
     #[serde(rename = "token")]
     pub token: String,
+    #[serde(rename = "expiry", default, skip_serializing_if = "Option::is_none")]
+    pub expiry: Option<f64>,
+    #[serde(rename = "identity", default, skip_serializing_if = "Option::is_none")]
+    pub identity: Option<serde_json::Value>,
 }
 
 /// Complete SSO Login
@@ -419,6 +427,10 @@ pub struct SsoLoginRequest {
 pub struct SsoLoginResponse {
     #[serde(rename = "token")]
     pub token: String,
+    #[serde(rename = "expiry", default, skip_serializing_if = "Option::is_none")]
+    pub expiry: Option<f64>,
+    #[serde(rename = "identity", default, skip_serializing_if = "Option::is_none")]
+    pub identity: Option<serde_json::Value>,
 }
 
 /// Initiate SSO Login
