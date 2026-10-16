@@ -546,10 +546,12 @@ pub enum CredentialKind {
     Fido2,
     #[serde(rename = "Key")]
     Key,
-    #[serde(rename = "RecoveryKey")]
-    RecoveryKey,
     #[serde(rename = "PasswordProtectedKey")]
     PasswordProtectedKey,
+    #[serde(rename = "RecoveryKey")]
+    RecoveryKey,
+    #[serde(rename = "SessionKey")]
+    SessionKey,
 }
 
 impl std::fmt::Display for CredentialKind {
@@ -557,8 +559,9 @@ impl std::fmt::Display for CredentialKind {
         f.write_str(match self {
             CredentialKind::Fido2 => "Fido2",
             CredentialKind::Key => "Key",
-            CredentialKind::RecoveryKey => "RecoveryKey",
             CredentialKind::PasswordProtectedKey => "PasswordProtectedKey",
+            CredentialKind::RecoveryKey => "RecoveryKey",
+            CredentialKind::SessionKey => "SessionKey",
         })
     }
 }
@@ -1550,6 +1553,12 @@ pub struct User {
     pub kind: String,
     #[serde(rename = "credentialUuid")]
     pub credential_uuid: String,
+    #[serde(
+        rename = "credentialId",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub credential_id: Option<String>,
     #[serde(rename = "orgId", default, skip_serializing_if = "Option::is_none")]
     pub org_id: Option<String>,
     #[serde(rename = "tenantId", default, skip_serializing_if = "Option::is_none")]

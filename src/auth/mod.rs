@@ -322,15 +322,32 @@ impl AuthClient {
             .await
     }
 
-    /// Completes the OIDC login process by exchanging the authorization code obtained from the identity provider. If the verified user has no active first-factor credential yet, it returns a registration challenge to complete via [Complete User Registration](/api-reference/auth/complete-user-registration); otherwise it returns the user's authentication token.
+    /// Registers the first credential for an OIDC-authenticated user, bootstrapping from the credential challenge issued by [OIDC Login](/api-reference/auth/oidc-login). Rejected if the user already has an active first-factor credential; use [Create Credential](/api-reference/auth/create-credential) in that case.
+    pub async fn oidc_login_credentials(
+        &self,
+        body: OidcLoginCredentialsRequest,
+    ) -> Result<OidcLoginCredentialsResponse, crate::error::Error> {
+        let path = String::from("/auth/login/oidc/credentials");
+        let body = serde_json::to_value(&body)?;
+        self.client
+            .request::<OidcLoginCredentialsResponse>(
+                reqwest::Method::POST,
+                &path,
+                Some(&body),
+                false,
+            )
+            .await
+    }
+
+    /// Completes the OIDC login process by exchanging the authorization code obtained from the identity provider. Returns the user's authentication token; when the verified user has no active first-factor credential yet, the response also includes a credential challenge so the client can register one before performing any user-action-signed operation.
     pub async fn oidc_login(
         &self,
         body: OidcLoginRequest,
-    ) -> Result<serde_json::Value, crate::error::Error> {
+    ) -> Result<OidcLoginResponse, crate::error::Error> {
         let path = String::from("/auth/login/oidc");
         let body = serde_json::to_value(&body)?;
         self.client
-            .request::<serde_json::Value>(reqwest::Method::POST, &path, Some(&body), false)
+            .request::<OidcLoginResponse>(reqwest::Method::POST, &path, Some(&body), false)
             .await
     }
 
@@ -339,7 +356,7 @@ impl AuthClient {
     pub async fn complete_oidc_login(
         &self,
         body: OidcLoginRequest,
-    ) -> Result<serde_json::Value, crate::error::Error> {
+    ) -> Result<OidcLoginResponse, crate::error::Error> {
         self.oidc_login(body).await
     }
 
@@ -861,6 +878,42 @@ impl AuthClient {
                 reqwest::Method::PUT,
                 &path,
                 Some(&body),
+                true,
+            )
+            .await
+    }
+
+    /// Add a new Key credential to the OIDC service account authenticated by this request. The caller must be an OIDC service account — the IdP access token identifies the SA; the user-action is signed with an existing active credential to prove rotation authority.
+    pub async fn create_service_account_credential(
+        &self,
+        body: CreateServiceAccountCredentialRequest,
+    ) -> Result<CreateServiceAccountCredentialResponse, crate::error::Error> {
+        let path = String::from("/auth/service-accounts/credentials");
+        let body = serde_json::to_value(&body)?;
+        self.client
+            .request::<CreateServiceAccountCredentialResponse>(
+                reqwest::Method::POST,
+                &path,
+                Some(&body),
+                true,
+            )
+            .await
+    }
+
+    /// Delete a credential of the OIDC service account authenticated by this request. The caller must be an OIDC service account. At least one active credential must remain after the delete.
+    pub async fn delete_service_account_credential(
+        &self,
+        credential_uuid: String,
+    ) -> Result<DeleteServiceAccountCredentialResponse, crate::error::Error> {
+        let path = format!(
+            "/auth/service-accounts/credentials/{}",
+            urlencoding::encode(&credential_uuid)
+        );
+        self.client
+            .request::<DeleteServiceAccountCredentialResponse>(
+                reqwest::Method::DELETE,
+                &path,
+                None,
                 true,
             )
             .await

@@ -175,7 +175,7 @@ pub struct CreateCredentialResponse {
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct CreateCredentialChallengeRequest {
     #[serde(rename = "kind")]
-    pub kind: crate::types::CredentialKind,
+    pub kind: String,
 }
 
 /// Activate Credential
@@ -346,6 +346,32 @@ pub struct LogoutResponse {
     pub message: String,
 }
 
+/// Request body for the oidcLoginCredentials operation.
+pub type OidcLoginCredentialsRequest = serde_json::Value;
+
+/// Oidc Login Credentials
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct OidcLoginCredentialsResponse {
+    #[serde(rename = "kind")]
+    pub kind: String,
+    #[serde(rename = "credentialId")]
+    pub credential_id: String,
+    #[serde(rename = "credentialUuid")]
+    pub credential_uuid: String,
+    #[serde(rename = "dateCreated")]
+    pub date_created: String,
+    #[serde(rename = "isActive")]
+    pub is_active: bool,
+    #[serde(rename = "name")]
+    pub name: String,
+    #[serde(rename = "publicKey")]
+    pub public_key: String,
+    #[serde(rename = "relyingPartyId")]
+    pub relying_party_id: String,
+    #[serde(rename = "origin")]
+    pub origin: String,
+}
+
 /// Complete OIDC Login
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct OidcLoginRequest {
@@ -353,6 +379,23 @@ pub struct OidcLoginRequest {
     pub code: String,
     #[serde(rename = "state")]
     pub state: String,
+}
+
+/// Complete OIDC Login
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct OidcLoginResponse {
+    #[serde(rename = "token")]
+    pub token: String,
+    #[serde(rename = "expiry", default, skip_serializing_if = "Option::is_none")]
+    pub expiry: Option<f64>,
+    #[serde(rename = "identity", default, skip_serializing_if = "Option::is_none")]
+    pub identity: Option<serde_json::Value>,
+    #[serde(
+        rename = "credentialChallenge",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub credential_challenge: Option<serde_json::Value>,
 }
 
 /// Initiate OIDC Login
@@ -364,6 +407,8 @@ pub struct OidcLoginInitRequest {
     pub tenant_id: Option<String>,
     #[serde(rename = "redirectUri")]
     pub redirect_uri: String,
+    #[serde(rename = "nonce", default, skip_serializing_if = "Option::is_none")]
+    pub nonce: Option<String>,
 }
 
 /// Initiate OIDC Login
@@ -1046,6 +1091,12 @@ pub struct CreateServiceAccountRequest {
     pub external_id: Option<String>,
     #[serde(rename = "daysValid", default, skip_serializing_if = "Option::is_none")]
     pub days_valid: Option<i64>,
+    #[serde(
+        rename = "federatedIdentity",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub federated_identity: Option<serde_json::Value>,
 }
 
 /// Create Service Account
@@ -1129,6 +1180,42 @@ pub struct DeactivateServiceAccountResponse {
     pub access_tokens: Vec<crate::types::PersonalAccessToken>,
 }
 
+/// Create Service Account Credential
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct CreateServiceAccountCredentialRequest {
+    #[serde(rename = "publicKey")]
+    pub public_key: String,
+    #[serde(rename = "name", default, skip_serializing_if = "Option::is_none")]
+    pub name: Option<String>,
+}
+
+/// Create Service Account Credential
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct CreateServiceAccountCredentialResponse {
+    #[serde(rename = "kind")]
+    pub kind: String,
+    #[serde(rename = "credentialId")]
+    pub credential_id: String,
+    #[serde(rename = "credentialUuid")]
+    pub credential_uuid: String,
+    #[serde(rename = "dateCreated")]
+    pub date_created: String,
+    #[serde(rename = "isActive")]
+    pub is_active: bool,
+    #[serde(rename = "name")]
+    pub name: String,
+    #[serde(rename = "publicKey")]
+    pub public_key: String,
+    #[serde(rename = "relyingPartyId")]
+    pub relying_party_id: String,
+    #[serde(rename = "origin")]
+    pub origin: String,
+}
+
+/// Delete Service Account Credential
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct DeleteServiceAccountCredentialResponse {}
+
 /// Activate User
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct ActivateUserResponse {
@@ -1142,6 +1229,12 @@ pub struct ActivateUserResponse {
     pub kind: String,
     #[serde(rename = "credentialUuid")]
     pub credential_uuid: String,
+    #[serde(
+        rename = "credentialId",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub credential_id: Option<String>,
     #[serde(rename = "orgId", default, skip_serializing_if = "Option::is_none")]
     pub org_id: Option<String>,
     #[serde(rename = "tenantId", default, skip_serializing_if = "Option::is_none")]
@@ -1177,6 +1270,12 @@ pub struct DeactivateUserResponse {
     pub kind: String,
     #[serde(rename = "credentialUuid")]
     pub credential_uuid: String,
+    #[serde(
+        rename = "credentialId",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub credential_id: Option<String>,
     #[serde(rename = "orgId", default, skip_serializing_if = "Option::is_none")]
     pub org_id: Option<String>,
     #[serde(rename = "tenantId", default, skip_serializing_if = "Option::is_none")]
@@ -1212,6 +1311,12 @@ pub struct GetUserResponse {
     pub kind: String,
     #[serde(rename = "credentialUuid")]
     pub credential_uuid: String,
+    #[serde(
+        rename = "credentialId",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub credential_id: Option<String>,
     #[serde(rename = "orgId", default, skip_serializing_if = "Option::is_none")]
     pub org_id: Option<String>,
     #[serde(rename = "tenantId", default, skip_serializing_if = "Option::is_none")]
@@ -1254,6 +1359,12 @@ pub struct UpdateUserResponse {
     pub kind: String,
     #[serde(rename = "credentialUuid")]
     pub credential_uuid: String,
+    #[serde(
+        rename = "credentialId",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub credential_id: Option<String>,
     #[serde(rename = "orgId", default, skip_serializing_if = "Option::is_none")]
     pub org_id: Option<String>,
     #[serde(rename = "tenantId", default, skip_serializing_if = "Option::is_none")]
@@ -1289,6 +1400,12 @@ pub struct DeleteUserResponse {
     pub kind: String,
     #[serde(rename = "credentialUuid")]
     pub credential_uuid: String,
+    #[serde(
+        rename = "credentialId",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub credential_id: Option<String>,
     #[serde(rename = "orgId", default, skip_serializing_if = "Option::is_none")]
     pub org_id: Option<String>,
     #[serde(rename = "tenantId", default, skip_serializing_if = "Option::is_none")]
@@ -1375,6 +1492,12 @@ pub struct CreateUserResponse {
     pub kind: String,
     #[serde(rename = "credentialUuid")]
     pub credential_uuid: String,
+    #[serde(
+        rename = "credentialId",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub credential_id: Option<String>,
     #[serde(rename = "orgId", default, skip_serializing_if = "Option::is_none")]
     pub org_id: Option<String>,
     #[serde(rename = "tenantId", default, skip_serializing_if = "Option::is_none")]
@@ -1417,6 +1540,10 @@ pub type CompleteUserLoginRequest = LoginRequest;
 /// Deprecated: use `OidcLoginRequest` instead.
 #[deprecated(note = "use `OidcLoginRequest` instead")]
 pub type CompleteOidcLoginRequest = OidcLoginRequest;
+
+/// Deprecated: use `OidcLoginResponse` instead.
+#[deprecated(note = "use `OidcLoginResponse` instead")]
+pub type CompleteOidcLoginResponse = OidcLoginResponse;
 
 /// Deprecated: use `OidcLoginInitRequest` instead.
 #[deprecated(note = "use `OidcLoginInitRequest` instead")]
