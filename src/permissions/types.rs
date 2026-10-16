@@ -205,7 +205,7 @@ pub struct CreatePermissionResponse {
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct RevokePermissionQuery {
     #[serde(rename = "force", default, skip_serializing_if = "Option::is_none")]
-    pub force: Option<bool>,
+    pub force: Option<serde_json::Value>,
 }
 
 /// Deprecated: use `ListAssignmentsResponse` instead.

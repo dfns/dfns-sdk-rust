@@ -460,15 +460,32 @@ impl DelegatedAuthClient {
             .await
     }
 
-    /// Completes the OIDC login process by exchanging the authorization code obtained from the identity provider. If the verified user has no active first-factor credential yet, it returns a registration challenge to complete via [Complete User Registration](/api-reference/auth/complete-user-registration); otherwise it returns the user's authentication token.
+    /// Registers the first credential for an OIDC-authenticated user, bootstrapping from the credential challenge issued by [OIDC Login](/api-reference/auth/oidc-login). Rejected if the user already has an active first-factor credential; use [Create Credential](/api-reference/auth/create-credential) in that case.
+    pub async fn oidc_login_credentials(
+        &self,
+        body: OidcLoginCredentialsRequest,
+    ) -> Result<OidcLoginCredentialsResponse, crate::error::Error> {
+        let path = String::from("/auth/login/oidc/credentials");
+        let body = serde_json::to_value(&body)?;
+        self.client
+            .request::<OidcLoginCredentialsResponse>(
+                reqwest::Method::POST,
+                &path,
+                Some(&body),
+                false,
+            )
+            .await
+    }
+
+    /// Completes the OIDC login process by exchanging the authorization code obtained from the identity provider. Returns the user's authentication token; when the verified user has no active first-factor credential yet, the response also includes a credential challenge so the client can register one before performing any user-action-signed operation.
     pub async fn oidc_login(
         &self,
         body: OidcLoginRequest,
-    ) -> Result<serde_json::Value, crate::error::Error> {
+    ) -> Result<OidcLoginResponse, crate::error::Error> {
         let path = String::from("/auth/login/oidc");
         let body = serde_json::to_value(&body)?;
         self.client
-            .request::<serde_json::Value>(reqwest::Method::POST, &path, Some(&body), false)
+            .request::<OidcLoginResponse>(reqwest::Method::POST, &path, Some(&body), false)
             .await
     }
 
@@ -477,7 +494,7 @@ impl DelegatedAuthClient {
     pub async fn complete_oidc_login(
         &self,
         body: OidcLoginRequest,
-    ) -> Result<serde_json::Value, crate::error::Error> {
+    ) -> Result<OidcLoginResponse, crate::error::Error> {
         self.oidc_login(body).await
     }
 
@@ -1274,6 +1291,84 @@ impl DelegatedAuthClient {
                 reqwest::Method::PUT,
                 &path,
                 Some(&body),
+                &user_action,
+            )
+            .await
+    }
+
+    /// Starts delegated signing for createServiceAccountCredential: returns the challenge to sign.
+    /// Pass the signed assertion to create_service_account_credential_complete with the same arguments.
+    pub async fn create_service_account_credential_init(
+        &self,
+        body: CreateServiceAccountCredentialRequest,
+    ) -> Result<crate::signer::UserActionChallenge, crate::error::Error> {
+        let path = String::from("/auth/service-accounts/credentials");
+        let body = serde_json::to_value(&body)?;
+        self.client
+            .create_user_action_challenge(reqwest::Method::POST, &path, Some(&body))
+            .await
+    }
+
+    /// Finishes delegated signing for createServiceAccountCredential: submits the signed challenge
+    /// and issues the request.
+    pub async fn create_service_account_credential_complete(
+        &self,
+        body: CreateServiceAccountCredentialRequest,
+        challenge_identifier: String,
+        assertion: crate::signer::CredentialAssertion,
+    ) -> Result<CreateServiceAccountCredentialResponse, crate::error::Error> {
+        let path = String::from("/auth/service-accounts/credentials");
+        let body = serde_json::to_value(&body)?;
+        let user_action = self
+            .client
+            .complete_user_action_signing(challenge_identifier, &assertion)
+            .await?;
+        self.client
+            .request_with_user_action::<CreateServiceAccountCredentialResponse>(
+                reqwest::Method::POST,
+                &path,
+                Some(&body),
+                &user_action,
+            )
+            .await
+    }
+
+    /// Starts delegated signing for deleteServiceAccountCredential: returns the challenge to sign.
+    /// Pass the signed assertion to delete_service_account_credential_complete with the same arguments.
+    pub async fn delete_service_account_credential_init(
+        &self,
+        credential_uuid: String,
+    ) -> Result<crate::signer::UserActionChallenge, crate::error::Error> {
+        let path = format!(
+            "/auth/service-accounts/credentials/{}",
+            urlencoding::encode(&credential_uuid)
+        );
+        self.client
+            .create_user_action_challenge(reqwest::Method::DELETE, &path, None)
+            .await
+    }
+
+    /// Finishes delegated signing for deleteServiceAccountCredential: submits the signed challenge
+    /// and issues the request.
+    pub async fn delete_service_account_credential_complete(
+        &self,
+        credential_uuid: String,
+        challenge_identifier: String,
+        assertion: crate::signer::CredentialAssertion,
+    ) -> Result<DeleteServiceAccountCredentialResponse, crate::error::Error> {
+        let path = format!(
+            "/auth/service-accounts/credentials/{}",
+            urlencoding::encode(&credential_uuid)
+        );
+        let user_action = self
+            .client
+            .complete_user_action_signing(challenge_identifier, &assertion)
+            .await?;
+        self.client
+            .request_with_user_action::<DeleteServiceAccountCredentialResponse>(
+                reqwest::Method::DELETE,
+                &path,
+                None,
                 &user_action,
             )
             .await
