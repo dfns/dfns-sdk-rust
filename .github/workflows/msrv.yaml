@@ -3,8 +3,9 @@ name: MSRV
 # Verifies the crate actually builds on its declared minimum supported Rust
 # version (Cargo.toml `rust-version`). CI's other jobs float `@stable`, so
 # without this the declared MSRV can silently rot (as 1.75 did). If a
-# dependency raises the ecosystem floor above this, this job goes red — that
-# is the signal to bump `rust-version` + the README badge + the value below.
+# Cargo.lock bump pulls a dependency whose floor is above this, this job goes
+# red — that is the signal to bump `rust-version` + the README badge + the
+# value below (or to hold the bump).
 
 on:
   push:
@@ -34,4 +35,4 @@ jobs:
         uses: Swatinem/rust-cache@8cbdedb5103daa674dcf46d3590fe06a76645684 # v2.8.0
 
       - name: Verify the crate builds on the declared MSRV
-        run: cargo check --all-targets
+        run: cargo check --locked --all-targets
