@@ -60,6 +60,10 @@ pub enum AddressWatchNetwork {
     FlowEvm,
     #[serde(rename = "FlowEvmTestnet")]
     FlowEvmTestnet,
+    #[serde(rename = "HyperEvm")]
+    HyperEvm,
+    #[serde(rename = "HyperEvmTestnet")]
+    HyperEvmTestnet,
     #[serde(rename = "Ink")]
     Ink,
     #[serde(rename = "InkSepolia")]
@@ -153,6 +157,8 @@ impl std::fmt::Display for AddressWatchNetwork {
             AddressWatchNetwork::FlareCCoston2 => "FlareCCoston2",
             AddressWatchNetwork::FlowEvm => "FlowEvm",
             AddressWatchNetwork::FlowEvmTestnet => "FlowEvmTestnet",
+            AddressWatchNetwork::HyperEvm => "HyperEvm",
+            AddressWatchNetwork::HyperEvmTestnet => "HyperEvmTestnet",
             AddressWatchNetwork::Ink => "Ink",
             AddressWatchNetwork::InkSepolia => "InkSepolia",
             AddressWatchNetwork::Monad => "Monad",
@@ -285,6 +291,10 @@ pub enum Network {
     Hedera,
     #[serde(rename = "HederaTestnet")]
     HederaTestnet,
+    #[serde(rename = "HyperEvm")]
+    HyperEvm,
+    #[serde(rename = "HyperEvmTestnet")]
+    HyperEvmTestnet,
     #[serde(rename = "Ink")]
     Ink,
     #[serde(rename = "InkSepolia")]
@@ -470,6 +480,8 @@ impl std::fmt::Display for Network {
             Network::FlowEvmTestnet => "FlowEvmTestnet",
             Network::Hedera => "Hedera",
             Network::HederaTestnet => "HederaTestnet",
+            Network::HyperEvm => "HyperEvm",
+            Network::HyperEvmTestnet => "HyperEvmTestnet",
             Network::Ink => "Ink",
             Network::InkSepolia => "InkSepolia",
             Network::InternetComputer => "InternetComputer",
@@ -849,6 +861,12 @@ pub struct TransactionRequest {
     pub status: String,
     #[serde(rename = "reason", default, skip_serializing_if = "Option::is_none")]
     pub reason: Option<String>,
+    #[serde(
+        rename = "debugTrace",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub debug_trace: Option<std::collections::HashMap<String, serde_json::Value>>,
     #[serde(rename = "txHash", default, skip_serializing_if = "Option::is_none")]
     pub tx_hash: Option<String>,
     #[serde(rename = "fee", default, skip_serializing_if = "Option::is_none")]
@@ -1049,6 +1067,12 @@ pub struct TransferRequest {
     pub status: String,
     #[serde(rename = "reason", default, skip_serializing_if = "Option::is_none")]
     pub reason: Option<String>,
+    #[serde(
+        rename = "debugTrace",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub debug_trace: Option<std::collections::HashMap<String, serde_json::Value>>,
     #[serde(rename = "txHash", default, skip_serializing_if = "Option::is_none")]
     pub tx_hash: Option<String>,
     #[serde(rename = "fee", default, skip_serializing_if = "Option::is_none")]
@@ -1198,6 +1222,32 @@ pub struct Vault {
     pub date_updated: String,
     #[serde(rename = "addresses", default, skip_serializing_if = "Option::is_none")]
     pub addresses: Option<Vec<crate::types::VaultAddress>>,
+}
+
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct TenantUser {
+    #[serde(rename = "id")]
+    pub id: String,
+    #[serde(rename = "kind")]
+    pub kind: String,
+    #[serde(rename = "username")]
+    pub username: String,
+    #[serde(rename = "isRegistered")]
+    pub is_registered: bool,
+    #[serde(rename = "isActive")]
+    pub is_active: bool,
+    #[serde(rename = "isSSORequired")]
+    pub is_ssorequired: bool,
+    #[serde(
+        rename = "externalId",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub external_id: Option<String>,
+    #[serde(rename = "permissions")]
+    pub permissions: Vec<serde_json::Value>,
+    #[serde(rename = "orgs")]
+    pub orgs: Vec<serde_json::Value>,
 }
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
@@ -1542,6 +1592,48 @@ pub struct FeeSponsor {
 }
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct UserGroupMember {
+    #[serde(rename = "userId")]
+    pub user_id: String,
+    #[serde(rename = "username")]
+    pub username: String,
+    #[serde(rename = "kind")]
+    pub kind: String,
+    #[serde(rename = "isActive")]
+    pub is_active: bool,
+    #[serde(rename = "isArchived")]
+    pub is_archived: bool,
+    #[serde(rename = "isServiceAccount")]
+    pub is_service_account: bool,
+    #[serde(rename = "dateAdded")]
+    pub date_added: String,
+}
+
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct UserGroup {
+    #[serde(rename = "id")]
+    pub id: String,
+    #[serde(rename = "orgId", default, skip_serializing_if = "Option::is_none")]
+    pub org_id: Option<String>,
+    #[serde(rename = "tenantId", default, skip_serializing_if = "Option::is_none")]
+    pub tenant_id: Option<String>,
+    #[serde(rename = "name")]
+    pub name: String,
+    #[serde(
+        rename = "description",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub description: Option<String>,
+    #[serde(rename = "memberCount")]
+    pub member_count: i64,
+    #[serde(rename = "dateCreated")]
+    pub date_created: String,
+    #[serde(rename = "dateUpdated")]
+    pub date_updated: String,
+}
+
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct User {
     #[serde(rename = "username")]
     pub username: String,
@@ -1751,6 +1843,12 @@ pub struct AllocationAction {
     pub requester: crate::types::Requester,
     #[serde(rename = "requestBody")]
     pub request_body: serde_json::Value,
+    #[serde(
+        rename = "feeSponsorId",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub fee_sponsor_id: Option<String>,
     #[serde(
         rename = "failureReason",
         default,

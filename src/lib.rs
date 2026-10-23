@@ -20,6 +20,7 @@ pub mod policies;
 pub mod signers;
 pub mod staking;
 pub mod swaps;
+pub mod tenant;
 pub mod vaults;
 pub mod wallets;
 pub mod webhooks;
@@ -45,6 +46,7 @@ pub struct DfnsClient {
     pub signers: signers::SignersClient,
     pub staking: staking::StakingClient,
     pub swaps: swaps::SwapsClient,
+    pub tenant: tenant::TenantClient,
     pub vaults: vaults::VaultsClient,
     pub wallets: wallets::WalletsClient,
     pub webhooks: webhooks::WebhooksClient,
@@ -69,6 +71,7 @@ impl DfnsClient {
             signers: signers::SignersClient::new(client.clone()),
             staking: staking::StakingClient::new(client.clone()),
             swaps: swaps::SwapsClient::new(client.clone()),
+            tenant: tenant::TenantClient::new(client.clone()),
             vaults: vaults::VaultsClient::new(client.clone()),
             wallets: wallets::WalletsClient::new(client.clone()),
             webhooks: webhooks::WebhooksClient::new(client.clone()),
@@ -94,6 +97,7 @@ pub struct DfnsDelegatedClient {
     pub signers: signers::delegated::DelegatedSignersClient,
     pub staking: staking::delegated::DelegatedStakingClient,
     pub swaps: swaps::delegated::DelegatedSwapsClient,
+    pub tenant: tenant::delegated::DelegatedTenantClient,
     pub vaults: vaults::delegated::DelegatedVaultsClient,
     pub wallets: wallets::delegated::DelegatedWalletsClient,
     pub webhooks: webhooks::delegated::DelegatedWebhooksClient,
@@ -120,6 +124,7 @@ impl DfnsDelegatedClient {
             signers: signers::delegated::DelegatedSignersClient::new(client.clone()),
             staking: staking::delegated::DelegatedStakingClient::new(client.clone()),
             swaps: swaps::delegated::DelegatedSwapsClient::new(client.clone()),
+            tenant: tenant::delegated::DelegatedTenantClient::new(client.clone()),
             vaults: vaults::delegated::DelegatedVaultsClient::new(client.clone()),
             wallets: wallets::delegated::DelegatedWalletsClient::new(client.clone()),
             webhooks: webhooks::delegated::DelegatedWebhooksClient::new(client.clone()),

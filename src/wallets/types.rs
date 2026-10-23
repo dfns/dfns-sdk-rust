@@ -19,6 +19,12 @@ pub struct AbortTransactionResponse {
     pub status: String,
     #[serde(rename = "reason", default, skip_serializing_if = "Option::is_none")]
     pub reason: Option<String>,
+    #[serde(
+        rename = "debugTrace",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub debug_trace: Option<std::collections::HashMap<String, serde_json::Value>>,
     #[serde(rename = "txHash", default, skip_serializing_if = "Option::is_none")]
     pub tx_hash: Option<String>,
     #[serde(rename = "fee", default, skip_serializing_if = "Option::is_none")]
@@ -84,6 +90,12 @@ pub struct AbortTransferResponse {
     pub status: String,
     #[serde(rename = "reason", default, skip_serializing_if = "Option::is_none")]
     pub reason: Option<String>,
+    #[serde(
+        rename = "debugTrace",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub debug_trace: Option<std::collections::HashMap<String, serde_json::Value>>,
     #[serde(rename = "txHash", default, skip_serializing_if = "Option::is_none")]
     pub tx_hash: Option<String>,
     #[serde(rename = "fee", default, skip_serializing_if = "Option::is_none")]
@@ -156,6 +168,12 @@ pub struct ActivateWalletResponse {
     pub status: String,
     #[serde(rename = "reason", default, skip_serializing_if = "Option::is_none")]
     pub reason: Option<String>,
+    #[serde(
+        rename = "debugTrace",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub debug_trace: Option<std::collections::HashMap<String, serde_json::Value>>,
     #[serde(rename = "txHash", default, skip_serializing_if = "Option::is_none")]
     pub tx_hash: Option<String>,
     #[serde(rename = "fee", default, skip_serializing_if = "Option::is_none")]
@@ -385,6 +403,12 @@ pub struct SignAndBroadcastTransactionResponse {
     pub status: String,
     #[serde(rename = "reason", default, skip_serializing_if = "Option::is_none")]
     pub reason: Option<String>,
+    #[serde(
+        rename = "debugTrace",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub debug_trace: Option<std::collections::HashMap<String, serde_json::Value>>,
     #[serde(rename = "txHash", default, skip_serializing_if = "Option::is_none")]
     pub tx_hash: Option<String>,
     #[serde(rename = "fee", default, skip_serializing_if = "Option::is_none")]
@@ -448,6 +472,12 @@ pub struct CancelTransactionResponse {
     pub status: String,
     #[serde(rename = "reason", default, skip_serializing_if = "Option::is_none")]
     pub reason: Option<String>,
+    #[serde(
+        rename = "debugTrace",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub debug_trace: Option<std::collections::HashMap<String, serde_json::Value>>,
     #[serde(rename = "txHash", default, skip_serializing_if = "Option::is_none")]
     pub tx_hash: Option<String>,
     #[serde(rename = "fee", default, skip_serializing_if = "Option::is_none")]
@@ -511,6 +541,12 @@ pub struct CancelTransferResponse {
     pub status: String,
     #[serde(rename = "reason", default, skip_serializing_if = "Option::is_none")]
     pub reason: Option<String>,
+    #[serde(
+        rename = "debugTrace",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub debug_trace: Option<std::collections::HashMap<String, serde_json::Value>>,
     #[serde(rename = "txHash", default, skip_serializing_if = "Option::is_none")]
     pub tx_hash: Option<String>,
     #[serde(rename = "fee", default, skip_serializing_if = "Option::is_none")]
@@ -585,6 +621,12 @@ pub struct SpeedUpTransactionResponse {
     pub status: String,
     #[serde(rename = "reason", default, skip_serializing_if = "Option::is_none")]
     pub reason: Option<String>,
+    #[serde(
+        rename = "debugTrace",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub debug_trace: Option<std::collections::HashMap<String, serde_json::Value>>,
     #[serde(rename = "txHash", default, skip_serializing_if = "Option::is_none")]
     pub tx_hash: Option<String>,
     #[serde(rename = "fee", default, skip_serializing_if = "Option::is_none")]
@@ -648,6 +690,12 @@ pub struct SpeedUpTransferResponse {
     pub status: String,
     #[serde(rename = "reason", default, skip_serializing_if = "Option::is_none")]
     pub reason: Option<String>,
+    #[serde(
+        rename = "debugTrace",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub debug_trace: Option<std::collections::HashMap<String, serde_json::Value>>,
     #[serde(rename = "txHash", default, skip_serializing_if = "Option::is_none")]
     pub tx_hash: Option<String>,
     #[serde(rename = "fee", default, skip_serializing_if = "Option::is_none")]
@@ -831,6 +879,12 @@ pub struct GetTransactionResponse {
     pub status: String,
     #[serde(rename = "reason", default, skip_serializing_if = "Option::is_none")]
     pub reason: Option<String>,
+    #[serde(
+        rename = "debugTrace",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub debug_trace: Option<std::collections::HashMap<String, serde_json::Value>>,
     #[serde(rename = "txHash", default, skip_serializing_if = "Option::is_none")]
     pub tx_hash: Option<String>,
     #[serde(rename = "fee", default, skip_serializing_if = "Option::is_none")]
@@ -896,6 +950,12 @@ pub struct GetTransferResponse {
     pub status: String,
     #[serde(rename = "reason", default, skip_serializing_if = "Option::is_none")]
     pub reason: Option<String>,
+    #[serde(
+        rename = "debugTrace",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub debug_trace: Option<std::collections::HashMap<String, serde_json::Value>>,
     #[serde(rename = "txHash", default, skip_serializing_if = "Option::is_none")]
     pub tx_hash: Option<String>,
     #[serde(rename = "fee", default, skip_serializing_if = "Option::is_none")]
@@ -1248,6 +1308,12 @@ pub struct TransferAssetResponse {
     pub status: String,
     #[serde(rename = "reason", default, skip_serializing_if = "Option::is_none")]
     pub reason: Option<String>,
+    #[serde(
+        rename = "debugTrace",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub debug_trace: Option<std::collections::HashMap<String, serde_json::Value>>,
     #[serde(rename = "txHash", default, skip_serializing_if = "Option::is_none")]
     pub tx_hash: Option<String>,
     #[serde(rename = "fee", default, skip_serializing_if = "Option::is_none")]

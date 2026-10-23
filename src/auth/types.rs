@@ -1259,6 +1259,13 @@ pub struct ActivateUserResponse {
 
 /// Deactivate User
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct DeactivateUserRequest {
+    #[serde(rename = "force", default, skip_serializing_if = "Option::is_none")]
+    pub force: Option<bool>,
+}
+
+/// Deactivate User
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct DeactivateUserResponse {
     #[serde(rename = "username")]
     pub username: String,
@@ -1463,8 +1470,6 @@ pub struct CreateUserRequest {
     pub email: String,
     #[serde(rename = "kind")]
     pub kind: String,
-    #[serde(rename = "publicKey", default, skip_serializing_if = "Option::is_none")]
-    pub public_key: Option<String>,
     #[serde(
         rename = "externalId",
         default,
@@ -1477,6 +1482,12 @@ pub struct CreateUserRequest {
         skip_serializing_if = "Option::is_none"
     )]
     pub is_ssorequired: Option<bool>,
+    #[serde(
+        rename = "registration",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub registration: Option<String>,
 }
 
 /// Create User
@@ -1532,6 +1543,185 @@ pub struct InviteTenantUserRequest {
 /// Invite Tenant User
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct InviteTenantUserResponse {}
+
+/// List User Groups
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct ListUserGroupsResponse {
+    #[serde(rename = "items")]
+    pub items: Vec<crate::types::UserGroup>,
+    #[serde(
+        rename = "nextPageToken",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub next_page_token: Option<String>,
+}
+
+/// Query parameters for the ListUserGroupsQuery operation.
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct ListUserGroupsQuery {
+    #[serde(rename = "limit", default, skip_serializing_if = "Option::is_none")]
+    pub limit: Option<i64>,
+    #[serde(
+        rename = "paginationToken",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub pagination_token: Option<String>,
+}
+
+/// Create User Group
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct CreateUserGroupRequest {
+    #[serde(rename = "name")]
+    pub name: String,
+    #[serde(
+        rename = "description",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub description: Option<String>,
+}
+
+/// Create User Group
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct CreateUserGroupResponse {
+    #[serde(rename = "id")]
+    pub id: String,
+    #[serde(rename = "orgId", default, skip_serializing_if = "Option::is_none")]
+    pub org_id: Option<String>,
+    #[serde(rename = "tenantId", default, skip_serializing_if = "Option::is_none")]
+    pub tenant_id: Option<String>,
+    #[serde(rename = "name")]
+    pub name: String,
+    #[serde(
+        rename = "description",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub description: Option<String>,
+    #[serde(rename = "memberCount")]
+    pub member_count: i64,
+    #[serde(rename = "dateCreated")]
+    pub date_created: String,
+    #[serde(rename = "dateUpdated")]
+    pub date_updated: String,
+}
+
+/// Get User Group
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct GetUserGroupResponse {
+    #[serde(rename = "id")]
+    pub id: String,
+    #[serde(rename = "orgId", default, skip_serializing_if = "Option::is_none")]
+    pub org_id: Option<String>,
+    #[serde(rename = "tenantId", default, skip_serializing_if = "Option::is_none")]
+    pub tenant_id: Option<String>,
+    #[serde(rename = "name")]
+    pub name: String,
+    #[serde(
+        rename = "description",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub description: Option<String>,
+    #[serde(rename = "memberCount")]
+    pub member_count: i64,
+    #[serde(rename = "dateCreated")]
+    pub date_created: String,
+    #[serde(rename = "dateUpdated")]
+    pub date_updated: String,
+}
+
+/// Update User Group
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct UpdateUserGroupRequest {
+    #[serde(rename = "name", default, skip_serializing_if = "Option::is_none")]
+    pub name: Option<String>,
+    #[serde(
+        rename = "description",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub description: Option<serde_json::Value>,
+}
+
+/// Update User Group
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct UpdateUserGroupResponse {
+    #[serde(rename = "id")]
+    pub id: String,
+    #[serde(rename = "orgId", default, skip_serializing_if = "Option::is_none")]
+    pub org_id: Option<String>,
+    #[serde(rename = "tenantId", default, skip_serializing_if = "Option::is_none")]
+    pub tenant_id: Option<String>,
+    #[serde(rename = "name")]
+    pub name: String,
+    #[serde(
+        rename = "description",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub description: Option<String>,
+    #[serde(rename = "memberCount")]
+    pub member_count: i64,
+    #[serde(rename = "dateCreated")]
+    pub date_created: String,
+    #[serde(rename = "dateUpdated")]
+    pub date_updated: String,
+}
+
+/// Delete User Group
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct DeleteUserGroupResponse {}
+
+/// List User Group Members
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct ListUserGroupMembersResponse {
+    #[serde(rename = "items")]
+    pub items: Vec<crate::types::UserGroupMember>,
+    #[serde(
+        rename = "nextPageToken",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub next_page_token: Option<String>,
+}
+
+/// Query parameters for the ListUserGroupMembersQuery operation.
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct ListUserGroupMembersQuery {
+    #[serde(rename = "limit", default, skip_serializing_if = "Option::is_none")]
+    pub limit: Option<i64>,
+    #[serde(
+        rename = "paginationToken",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub pagination_token: Option<String>,
+}
+
+/// Add User Group Members
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct AddUserGroupMembersRequest {
+    #[serde(rename = "userIds")]
+    pub user_ids: Vec<String>,
+}
+
+/// Add User Group Members
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct AddUserGroupMembersResponse {}
+
+/// Remove User Group Members
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct RemoveUserGroupMembersRequest {
+    #[serde(rename = "userIds")]
+    pub user_ids: Vec<String>,
+}
+
+/// Remove User Group Members
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct RemoveUserGroupMembersResponse {}
 
 /// Deprecated: use `LoginRequest` instead.
 #[deprecated(note = "use `LoginRequest` instead")]

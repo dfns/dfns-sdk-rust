@@ -242,6 +242,12 @@ pub struct CreateVaultTransferResponse {
     pub status: String,
     #[serde(rename = "reason", default, skip_serializing_if = "Option::is_none")]
     pub reason: Option<String>,
+    #[serde(
+        rename = "debugTrace",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub debug_trace: Option<std::collections::HashMap<String, serde_json::Value>>,
     #[serde(rename = "txHash", default, skip_serializing_if = "Option::is_none")]
     pub tx_hash: Option<String>,
     #[serde(rename = "fee", default, skip_serializing_if = "Option::is_none")]
@@ -712,6 +718,12 @@ pub struct TransferVaultLockResponse {
     pub status: String,
     #[serde(rename = "reason", default, skip_serializing_if = "Option::is_none")]
     pub reason: Option<String>,
+    #[serde(
+        rename = "debugTrace",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub debug_trace: Option<std::collections::HashMap<String, serde_json::Value>>,
     #[serde(rename = "txHash", default, skip_serializing_if = "Option::is_none")]
     pub tx_hash: Option<String>,
     #[serde(rename = "fee", default, skip_serializing_if = "Option::is_none")]

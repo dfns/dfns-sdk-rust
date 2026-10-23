@@ -460,7 +460,7 @@ impl DelegatedAuthClient {
             .await
     }
 
-    /// Registers the first credential for an OIDC-authenticated user, bootstrapping from the credential challenge issued by [OIDC Login](/api-reference/auth/oidc-login). Rejected if the user already has an active first-factor credential; use [Create Credential](/api-reference/auth/create-credential) in that case.
+    /// Registers the first credential for an OIDC-authenticated user, bootstrapping from the credential challenge issued by [Complete OIDC Login](/api-reference/auth/complete-oidc-login). Rejected if the user already has an active first-factor credential; use [Create Credential](/api-reference/auth/create-credential) in that case.
     pub async fn oidc_login_credentials(
         &self,
         body: OidcLoginCredentialsRequest,
@@ -867,7 +867,9 @@ impl DelegatedAuthClient {
         self.recover(body).await
     }
 
-    /// Starts a user recovery session, returning a challenge that will be used to verify the user's identity.
+    /// Starts a user recovery session from the recovery code received by email. It returns a challenge that will be used to verify the user's identity.
+    ///
+    /// <Note>This endpoint is for users that registered through the "Direct" registration flow. For users registered through the "Delegated" registration flow, the endpoint [Create Delegated Recovery Challenge](https://docs.dfns.co/api-reference/auth/create-delegated-recovery-challenge) should be used.</Note>
     pub async fn create_recovery_challenge(
         &self,
         body: CreateRecoveryChallengeRequest,
@@ -885,6 +887,8 @@ impl DelegatedAuthClient {
     }
 
     /// Send the user a recovery verification code. This code is used as a second factor to verify the user initiated the recovery request.
+    ///   
+    ///   <Note>This endpoint is for users that registered through the "Direct" registration flow. For users registered through the "Delegated" registration flow, the endpoint [Create Delegated Recovery Challenge](https://docs.dfns.co/api-reference/auth/create-delegated-recovery-challenge) should be used.</Note>
     pub async fn send_recovery_code(
         &self,
         body: SendRecoveryCodeRequest,
@@ -942,7 +946,10 @@ impl DelegatedAuthClient {
             .await
     }
 
-    /// Starts a user registration session. It returns a challenge that will need to be signed by a passkey and used to perform the step [Complete User Registration](/api-reference/auth/complete-user-registration)
+    /// Starts a user registration session from the registration code received by email. It returns a challenge that will need to be signed by a passkey and used to perform the step [Complete User Registration](/api-reference/auth/complete-user-registration). Either `orgId` or `tenantId` needs to be specified.
+    ///
+    /// <Note>
+    /// This endpoint is for users previously created through [Create User](https://docs.dfns.co/api-reference/auth/create-user) endpoint with `registration: "Direct"`, and received a registration code by email.
     pub async fn create_registration_challenge(
         &self,
         body: CreateRegistrationChallengeRequest,
@@ -1025,6 +1032,9 @@ impl DelegatedAuthClient {
     }
 
     /// Sends the user a new registration code. The previous registration code will be marked invalid. If the user has already completed their registration no action will be taken.
+    ///
+    /// <Note>
+    /// This endpoint is for users previously created through [Create User](https://docs.dfns.co/api-reference/auth/create-user) endpoint with `registration: "Direct"`, and received a registration code by email.
     pub async fn resend_registration_code(
         &self,
         body: ResendRegistrationCodeRequest,
@@ -1414,10 +1424,12 @@ impl DelegatedAuthClient {
     pub async fn deactivate_user_init(
         &self,
         user_id: String,
+        body: DeactivateUserRequest,
     ) -> Result<crate::signer::UserActionChallenge, crate::error::Error> {
         let path = format!("/auth/users/{}/deactivate", urlencoding::encode(&user_id));
+        let body = serde_json::to_value(&body)?;
         self.client
-            .create_user_action_challenge(reqwest::Method::PUT, &path, None)
+            .create_user_action_challenge(reqwest::Method::PUT, &path, Some(&body))
             .await
     }
 
@@ -1426,10 +1438,12 @@ impl DelegatedAuthClient {
     pub async fn deactivate_user_complete(
         &self,
         user_id: String,
+        body: DeactivateUserRequest,
         challenge_identifier: String,
         assertion: crate::signer::CredentialAssertion,
     ) -> Result<DeactivateUserResponse, crate::error::Error> {
         let path = format!("/auth/users/{}/deactivate", urlencoding::encode(&user_id));
+        let body = serde_json::to_value(&body)?;
         let user_action = self
             .client
             .complete_user_action_signing(challenge_identifier, &assertion)
@@ -1438,7 +1452,7 @@ impl DelegatedAuthClient {
             .request_with_user_action::<DeactivateUserResponse>(
                 reqwest::Method::PUT,
                 &path,
-                None,
+                Some(&body),
                 &user_action,
             )
             .await
@@ -1623,6 +1637,276 @@ impl DelegatedAuthClient {
         self.client
             .request_with_user_action::<InviteTenantUserResponse>(
                 reqwest::Method::POST,
+                &path,
+                Some(&body),
+                &user_action,
+            )
+            .await
+    }
+
+    /// List the user groups in the caller's org.
+    pub async fn list_user_groups(
+        &self,
+        query: Option<ListUserGroupsQuery>,
+    ) -> Result<ListUserGroupsResponse, crate::error::Error> {
+        let mut path = String::from("/auth/user-groups");
+        if let Some(query) = &query {
+            let mut q: Vec<String> = Vec::new();
+            if let Some(v) = &query.limit {
+                q.push(format!("limit={}", urlencoding::encode(&v.to_string())));
+            }
+            if let Some(v) = &query.pagination_token {
+                q.push(format!(
+                    "paginationToken={}",
+                    urlencoding::encode(&v.to_string())
+                ));
+            }
+            if !q.is_empty() {
+                path.push('?');
+                path.push_str(&q.join("&"));
+            }
+        }
+        self.client
+            .request::<ListUserGroupsResponse>(reqwest::Method::GET, &path, None, false)
+            .await
+    }
+
+    /// Starts delegated signing for createUserGroup: returns the challenge to sign.
+    /// Pass the signed assertion to create_user_group_complete with the same arguments.
+    pub async fn create_user_group_init(
+        &self,
+        body: CreateUserGroupRequest,
+    ) -> Result<crate::signer::UserActionChallenge, crate::error::Error> {
+        let path = String::from("/auth/user-groups");
+        let body = serde_json::to_value(&body)?;
+        self.client
+            .create_user_action_challenge(reqwest::Method::POST, &path, Some(&body))
+            .await
+    }
+
+    /// Finishes delegated signing for createUserGroup: submits the signed challenge
+    /// and issues the request.
+    pub async fn create_user_group_complete(
+        &self,
+        body: CreateUserGroupRequest,
+        challenge_identifier: String,
+        assertion: crate::signer::CredentialAssertion,
+    ) -> Result<CreateUserGroupResponse, crate::error::Error> {
+        let path = String::from("/auth/user-groups");
+        let body = serde_json::to_value(&body)?;
+        let user_action = self
+            .client
+            .complete_user_action_signing(challenge_identifier, &assertion)
+            .await?;
+        self.client
+            .request_with_user_action::<CreateUserGroupResponse>(
+                reqwest::Method::POST,
+                &path,
+                Some(&body),
+                &user_action,
+            )
+            .await
+    }
+
+    /// Get a specific user group.
+    pub async fn get_user_group(
+        &self,
+        user_group_id: String,
+    ) -> Result<GetUserGroupResponse, crate::error::Error> {
+        let path = format!("/auth/user-groups/{}", urlencoding::encode(&user_group_id));
+        self.client
+            .request::<GetUserGroupResponse>(reqwest::Method::GET, &path, None, false)
+            .await
+    }
+
+    /// Starts delegated signing for updateUserGroup: returns the challenge to sign.
+    /// Pass the signed assertion to update_user_group_complete with the same arguments.
+    pub async fn update_user_group_init(
+        &self,
+        user_group_id: String,
+        body: UpdateUserGroupRequest,
+    ) -> Result<crate::signer::UserActionChallenge, crate::error::Error> {
+        let path = format!("/auth/user-groups/{}", urlencoding::encode(&user_group_id));
+        let body = serde_json::to_value(&body)?;
+        self.client
+            .create_user_action_challenge(reqwest::Method::PUT, &path, Some(&body))
+            .await
+    }
+
+    /// Finishes delegated signing for updateUserGroup: submits the signed challenge
+    /// and issues the request.
+    pub async fn update_user_group_complete(
+        &self,
+        user_group_id: String,
+        body: UpdateUserGroupRequest,
+        challenge_identifier: String,
+        assertion: crate::signer::CredentialAssertion,
+    ) -> Result<UpdateUserGroupResponse, crate::error::Error> {
+        let path = format!("/auth/user-groups/{}", urlencoding::encode(&user_group_id));
+        let body = serde_json::to_value(&body)?;
+        let user_action = self
+            .client
+            .complete_user_action_signing(challenge_identifier, &assertion)
+            .await?;
+        self.client
+            .request_with_user_action::<UpdateUserGroupResponse>(
+                reqwest::Method::PUT,
+                &path,
+                Some(&body),
+                &user_action,
+            )
+            .await
+    }
+
+    /// Starts delegated signing for deleteUserGroup: returns the challenge to sign.
+    /// Pass the signed assertion to delete_user_group_complete with the same arguments.
+    pub async fn delete_user_group_init(
+        &self,
+        user_group_id: String,
+    ) -> Result<crate::signer::UserActionChallenge, crate::error::Error> {
+        let path = format!("/auth/user-groups/{}", urlencoding::encode(&user_group_id));
+        self.client
+            .create_user_action_challenge(reqwest::Method::DELETE, &path, None)
+            .await
+    }
+
+    /// Finishes delegated signing for deleteUserGroup: submits the signed challenge
+    /// and issues the request.
+    pub async fn delete_user_group_complete(
+        &self,
+        user_group_id: String,
+        challenge_identifier: String,
+        assertion: crate::signer::CredentialAssertion,
+    ) -> Result<DeleteUserGroupResponse, crate::error::Error> {
+        let path = format!("/auth/user-groups/{}", urlencoding::encode(&user_group_id));
+        let user_action = self
+            .client
+            .complete_user_action_signing(challenge_identifier, &assertion)
+            .await?;
+        self.client
+            .request_with_user_action::<DeleteUserGroupResponse>(
+                reqwest::Method::DELETE,
+                &path,
+                None,
+                &user_action,
+            )
+            .await
+    }
+
+    /// List the members of a user group.
+    pub async fn list_user_group_members(
+        &self,
+        user_group_id: String,
+        query: Option<ListUserGroupMembersQuery>,
+    ) -> Result<ListUserGroupMembersResponse, crate::error::Error> {
+        let mut path = format!(
+            "/auth/user-groups/{}/members",
+            urlencoding::encode(&user_group_id)
+        );
+        if let Some(query) = &query {
+            let mut q: Vec<String> = Vec::new();
+            if let Some(v) = &query.limit {
+                q.push(format!("limit={}", urlencoding::encode(&v.to_string())));
+            }
+            if let Some(v) = &query.pagination_token {
+                q.push(format!(
+                    "paginationToken={}",
+                    urlencoding::encode(&v.to_string())
+                ));
+            }
+            if !q.is_empty() {
+                path.push('?');
+                path.push_str(&q.join("&"));
+            }
+        }
+        self.client
+            .request::<ListUserGroupMembersResponse>(reqwest::Method::GET, &path, None, false)
+            .await
+    }
+
+    /// Starts delegated signing for addUserGroupMembers: returns the challenge to sign.
+    /// Pass the signed assertion to add_user_group_members_complete with the same arguments.
+    pub async fn add_user_group_members_init(
+        &self,
+        user_group_id: String,
+        body: AddUserGroupMembersRequest,
+    ) -> Result<crate::signer::UserActionChallenge, crate::error::Error> {
+        let path = format!(
+            "/auth/user-groups/{}/members",
+            urlencoding::encode(&user_group_id)
+        );
+        let body = serde_json::to_value(&body)?;
+        self.client
+            .create_user_action_challenge(reqwest::Method::POST, &path, Some(&body))
+            .await
+    }
+
+    /// Finishes delegated signing for addUserGroupMembers: submits the signed challenge
+    /// and issues the request.
+    pub async fn add_user_group_members_complete(
+        &self,
+        user_group_id: String,
+        body: AddUserGroupMembersRequest,
+        challenge_identifier: String,
+        assertion: crate::signer::CredentialAssertion,
+    ) -> Result<AddUserGroupMembersResponse, crate::error::Error> {
+        let path = format!(
+            "/auth/user-groups/{}/members",
+            urlencoding::encode(&user_group_id)
+        );
+        let body = serde_json::to_value(&body)?;
+        let user_action = self
+            .client
+            .complete_user_action_signing(challenge_identifier, &assertion)
+            .await?;
+        self.client
+            .request_with_user_action::<AddUserGroupMembersResponse>(
+                reqwest::Method::POST,
+                &path,
+                Some(&body),
+                &user_action,
+            )
+            .await
+    }
+
+    /// Starts delegated signing for removeUserGroupMembers: returns the challenge to sign.
+    /// Pass the signed assertion to remove_user_group_members_complete with the same arguments.
+    pub async fn remove_user_group_members_init(
+        &self,
+        user_group_id: String,
+        body: RemoveUserGroupMembersRequest,
+    ) -> Result<crate::signer::UserActionChallenge, crate::error::Error> {
+        let path = format!(
+            "/auth/user-groups/{}/members",
+            urlencoding::encode(&user_group_id)
+        );
+        let body = serde_json::to_value(&body)?;
+        self.client
+            .create_user_action_challenge(reqwest::Method::DELETE, &path, Some(&body))
+            .await
+    }
+
+    /// Finishes delegated signing for removeUserGroupMembers: submits the signed challenge
+    /// and issues the request.
+    pub async fn remove_user_group_members_complete(
+        &self,
+        user_group_id: String,
+        body: RemoveUserGroupMembersRequest,
+        challenge_identifier: String,
+        assertion: crate::signer::CredentialAssertion,
+    ) -> Result<RemoveUserGroupMembersResponse, crate::error::Error> {
+        let path = format!(
+            "/auth/user-groups/{}/members",
+            urlencoding::encode(&user_group_id)
+        );
+        let body = serde_json::to_value(&body)?;
+        let user_action = self
+            .client
+            .complete_user_action_signing(challenge_identifier, &assertion)
+            .await?;
+        self.client
+            .request_with_user_action::<RemoveUserGroupMembersResponse>(
+                reqwest::Method::DELETE,
                 &path,
                 Some(&body),
                 &user_action,
