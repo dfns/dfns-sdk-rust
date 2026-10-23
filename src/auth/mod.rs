@@ -322,7 +322,7 @@ impl AuthClient {
             .await
     }
 
-    /// Registers the first credential for an OIDC-authenticated user, bootstrapping from the credential challenge issued by [OIDC Login](/api-reference/auth/oidc-login). Rejected if the user already has an active first-factor credential; use [Create Credential](/api-reference/auth/create-credential) in that case.
+    /// Registers the first credential for an OIDC-authenticated user, bootstrapping from the credential challenge issued by [Complete OIDC Login](/api-reference/auth/complete-oidc-login). Rejected if the user already has an active first-factor credential; use [Create Credential](/api-reference/auth/create-credential) in that case.
     pub async fn oidc_login_credentials(
         &self,
         body: OidcLoginCredentialsRequest,
@@ -609,7 +609,9 @@ impl AuthClient {
         self.recover(body).await
     }
 
-    /// Starts a user recovery session, returning a challenge that will be used to verify the user's identity.
+    /// Starts a user recovery session from the recovery code received by email. It returns a challenge that will be used to verify the user's identity.
+    ///
+    /// <Note>This endpoint is for users that registered through the "Direct" registration flow. For users registered through the "Delegated" registration flow, the endpoint [Create Delegated Recovery Challenge](https://docs.dfns.co/api-reference/auth/create-delegated-recovery-challenge) should be used.</Note>
     pub async fn create_recovery_challenge(
         &self,
         body: CreateRecoveryChallengeRequest,
@@ -627,6 +629,8 @@ impl AuthClient {
     }
 
     /// Send the user a recovery verification code. This code is used as a second factor to verify the user initiated the recovery request.
+    ///   
+    ///   <Note>This endpoint is for users that registered through the "Direct" registration flow. For users registered through the "Delegated" registration flow, the endpoint [Create Delegated Recovery Challenge](https://docs.dfns.co/api-reference/auth/create-delegated-recovery-challenge) should be used.</Note>
     pub async fn send_recovery_code(
         &self,
         body: SendRecoveryCodeRequest,
@@ -667,7 +671,10 @@ impl AuthClient {
             .await
     }
 
-    /// Starts a user registration session. It returns a challenge that will need to be signed by a passkey and used to perform the step [Complete User Registration](/api-reference/auth/complete-user-registration)
+    /// Starts a user registration session from the registration code received by email. It returns a challenge that will need to be signed by a passkey and used to perform the step [Complete User Registration](/api-reference/auth/complete-user-registration). Either `orgId` or `tenantId` needs to be specified.
+    ///
+    /// <Note>
+    /// This endpoint is for users previously created through [Create User](https://docs.dfns.co/api-reference/auth/create-user) endpoint with `registration: "Direct"`, and received a registration code by email.
     pub async fn create_registration_challenge(
         &self,
         body: CreateRegistrationChallengeRequest,
@@ -750,6 +757,9 @@ impl AuthClient {
     }
 
     /// Sends the user a new registration code. The previous registration code will be marked invalid. If the user has already completed their registration no action will be taken.
+    ///
+    /// <Note>
+    /// This endpoint is for users previously created through [Create User](https://docs.dfns.co/api-reference/auth/create-user) endpoint with `registration: "Direct"`, and received a registration code by email.
     pub async fn resend_registration_code(
         &self,
         body: ResendRegistrationCodeRequest,
@@ -848,7 +858,7 @@ impl AuthClient {
             .await
     }
 
-    /// Activate a specific Service Account.
+    /// Re-activate a previously deactivated Service Account. New Service Accounts are active as soon as they are created, so this is only needed after a Service Account has been deactivated.
     pub async fn activate_service_account(
         &self,
         service_account_id: String,
@@ -934,10 +944,12 @@ impl AuthClient {
     pub async fn deactivate_user(
         &self,
         user_id: String,
+        body: DeactivateUserRequest,
     ) -> Result<DeactivateUserResponse, crate::error::Error> {
         let path = format!("/auth/users/{}/deactivate", urlencoding::encode(&user_id));
+        let body = serde_json::to_value(&body)?;
         self.client
-            .request::<DeactivateUserResponse>(reqwest::Method::PUT, &path, None, true)
+            .request::<DeactivateUserResponse>(reqwest::Method::PUT, &path, Some(&body), true)
             .await
     }
 
@@ -1003,10 +1015,10 @@ impl AuthClient {
             .await
     }
 
-    /// Invite a new user in the caller's org. This will create the user and send a registration email to the created User's email, with a registration code, and pointing him to complete his registration on Dfns Dashboard. The user is created without any permissions.
-    ///   
-    ///   <Note>If you want the created User to not know about about Dfns, and don't want him to
-    ///   receive the registration email from Dfns, you should rather use the Delegated Registration
+    /// Creates a new user in the caller's org.
+    ///
+    /// The registration flow this user will go through depends on the `registration` kind specified:
+    /// - If `Direct`, we orchestrate the user's registration: he will receive an email from us directly. Then be redirected to our dashboard to finish registration and onboard there. This is only available for `CustomerEmployee`. This is for users meant to use our dashboard directly (in addition to custom apps you may build).
     pub async fn create_user(
         &self,
         body: CreateUserRequest,
@@ -1027,6 +1039,148 @@ impl AuthClient {
         let body = serde_json::to_value(&body)?;
         self.client
             .request::<InviteTenantUserResponse>(reqwest::Method::POST, &path, Some(&body), true)
+            .await
+    }
+
+    /// List the user groups in the caller's org.
+    pub async fn list_user_groups(
+        &self,
+        query: Option<ListUserGroupsQuery>,
+    ) -> Result<ListUserGroupsResponse, crate::error::Error> {
+        let mut path = String::from("/auth/user-groups");
+        if let Some(query) = &query {
+            let mut q: Vec<String> = Vec::new();
+            if let Some(v) = &query.limit {
+                q.push(format!("limit={}", urlencoding::encode(&v.to_string())));
+            }
+            if let Some(v) = &query.pagination_token {
+                q.push(format!(
+                    "paginationToken={}",
+                    urlencoding::encode(&v.to_string())
+                ));
+            }
+            if !q.is_empty() {
+                path.push('?');
+                path.push_str(&q.join("&"));
+            }
+        }
+        self.client
+            .request::<ListUserGroupsResponse>(reqwest::Method::GET, &path, None, false)
+            .await
+    }
+
+    /// Create a user group in the caller's org. A group holds permissions through the regular permission assignment endpoint, and its members hold those permissions in addition to their own.
+    pub async fn create_user_group(
+        &self,
+        body: CreateUserGroupRequest,
+    ) -> Result<CreateUserGroupResponse, crate::error::Error> {
+        let path = String::from("/auth/user-groups");
+        let body = serde_json::to_value(&body)?;
+        self.client
+            .request::<CreateUserGroupResponse>(reqwest::Method::POST, &path, Some(&body), true)
+            .await
+    }
+
+    /// Get a specific user group.
+    pub async fn get_user_group(
+        &self,
+        user_group_id: String,
+    ) -> Result<GetUserGroupResponse, crate::error::Error> {
+        let path = format!("/auth/user-groups/{}", urlencoding::encode(&user_group_id));
+        self.client
+            .request::<GetUserGroupResponse>(reqwest::Method::GET, &path, None, false)
+            .await
+    }
+
+    /// Rename a user group or change its description. Fields left out keep their value. Its permissions and members are unaffected. Returns the group on success (200), or the pending user action if a policy requires approval (202).
+    pub async fn update_user_group(
+        &self,
+        user_group_id: String,
+        body: UpdateUserGroupRequest,
+    ) -> Result<UpdateUserGroupResponse, crate::error::Error> {
+        let path = format!("/auth/user-groups/{}", urlencoding::encode(&user_group_id));
+        let body = serde_json::to_value(&body)?;
+        self.client
+            .request::<UpdateUserGroupResponse>(reqwest::Method::PUT, &path, Some(&body), true)
+            .await
+    }
+
+    /// Delete a user group. Its permission assignments are revoked and its members are removed. The name can be reused. Returns an empty body on success (200), or the pending user action if a policy requires approval (202).
+    pub async fn delete_user_group(
+        &self,
+        user_group_id: String,
+    ) -> Result<DeleteUserGroupResponse, crate::error::Error> {
+        let path = format!("/auth/user-groups/{}", urlencoding::encode(&user_group_id));
+        self.client
+            .request::<DeleteUserGroupResponse>(reqwest::Method::DELETE, &path, None, true)
+            .await
+    }
+
+    /// List the members of a user group.
+    pub async fn list_user_group_members(
+        &self,
+        user_group_id: String,
+        query: Option<ListUserGroupMembersQuery>,
+    ) -> Result<ListUserGroupMembersResponse, crate::error::Error> {
+        let mut path = format!(
+            "/auth/user-groups/{}/members",
+            urlencoding::encode(&user_group_id)
+        );
+        if let Some(query) = &query {
+            let mut q: Vec<String> = Vec::new();
+            if let Some(v) = &query.limit {
+                q.push(format!("limit={}", urlencoding::encode(&v.to_string())));
+            }
+            if let Some(v) = &query.pagination_token {
+                q.push(format!(
+                    "paginationToken={}",
+                    urlencoding::encode(&v.to_string())
+                ));
+            }
+            if !q.is_empty() {
+                path.push('?');
+                path.push_str(&q.join("&"));
+            }
+        }
+        self.client
+            .request::<ListUserGroupMembersResponse>(reqwest::Method::GET, &path, None, false)
+            .await
+    }
+
+    /// Add users to a user group. Each member gains every permission assigned to the group, in addition to their own. Returns an empty body on success (200), or the pending user action if a policy requires approval (202).
+    pub async fn add_user_group_members(
+        &self,
+        user_group_id: String,
+        body: AddUserGroupMembersRequest,
+    ) -> Result<AddUserGroupMembersResponse, crate::error::Error> {
+        let path = format!(
+            "/auth/user-groups/{}/members",
+            urlencoding::encode(&user_group_id)
+        );
+        let body = serde_json::to_value(&body)?;
+        self.client
+            .request::<AddUserGroupMembersResponse>(reqwest::Method::POST, &path, Some(&body), true)
+            .await
+    }
+
+    /// Remove users from a user group. Each removed user loses every permission they held only through this group. Returns an empty body on success (200), or the pending user action if a policy requires approval (202).
+    pub async fn remove_user_group_members(
+        &self,
+        user_group_id: String,
+        body: RemoveUserGroupMembersRequest,
+    ) -> Result<RemoveUserGroupMembersResponse, crate::error::Error> {
+        let path = format!(
+            "/auth/user-groups/{}/members",
+            urlencoding::encode(&user_group_id)
+        );
+        let body = serde_json::to_value(&body)?;
+        self.client
+            .request::<RemoveUserGroupMembersResponse>(
+                reqwest::Method::DELETE,
+                &path,
+                Some(&body),
+                true,
+            )
             .await
     }
 }

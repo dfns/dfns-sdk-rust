@@ -110,7 +110,7 @@ impl PermissionsClient {
         self.list_assignments(permission_id, query).await
     }
 
-    /// Assigns a permission (role) to an identity (user, PAT or service account), granting it access to the operations defined in the permission. Returns the assignment on success (200), or a pending change request if approval is required (202).
+    /// Assigns a permission (role) to an identity (user, PAT, service account or user group), granting it access to the operations defined in the permission. Returns the assignment on success (200), or a pending change request if approval is required (202).
     pub async fn assign_permission(
         &self,
         permission_id: String,

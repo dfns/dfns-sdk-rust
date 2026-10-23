@@ -212,7 +212,7 @@ impl DelegatedPoliciesClient {
             .await
     }
 
-    /// Retrieve the RSA public key (JWK, RFC 7517) of the org's Sumsub Travel Rule integration. Use it to JWE-encrypt (RSA-OAEP-256 / A256GCM) the IVMS101 payload client-side before submitting a transfer screened by a Sumsub Travel Rule policy. Requires Travel Rule to be enabled for the tenant and an activated Sumsub integration on the org.
+    /// Retrieve the RSA public key (JWK, RFC 7517) of the org's Sumsub Travel Rule integration. Use it to JWE-encrypt (RSA-OAEP-256 / A256GCM, compact serialization) the JWS-signed IVMS101 payload client-side before submitting a transfer screened by a Sumsub Travel Rule policy. Requires Travel Rule to be enabled for the tenant and an activated Sumsub integration on the org.
     pub async fn get_sumsub_travel_rule_public_key(
         &self,
     ) -> Result<GetSumsubTravelRulePublicKeyResponse, crate::error::Error> {

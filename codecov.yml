@@ -23,6 +23,7 @@ ignore:
   - "src/signers/**"
   - "src/staking/**"
   - "src/swaps/**"
+  - "src/tenant/**"
   - "src/vaults/**"
   - "src/wallets/**"
   - "src/webhooks/**"
