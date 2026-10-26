@@ -27,7 +27,10 @@ else
   exit 1
 fi
 
-# Cargo's semver: in 0.y.z, y is the breaking ("major") position and z the compatible one
+# Below 1.0, Cargo shifts semver one position: in 0.Y.z, a breaking change bumps Y (0.3.2 -> 0.4.0) and
+# anything else bumps z. cargo-semver-checks calls the Y bump "major". The move to 1.0.0 is never
+# automatic: set it in Cargo.toml by hand (later runs never lower the version); from then on, breaking
+# changes bump the first number.
 if [ "$major" -eq 0 ]; then
   case "$required" in
     major) echo "0.$((minor + 1)).0 minor true" ;;

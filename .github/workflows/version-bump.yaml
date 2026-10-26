@@ -60,16 +60,18 @@ jobs:
           RUN_HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
         run: .github/scripts/validate-semver-result.sh semver-result
 
-      # Sync PRs only (opened by the sync app, see validate-semver-result.sh): commit the version,
-      # unless Cargo.toml already carries it
+      # Sync PRs only: commit the version, unless Cargo.toml already carries it.
+      # The branch name is a pre-filter; commit-version.sh checks the PR comes from the sync app.
       - name: Commit the version
+        id: commit
         if: >-
           steps.validate.outputs.moved == 'false' &&
-          steps.validate.outputs.is-sync == 'true' &&
+          startsWith(github.event.workflow_run.head_branch, 'sdk-sync/') &&
           steps.validate.outputs.target != steps.validate.outputs.current
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ steps.validate.outputs.pr-number }}
           BRANCH: ${{ github.event.workflow_run.head_branch }}
           HEAD_SHA: ${{ steps.validate.outputs.head-sha }}
           TARGET: ${{ steps.validate.outputs.target }}
@@ -86,9 +88,9 @@ jobs:
           BREAKING: ${{ steps.validate.outputs.breaking }}
           VERSION: ${{ steps.validate.outputs.version }}
           PUBLISHED: ${{ steps.validate.outputs.published }}
-          # Hand-written PRs: the version to set if the PR should be released
+          # When this run did not set the version: the version to set if the PR should be released
           SUGGEST_VERSION: >-
-            ${{ steps.validate.outputs.is-sync != 'true' &&
+            ${{ steps.commit.outputs.committed != 'true' &&
             steps.validate.outputs.target != steps.validate.outputs.current &&
             steps.validate.outputs.target || '' }}
         run: .github/scripts/label-release.sh semver-result
