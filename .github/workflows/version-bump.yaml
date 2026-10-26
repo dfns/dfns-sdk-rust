@@ -1,0 +1,55 @@
+name: Version Bump
+
+# Commits the version computed by Semver Check to the monorepo sync PR, so merging that one PR
+# ships the SDK update and its version together. workflow_run always runs this file from the
+# default branch, so a PR cannot change what runs with write access; the artifact it reads is
+# validated by .github/scripts/apply-version-bump.sh.
+
+on:
+  workflow_run:
+    workflows:
+      - Semver Check
+    types:
+      - completed
+
+permissions:
+  contents: read
+
+jobs:
+  bump:
+    if: >-
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.conclusion == 'success' &&
+      startsWith(github.event.workflow_run.head_branch, 'sdk-sync/') &&
+      github.event.workflow_run.head_repository.full_name == github.repository
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # commit the version to the sync PR branch
+      pull-requests: write # release labels, comment, disable auto-merge
+      actions: read # download the Semver Check artifact
+    concurrency:
+      group: version-bump-${{ github.event.workflow_run.head_branch }}
+      cancel-in-progress: false
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+
+      - name: Download the Semver Check result
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: semver-result
+          path: semver-result
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ github.token }}
+
+      - name: Apply the version to the sync PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          RUN_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+          RUN_HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+        run: .github/scripts/apply-version-bump.sh semver-result
