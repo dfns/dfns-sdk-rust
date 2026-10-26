@@ -1,8 +1,7 @@
 name: Semver Check
 
-# Computes the release a PR requires, from its API change against the published crate.
-# Read-only: the Version Bump workflow (workflow_run) labels the PR, and commits the version
-# to monorepo sync PRs.
+# Reports the release a PR requires, from its API change against the published crate, in the job
+# summary. Read-only and informational: the version is set by the Prepare Release workflow.
 
 on:
   pull_request:
@@ -24,7 +23,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
           persist-credentials: false
 
       - name: Install Rust
@@ -33,33 +31,19 @@ jobs:
       - name: Install cargo-semver-checks
         run: cargo install --locked "cargo-semver-checks@$CARGO_SEMVER_CHECKS_VERSION"
 
-      - name: Compute the next version
-        env:
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+      - name: Report the required release
         run: |
           published=$(curl -fsSL -A "dfns-sdk-rust CI (https://github.com/dfns/dfns-sdk-rust)" \
             https://crates.io/api/v1/crates/dfns-sdk-rust | jq -r .crate.max_stable_version)
-          mkdir -p semver-result
-          .github/scripts/next-version.sh "$published" semver-result/report.txt > semver-result/result.txt
-          echo "$PR_NUMBER" > semver-result/pr-number.txt
-          echo "$HEAD_SHA" > semver-result/head-sha.txt
-          echo "$published" > semver-result/published.txt
-          read -r version level breaking < semver-result/result.txt
+          .github/scripts/next-version.sh "$published" semver-report.txt > semver-result.txt
+          read -r version level breaking < semver-result.txt
           {
-            echo "### Next version: \`$version\` ($level bump from \`$published\`)"
+            echo "### Next release: \`$version\` ($level bump from \`$published\`)"
             if [ "$breaking" = "true" ]; then
               echo
               echo "Breaking change against the published crate:"
               echo '```'
-              grep -E '^(--- failure|  )' semver-result/report.txt | head -60
+              grep -E '^(--- failure|  )' semver-report.txt | head -60
               echo '```'
             fi
           } >> "$GITHUB_STEP_SUMMARY"
-
-      - name: Upload the result
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: semver-result
-          path: semver-result/
-          retention-days: 7

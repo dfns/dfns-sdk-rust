@@ -1,0 +1,113 @@
+name: Prepare Release
+
+# Opens the release PR "chore(release): X.Y.Z" that sets the version in Cargo.toml and Cargo.lock.
+# Without a version input, the version is the one cargo-semver-checks requires against the published
+# crate (never lower than Cargo.toml on main). After the PR is merged, tag the merge commit
+# vX.Y.Z (signed) to publish.
+#
+# Setup: the dfns-sdk-semver GitHub App (Contents and Pull requests: read and write) opens the PR,
+# so its CI runs. Its credentials live in the `sdk-semver` environment, restricted to main:
+# variable SEMVER_APP_CLIENT_ID and secret SEMVER_APP_PRIVATE_KEY.
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to release (X.Y.Z). Leave empty to use the version cargo-semver-checks requires."
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: prepare-release
+  cancel-in-progress: false
+
+env:
+  CARGO_SEMVER_CHECKS_VERSION: "0.51.0"
+
+jobs:
+  release-pr:
+    if: github.ref == 'refs/heads/main'
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    environment:
+      name: sdk-semver
+      deployment: false
+    permissions:
+      contents: read # the branch, commit and PR are made with the dfns-sdk-semver app's token
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@4360b52568e2003a75bf9bc1d59f33a8e3fc893c # stable
+
+      - name: Install cargo-semver-checks
+        run: cargo install --locked "cargo-semver-checks@$CARGO_SEMVER_CHECKS_VERSION"
+
+      - name: Choose the version
+        id: version
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
+        run: |
+          published=$(curl -fsSL -A "dfns-sdk-rust CI (https://github.com/dfns/dfns-sdk-rust)" \
+            https://crates.io/api/v1/crates/dfns-sdk-rust | jq -r .crate.max_stable_version)
+          # Informational when a version is forced: a failed check must not block the release
+          if .github/scripts/next-version.sh "$published" semver-report.txt > semver-result.txt; then
+            read -r required _ _ < semver-result.txt
+          elif [ -n "$INPUT_VERSION" ]; then
+            required=unknown
+            echo "::warning::cargo-semver-checks failed; continuing with the forced version"
+          else
+            exit 1
+          fi
+          current=$(awk '/^\[/ { p = ($0 == "[package]") } p && /^version = / { gsub(/"/, "", $3); print $3; exit }' Cargo.toml)
+
+          if [ -n "$INPUT_VERSION" ]; then
+            if ! [[ "$INPUT_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+              echo "::error::Version must be X.Y.Z, got: $INPUT_VERSION"
+              exit 1
+            fi
+            version="$INPUT_VERSION"
+            mode=forced
+          else
+            # Keep an unreleased bump already on main
+            version=$(printf '%s\n%s\n' "$required" "$current" | sort -V | tail -1)
+            mode=computed
+          fi
+
+          if [ "$version" = "$current" ]; then
+            echo "::error::Cargo.toml on main is already $version: tag the commit to publish it"
+            exit 1
+          fi
+
+          {
+            echo "version=$version"
+            echo "published=$published"
+            echo "required=$required"
+            echo "mode=$mode"
+          } >> "$GITHUB_OUTPUT"
+          echo "### Release \`$version\` ($mode; \`cargo-semver-checks\` requires \`$required\` over \`$published\`)" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Generate the dfns-sdk-semver app token
+        id: app-token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          client-id: ${{ vars.SEMVER_APP_CLIENT_ID }}
+          private-key: ${{ secrets.SEMVER_APP_PRIVATE_KEY }}
+
+      - name: Open the release PR
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          REPO: ${{ github.repository }}
+          BASE_SHA: ${{ github.sha }}
+          VERSION: ${{ steps.version.outputs.version }}
+          PUBLISHED: ${{ steps.version.outputs.published }}
+          REQUIRED: ${{ steps.version.outputs.required }}
+          MODE: ${{ steps.version.outputs.mode }}
+        run: .github/scripts/open-release-pr.sh semver-report.txt
