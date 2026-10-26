@@ -3,7 +3,7 @@ name: Prepare Release
 # Opens the release PR "chore(release): X.Y.Z" that sets the version in Cargo.toml and Cargo.lock.
 # Without a version input, the version is the one cargo-semver-checks requires against the published
 # crate (never lower than Cargo.toml on main). After the PR is merged, tag the merge commit
-# vX.Y.Z (signed) to publish.
+# X.Y.Z (signed) to publish.
 #
 # Setup: the dfns-sdk-semver GitHub App (Contents and Pull requests: read and write) opens the PR,
 # so its CI runs. Its credentials live in the `sdk-semver` environment, restricted to main:

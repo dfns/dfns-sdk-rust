@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Usage: open-release-pr.sh <report-file>
-# Opens the release PR "chore(release): VERSION": creates the branch release/vVERSION at BASE_SHA,
+# Opens the release PR "chore(release): VERSION": creates the branch release/VERSION at BASE_SHA,
 # commits the version in Cargo.toml and Cargo.lock, and opens the PR into main. GH_TOKEN is the
 # dfns-sdk-semver app's token, so the branch, the commit (Verified) and the PR are the app's, and
 # the PR's CI runs.
@@ -10,7 +10,7 @@ set -euo pipefail
 
 report="$1"
 script_dir=$(cd "$(dirname "$0")" && pwd)
-branch="release/v$VERSION"
+branch="release/$VERSION"
 
 "$script_dir/set-version.sh" "$VERSION" Cargo.toml Cargo.lock
 
@@ -50,7 +50,7 @@ body=$(mktemp)
     echo "~~~"
     echo
   fi
-  echo "After merging, tag the merge commit to publish: \`git tag -s v$VERSION <merge-sha> && git push origin v$VERSION\`."
+  echo "After merging, tag the merge commit to publish: \`git tag -s $VERSION <merge-sha> && git push origin $VERSION\`."
 } > "$body"
 
 gh pr create --repo "$REPO" --base main --head "$branch" --title "chore(release): $VERSION" --body-file "$body"

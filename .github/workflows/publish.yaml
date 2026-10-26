@@ -3,7 +3,8 @@ name: Publish to crates.io
 on:
   push:
     tags:
-      - "v*"
+      # Release tags are the bare version (0.3.3), like the Cargo.toml version
+      - "[0-9]+.[0-9]+.[0-9]+"
 
 permissions:
   contents: read
@@ -25,8 +26,8 @@ jobs:
       - name: Check the tag matches Cargo.toml and is on main
         run: |
           version=$(awk '/^\[/ { p = ($0 == "[package]") } p && /^version = / { gsub(/"/, "", $3); print $3; exit }' Cargo.toml)
-          if [ "$GITHUB_REF_NAME" != "v$version" ]; then
-            echo "::error::Tag $GITHUB_REF_NAME does not match the Cargo.toml version $version (expected v$version)"
+          if [ "$GITHUB_REF_NAME" != "$version" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match the Cargo.toml version $version"
             exit 1
           fi
           if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/main; then
