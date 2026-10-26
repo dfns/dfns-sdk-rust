@@ -1,9 +1,9 @@
 name: Version Bump
 
-# Commits the version computed by Semver Check to the monorepo sync PR, so merging that one PR
-# ships the SDK update and its version together. workflow_run always runs this file from the
-# default branch, so a PR cannot change what runs with write access; the artifact it reads is
-# validated by .github/scripts/apply-version-bump.sh.
+# Labels each PR with the release Semver Check computed, and commits that version to monorepo
+# sync PRs, so merging one sync PR ships the SDK update and its version together. workflow_run
+# always runs this file from the default branch, so a PR cannot change what runs with write
+# access; the artifact it reads is validated by .github/scripts/apply-version-bump.sh.
 
 on:
   workflow_run:
@@ -20,12 +20,11 @@ jobs:
     if: >-
       github.event.workflow_run.event == 'pull_request' &&
       github.event.workflow_run.conclusion == 'success' &&
-      startsWith(github.event.workflow_run.head_branch, 'sdk-sync/') &&
       github.event.workflow_run.head_repository.full_name == github.repository
     timeout-minutes: 10
     runs-on: ubuntu-latest
     permissions:
-      contents: write # commit the version to the sync PR branch
+      contents: write # commit the version to sync PR branches
       pull-requests: write # release labels, comment, disable auto-merge
       actions: read # download the Semver Check artifact
     concurrency:
@@ -46,7 +45,7 @@ jobs:
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ github.token }}
 
-      - name: Apply the version to the sync PR
+      - name: Label the PR and apply the version to sync PRs
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}

@@ -1,7 +1,8 @@
 name: Semver Check
 
-# Computes the version a monorepo sync PR must ship with, from the API change against the
-# published crate. Read-only: the Version Bump workflow (workflow_run) commits the result.
+# Computes the release a PR requires, from its API change against the published crate.
+# Read-only: the Version Bump workflow (workflow_run) labels the PR, and commits the version
+# to monorepo sync PRs.
 
 on:
   pull_request:
@@ -16,8 +17,6 @@ env:
 
 jobs:
   semver:
-    # Only the monorepo's generated-SDK sync PRs, from branches of this repository
-    if: startsWith(github.head_ref, 'sdk-sync/') && github.event.pull_request.head.repo.full_name == github.repository
     timeout-minutes: 30
     runs-on: ubuntu-latest
 
