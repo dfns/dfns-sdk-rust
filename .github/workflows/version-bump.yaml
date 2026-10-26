@@ -3,7 +3,7 @@ name: Version Bump
 # Labels each PR with the release Semver Check computed, and commits that version to monorepo
 # sync PRs, so merging one sync PR ships the SDK update and its version together. workflow_run
 # always runs this file from the default branch, so a PR cannot change what runs with write
-# access; the artifact it reads is validated by .github/scripts/apply-version-bump.sh.
+# access; the artifact it reads is validated by .github/scripts/validate-semver-result.sh.
 
 on:
   workflow_run:
@@ -45,10 +45,43 @@ jobs:
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ github.token }}
 
-      - name: Label the PR and apply the version to sync PRs
+      - name: Validate the result
+        id: validate
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
           RUN_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
           RUN_HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
-        run: .github/scripts/apply-version-bump.sh semver-result
+        run: .github/scripts/validate-semver-result.sh semver-result
+
+      # Sync PRs only: commit the version, unless Cargo.toml already carries it
+      - name: Commit the version
+        if: >-
+          steps.validate.outputs.moved == 'false' &&
+          startsWith(github.event.workflow_run.head_branch, 'sdk-sync/') &&
+          steps.validate.outputs.target != steps.validate.outputs.current
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          BRANCH: ${{ github.event.workflow_run.head_branch }}
+          HEAD_SHA: ${{ steps.validate.outputs.head-sha }}
+          TARGET: ${{ steps.validate.outputs.target }}
+        run: .github/scripts/commit-version.sh
+
+      # All PRs: release labels, and a comment on breaking changes
+      - name: Label the release
+        if: steps.validate.outputs.moved == 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ steps.validate.outputs.pr-number }}
+          LEVEL: ${{ steps.validate.outputs.level }}
+          BREAKING: ${{ steps.validate.outputs.breaking }}
+          VERSION: ${{ steps.validate.outputs.version }}
+          PUBLISHED: ${{ steps.validate.outputs.published }}
+          # Hand-written PRs: the version to set if the PR should be released
+          SUGGEST_VERSION: >-
+            ${{ !startsWith(github.event.workflow_run.head_branch, 'sdk-sync/') &&
+            steps.validate.outputs.target != steps.validate.outputs.current &&
+            steps.validate.outputs.target || '' }}
+        run: .github/scripts/label-release.sh semver-result
