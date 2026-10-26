@@ -1,24 +1,26 @@
 #!/usr/bin/env bash
 # Usage: commit-version.sh
 # Sync PRs only. Checks the PR really is a monorepo sync PR, then sets TARGET in Cargo.toml and Cargo.lock
-# of the PR head and commits it to the PR branch as "chore(release): TARGET". The commit goes through the
-# GitHub API, so GitHub signs it (Verified), and only lands if the branch is still at HEAD_SHA.
+# of the PR head and commits it to the PR branch as "chore(release): TARGET". GH_TOKEN is the SDK release
+# app's token: the commit goes through the GitHub API as that app, so GitHub signs it (Verified), it
+# triggers the PR's CI, and it only lands if the branch is still at HEAD_SHA.
 # Writes committed=true|false to $GITHUB_OUTPUT.
 # Env: GH_TOKEN, REPO, PR_NUMBER, BRANCH, HEAD_SHA, TARGET (validated by validate-semver-result.sh),
-#      SYNC_APP_USER_ID (the sync app's bot user), ACTIONS_BOT_USER_ID (github-actions[bot]).
+#      SYNC_APP_USER_ID (the sync app's bot user), RELEASE_APP_SLUG (the release app, from its token).
 set -euo pipefail
 
 script_dir=$(cd "$(dirname "$0")" && pwd)
 
 # A sync PR is one the monorepo's sync app opened, whose commits were all made through the GitHub API
-# (committer web-flow, Verified) by that app or by this workflow's version commit. Anyone with write
-# access can name a branch sdk-sync/, and a commit's author can be set by its email, but a pushed commit
-# is never a Verified web-flow commit attributed to the app.
+# (committer web-flow, Verified) by that app or by the release app (an earlier version commit). The
+# sdk-sync/** ruleset already limits those branches to both apps; this checks it independently. A commit's
+# author can be set by its email, but a pushed commit is never a Verified web-flow commit attributed to an app.
+release_app_user_id=$(gh api "users/$RELEASE_APP_SLUG%5Bbot%5D" --jq .id)
 pr_author_id=$(gh api "repos/$REPO/pulls/$PR_NUMBER" --jq .user.id)
 foreign_commits=$(gh api --paginate "repos/$REPO/pulls/$PR_NUMBER/commits" \
-  | jq -s --arg sync "$SYNC_APP_USER_ID" --arg actions "$ACTIONS_BOT_USER_ID" \
+  | jq -s --arg sync "$SYNC_APP_USER_ID" --arg release "$release_app_user_id" \
     '[add[] | select(
-        ((.author.id // 0 | tostring) as $a | ($a != $sync and $a != $actions))
+        ((.author.id // 0 | tostring) as $a | ($a != $sync and $a != $release))
         or .committer.login != "web-flow"
         or .commit.verification.verified != true
       )] | length')
