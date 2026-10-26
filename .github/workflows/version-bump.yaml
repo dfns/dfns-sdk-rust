@@ -15,6 +15,12 @@ on:
 permissions:
   contents: read
 
+env:
+  # dfnsco-dfns-sdk-sync[bot], which opens the monorepo sync PRs
+  SYNC_APP_USER_ID: "275545256"
+  # github-actions[bot], which makes the version commit
+  ACTIONS_BOT_USER_ID: "41898282"
+
 jobs:
   bump:
     if: >-
@@ -54,11 +60,12 @@ jobs:
           RUN_HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
         run: .github/scripts/validate-semver-result.sh semver-result
 
-      # Sync PRs only: commit the version, unless Cargo.toml already carries it
+      # Sync PRs only (opened by the sync app, see validate-semver-result.sh): commit the version,
+      # unless Cargo.toml already carries it
       - name: Commit the version
         if: >-
           steps.validate.outputs.moved == 'false' &&
-          startsWith(github.event.workflow_run.head_branch, 'sdk-sync/') &&
+          steps.validate.outputs.is-sync == 'true' &&
           steps.validate.outputs.target != steps.validate.outputs.current
         env:
           GH_TOKEN: ${{ github.token }}
@@ -81,7 +88,7 @@ jobs:
           PUBLISHED: ${{ steps.validate.outputs.published }}
           # Hand-written PRs: the version to set if the PR should be released
           SUGGEST_VERSION: >-
-            ${{ !startsWith(github.event.workflow_run.head_branch, 'sdk-sync/') &&
+            ${{ steps.validate.outputs.is-sync != 'true' &&
             steps.validate.outputs.target != steps.validate.outputs.current &&
             steps.validate.outputs.target || '' }}
         run: .github/scripts/label-release.sh semver-result

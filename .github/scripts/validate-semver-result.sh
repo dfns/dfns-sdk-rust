@@ -4,7 +4,8 @@
 # pull_request run and is untrusted: each value is validated, and the PR must still be an open
 # same-repository PR into main at the commit that was checked.
 # Writes the validated values to $GITHUB_OUTPUT for the label and commit steps.
-# Env: GH_TOKEN, REPO (owner/name), RUN_HEAD_SHA and RUN_HEAD_BRANCH (from the workflow_run event).
+# Env: GH_TOKEN, REPO (owner/name), RUN_HEAD_SHA and RUN_HEAD_BRANCH (from the workflow_run event),
+#      SYNC_APP_USER_ID (the sync app's bot user) and ACTIONS_BOT_USER_ID (github-actions[bot]).
 set -euo pipefail
 
 dir="$1"
@@ -33,6 +34,27 @@ if [ "$state" != "open" ] || [ "$pr_base" != "main" ] || [ "$pr_head_repo" != "$
   exit 1
 fi
 
+# A sync PR is one the monorepo's sync app opened, on an sdk-sync/ branch, whose commits were all made
+# through the GitHub API (committer web-flow, Verified) by that app or by this workflow's version commit.
+# A branch name alone can be chosen by anyone with write access, and a commit's author can be set
+# by its email, but a pushed commit is never a Verified web-flow commit attributed to the app.
+is_sync=false
+pr_author_id=$(jq -r .user.id <<< "$pr")
+if [[ "$pr_head_ref" == sdk-sync/* ]] && [ "$pr_author_id" = "$SYNC_APP_USER_ID" ]; then
+  foreign_commits=$(gh api --paginate "repos/$REPO/pulls/$pr_number/commits" \
+    | jq -s --arg sync "$SYNC_APP_USER_ID" --arg actions "$ACTIONS_BOT_USER_ID" \
+      '[add[] | select(
+          ((.author.id // 0 | tostring) as $a | ($a != $sync and $a != $actions))
+          or .committer.login != "web-flow"
+          or .commit.verification.verified != true
+        )] | length' 2> /dev/null || echo error)
+  if [ "$foreign_commits" = "0" ]; then
+    is_sync=true
+  else
+    echo "::warning::PR #$pr_number looks like a sync PR, but not all its commits come from the sync app"
+  fi
+fi
+
 moved=false
 if [ "$pr_head_sha" != "$head_sha" ]; then
   echo "::notice::PR #$pr_number moved since the check ran; the run for the new head will handle it"
@@ -51,6 +73,7 @@ target=$(printf '%s\n%s\n' "$version" "$current" | sort -V | tail -1)
   echo "pr-number=$pr_number"
   echo "head-sha=$head_sha"
   echo "moved=$moved"
+  echo "is-sync=$is_sync"
   echo "published=$published"
   echo "version=$version"
   echo "level=$level"
