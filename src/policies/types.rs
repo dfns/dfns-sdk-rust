@@ -184,3 +184,12 @@ pub struct ListApprovalsQuery {
     )]
     pub approver_id: Option<String>,
 }
+
+/// Look up the Sumsub Travel Rule VASP of a wallet address
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct LookupSumsubTravelRuleVaspRequest {
+    #[serde(rename = "network")]
+    pub network: crate::types::Network,
+    #[serde(rename = "walletAddress")]
+    pub wallet_address: String,
+}

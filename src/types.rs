@@ -620,28 +620,94 @@ impl std::fmt::Display for KeyCurve {
 
 #[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum BulkWalletNetwork {
+    #[serde(rename = "Adi")]
+    Adi,
+    #[serde(rename = "ArbitrumOne")]
+    ArbitrumOne,
+    #[serde(rename = "Arc")]
+    Arc,
+    #[serde(rename = "Areum")]
+    Areum,
+    #[serde(rename = "AvalancheC")]
+    AvalancheC,
+    #[serde(rename = "Base")]
+    Base,
+    #[serde(rename = "Bob")]
+    Bob,
+    #[serde(rename = "Bsc")]
+    Bsc,
+    #[serde(rename = "Berachain")]
+    Berachain,
+    #[serde(rename = "Besu")]
+    Besu,
+    #[serde(rename = "Besu2")]
+    Besu2,
+    #[serde(rename = "Besu3")]
+    Besu3,
+    #[serde(rename = "Besu4")]
+    Besu4,
+    #[serde(rename = "Besu5")]
+    Besu5,
+    #[serde(rename = "Besu6")]
+    Besu6,
+    #[serde(rename = "Celo")]
+    Celo,
+    #[serde(rename = "Codex")]
+    Codex,
     #[serde(rename = "Ethereum")]
     Ethereum,
+    #[serde(rename = "EthereumClassic")]
+    EthereumClassic,
+    #[serde(rename = "FantomOpera")]
+    FantomOpera,
+    #[serde(rename = "FlareC")]
+    FlareC,
+    #[serde(rename = "FlowEvm")]
+    FlowEvm,
+    #[serde(rename = "HyperEvm")]
+    HyperEvm,
+    #[serde(rename = "Ink")]
+    Ink,
+    #[serde(rename = "Monad")]
+    Monad,
+    #[serde(rename = "Optimism")]
+    Optimism,
+    #[serde(rename = "Plasma")]
+    Plasma,
+    #[serde(rename = "Plume")]
+    Plume,
+    #[serde(rename = "Polygon")]
+    Polygon,
+    #[serde(rename = "Race")]
+    Race,
+    #[serde(rename = "Rayls")]
+    Rayls,
+    #[serde(rename = "Robinhood")]
+    Robinhood,
+    #[serde(rename = "SeiPacific1")]
+    SeiPacific1,
+    #[serde(rename = "Sonic")]
+    Sonic,
+    #[serde(rename = "Tempo")]
+    Tempo,
+    #[serde(rename = "Tsc")]
+    Tsc,
+    #[serde(rename = "Xdc")]
+    Xdc,
+    #[serde(rename = "XLayer")]
+    XLayer,
     #[serde(rename = "EthereumSepolia")]
     EthereumSepolia,
     #[serde(rename = "EthereumHolesky")]
     EthereumHolesky,
     #[serde(rename = "EthereumHoodi")]
     EthereumHoodi,
-    #[serde(rename = "Bsc")]
-    Bsc,
     #[serde(rename = "BscTestnet")]
     BscTestnet,
-    #[serde(rename = "Base")]
-    Base,
     #[serde(rename = "BaseSepolia")]
     BaseSepolia,
-    #[serde(rename = "ArbitrumOne")]
-    ArbitrumOne,
     #[serde(rename = "ArbitrumSepolia")]
     ArbitrumSepolia,
-    #[serde(rename = "Optimism")]
-    Optimism,
     #[serde(rename = "OptimismSepolia")]
     OptimismSepolia,
     #[serde(rename = "Tron")]
@@ -652,27 +718,63 @@ pub enum BulkWalletNetwork {
     Solana,
     #[serde(rename = "SolanaDevnet")]
     SolanaDevnet,
+    #[serde(rename = "Bitcoin")]
+    Bitcoin,
 }
 
 impl std::fmt::Display for BulkWalletNetwork {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.write_str(match self {
+            BulkWalletNetwork::Adi => "Adi",
+            BulkWalletNetwork::ArbitrumOne => "ArbitrumOne",
+            BulkWalletNetwork::Arc => "Arc",
+            BulkWalletNetwork::Areum => "Areum",
+            BulkWalletNetwork::AvalancheC => "AvalancheC",
+            BulkWalletNetwork::Base => "Base",
+            BulkWalletNetwork::Bob => "Bob",
+            BulkWalletNetwork::Bsc => "Bsc",
+            BulkWalletNetwork::Berachain => "Berachain",
+            BulkWalletNetwork::Besu => "Besu",
+            BulkWalletNetwork::Besu2 => "Besu2",
+            BulkWalletNetwork::Besu3 => "Besu3",
+            BulkWalletNetwork::Besu4 => "Besu4",
+            BulkWalletNetwork::Besu5 => "Besu5",
+            BulkWalletNetwork::Besu6 => "Besu6",
+            BulkWalletNetwork::Celo => "Celo",
+            BulkWalletNetwork::Codex => "Codex",
             BulkWalletNetwork::Ethereum => "Ethereum",
+            BulkWalletNetwork::EthereumClassic => "EthereumClassic",
+            BulkWalletNetwork::FantomOpera => "FantomOpera",
+            BulkWalletNetwork::FlareC => "FlareC",
+            BulkWalletNetwork::FlowEvm => "FlowEvm",
+            BulkWalletNetwork::HyperEvm => "HyperEvm",
+            BulkWalletNetwork::Ink => "Ink",
+            BulkWalletNetwork::Monad => "Monad",
+            BulkWalletNetwork::Optimism => "Optimism",
+            BulkWalletNetwork::Plasma => "Plasma",
+            BulkWalletNetwork::Plume => "Plume",
+            BulkWalletNetwork::Polygon => "Polygon",
+            BulkWalletNetwork::Race => "Race",
+            BulkWalletNetwork::Rayls => "Rayls",
+            BulkWalletNetwork::Robinhood => "Robinhood",
+            BulkWalletNetwork::SeiPacific1 => "SeiPacific1",
+            BulkWalletNetwork::Sonic => "Sonic",
+            BulkWalletNetwork::Tempo => "Tempo",
+            BulkWalletNetwork::Tsc => "Tsc",
+            BulkWalletNetwork::Xdc => "Xdc",
+            BulkWalletNetwork::XLayer => "XLayer",
             BulkWalletNetwork::EthereumSepolia => "EthereumSepolia",
             BulkWalletNetwork::EthereumHolesky => "EthereumHolesky",
             BulkWalletNetwork::EthereumHoodi => "EthereumHoodi",
-            BulkWalletNetwork::Bsc => "Bsc",
             BulkWalletNetwork::BscTestnet => "BscTestnet",
-            BulkWalletNetwork::Base => "Base",
             BulkWalletNetwork::BaseSepolia => "BaseSepolia",
-            BulkWalletNetwork::ArbitrumOne => "ArbitrumOne",
             BulkWalletNetwork::ArbitrumSepolia => "ArbitrumSepolia",
-            BulkWalletNetwork::Optimism => "Optimism",
             BulkWalletNetwork::OptimismSepolia => "OptimismSepolia",
             BulkWalletNetwork::Tron => "Tron",
             BulkWalletNetwork::TronNile => "TronNile",
             BulkWalletNetwork::Solana => "Solana",
             BulkWalletNetwork::SolanaDevnet => "SolanaDevnet",
+            BulkWalletNetwork::Bitcoin => "Bitcoin",
         })
     }
 }
@@ -801,8 +903,8 @@ pub struct BulkWalletCreationJob {
     pub org_id: String,
     #[serde(rename = "status")]
     pub status: String,
-    #[serde(rename = "network")]
-    pub network: crate::types::Network,
+    #[serde(rename = "networks")]
+    pub networks: Vec<crate::types::Network>,
     #[serde(rename = "namePrefix")]
     pub name_prefix: String,
     #[serde(rename = "tags")]

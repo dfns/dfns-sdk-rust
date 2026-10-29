@@ -16,6 +16,13 @@ pub struct GetLatestUnacceptedAgreementQuery {
     pub agreement_type: String,
 }
 
+/// Get Latest Agreements
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct GetLatestAgreementsResponse {
+    #[serde(rename = "latestAgreements")]
+    pub latest_agreements: Vec<serde_json::Value>,
+}
+
 /// Record Agreement Acceptance
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct RecordAgreementAcceptanceResponse {

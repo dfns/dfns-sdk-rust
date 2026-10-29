@@ -170,25 +170,16 @@ impl PermissionsClient {
         &self,
         permission_id: String,
         assignment_id: String,
-        query: Option<RevokePermissionQuery>,
+        body: RevokePermissionRequest,
     ) -> Result<(), crate::error::Error> {
-        let mut path = format!(
+        let path = format!(
             "/permissions/{}/assignments/{}",
             urlencoding::encode(&permission_id),
             urlencoding::encode(&assignment_id)
         );
-        if let Some(query) = &query {
-            let mut q: Vec<String> = Vec::new();
-            if let Some(v) = &query.force {
-                q.push(format!("force={}", urlencoding::encode(&v.to_string())));
-            }
-            if !q.is_empty() {
-                path.push('?');
-                path.push_str(&q.join("&"));
-            }
-        }
+        let body = serde_json::to_value(&body)?;
         self.client
-            .request_no_content(reqwest::Method::DELETE, &path, None, true)
+            .request_no_content(reqwest::Method::DELETE, &path, Some(&body), true)
             .await
     }
 }
