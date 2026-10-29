@@ -201,11 +201,11 @@ pub struct CreatePermissionResponse {
     pub date_updated: String,
 }
 
-/// Query parameters for the RevokePermissionQuery operation.
+/// Revoke Permission
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-pub struct RevokePermissionQuery {
+pub struct RevokePermissionRequest {
     #[serde(rename = "force", default, skip_serializing_if = "Option::is_none")]
-    pub force: Option<serde_json::Value>,
+    pub force: Option<bool>,
 }
 
 /// Deprecated: use `ListAssignmentsResponse` instead.

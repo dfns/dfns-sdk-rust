@@ -42,6 +42,16 @@ impl DelegatedAgreementsClient {
             .await
     }
 
+    /// Get the latest agreements
+    pub async fn get_latest_agreements(
+        &self,
+    ) -> Result<GetLatestAgreementsResponse, crate::error::Error> {
+        let path = String::from("/dashboard/agreements/latest");
+        self.client
+            .request::<GetLatestAgreementsResponse>(reqwest::Method::GET, &path, None, false)
+            .await
+    }
+
     /// Starts delegated signing for recordAgreementAcceptance: returns the challenge to sign.
     /// Pass the signed assertion to record_agreement_acceptance_complete with the same arguments.
     pub async fn record_agreement_acceptance_init(

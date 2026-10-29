@@ -185,4 +185,16 @@ impl PoliciesClient {
             .request::<ListApprovalsResponse>(reqwest::Method::GET, &path, None, false)
             .await
     }
+
+    /// Ask the org's Sumsub Travel Rule integration which VASP controls a counterparty wallet address on a network. Use the returned `vaspId` as `travelRule.beneficiaryVaspId` on a transfer screened by a Sumsub Travel Rule policy. `found: false` means Sumsub could not attribute the address (it may still be hosted). Read-only, so no user action signature is required. Requires Travel Rule to be enabled for the tenant, an activated Sumsub integration on the org, and wallet attribution enabled on the org's Sumsub account.
+    pub async fn lookup_sumsub_travel_rule_vasp(
+        &self,
+        body: LookupSumsubTravelRuleVaspRequest,
+    ) -> Result<serde_json::Value, crate::error::Error> {
+        let path = String::from("/v2/policies/travel-rule/sumsub/vasp-lookup");
+        let body = serde_json::to_value(&body)?;
+        self.client
+            .request::<serde_json::Value>(reqwest::Method::POST, &path, Some(&body), false)
+            .await
+    }
 }

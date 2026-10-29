@@ -251,8 +251,8 @@ pub struct ListBulkWalletJobsQuery {
 /// Bulk Create Wallets
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct BulkCreateWalletsRequest {
-    #[serde(rename = "network")]
-    pub network: crate::types::BulkWalletNetwork,
+    #[serde(rename = "networks")]
+    pub networks: Vec<crate::types::BulkWalletNetwork>,
     #[serde(rename = "count")]
     pub count: i64,
     #[serde(rename = "name")]
@@ -285,8 +285,8 @@ pub struct GetBulkWalletJobResponse {
     pub org_id: String,
     #[serde(rename = "status")]
     pub status: String,
-    #[serde(rename = "network")]
-    pub network: crate::types::Network,
+    #[serde(rename = "networks")]
+    pub networks: Vec<crate::types::Network>,
     #[serde(rename = "namePrefix")]
     pub name_prefix: String,
     #[serde(rename = "tags")]

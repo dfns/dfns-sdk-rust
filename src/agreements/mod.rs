@@ -44,6 +44,16 @@ impl AgreementsClient {
             .await
     }
 
+    /// Get the latest agreements
+    pub async fn get_latest_agreements(
+        &self,
+    ) -> Result<GetLatestAgreementsResponse, crate::error::Error> {
+        let path = String::from("/dashboard/agreements/latest");
+        self.client
+            .request::<GetLatestAgreementsResponse>(reqwest::Method::GET, &path, None, false)
+            .await
+    }
+
     /// Record the acceptance of a specific agreement by its ID
     pub async fn record_agreement_acceptance(
         &self,

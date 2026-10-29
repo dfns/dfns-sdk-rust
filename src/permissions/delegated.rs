@@ -301,25 +301,16 @@ impl DelegatedPermissionsClient {
         &self,
         permission_id: String,
         assignment_id: String,
-        query: Option<RevokePermissionQuery>,
+        body: RevokePermissionRequest,
     ) -> Result<crate::signer::UserActionChallenge, crate::error::Error> {
-        let mut path = format!(
+        let path = format!(
             "/permissions/{}/assignments/{}",
             urlencoding::encode(&permission_id),
             urlencoding::encode(&assignment_id)
         );
-        if let Some(query) = &query {
-            let mut q: Vec<String> = Vec::new();
-            if let Some(v) = &query.force {
-                q.push(format!("force={}", urlencoding::encode(&v.to_string())));
-            }
-            if !q.is_empty() {
-                path.push('?');
-                path.push_str(&q.join("&"));
-            }
-        }
+        let body = serde_json::to_value(&body)?;
         self.client
-            .create_user_action_challenge(reqwest::Method::DELETE, &path, None)
+            .create_user_action_challenge(reqwest::Method::DELETE, &path, Some(&body))
             .await
     }
 
@@ -329,31 +320,27 @@ impl DelegatedPermissionsClient {
         &self,
         permission_id: String,
         assignment_id: String,
-        query: Option<RevokePermissionQuery>,
+        body: RevokePermissionRequest,
         challenge_identifier: String,
         assertion: crate::signer::CredentialAssertion,
     ) -> Result<(), crate::error::Error> {
-        let mut path = format!(
+        let path = format!(
             "/permissions/{}/assignments/{}",
             urlencoding::encode(&permission_id),
             urlencoding::encode(&assignment_id)
         );
-        if let Some(query) = &query {
-            let mut q: Vec<String> = Vec::new();
-            if let Some(v) = &query.force {
-                q.push(format!("force={}", urlencoding::encode(&v.to_string())));
-            }
-            if !q.is_empty() {
-                path.push('?');
-                path.push_str(&q.join("&"));
-            }
-        }
+        let body = serde_json::to_value(&body)?;
         let user_action = self
             .client
             .complete_user_action_signing(challenge_identifier, &assertion)
             .await?;
         self.client
-            .request_no_content_with_user_action(reqwest::Method::DELETE, &path, None, &user_action)
+            .request_no_content_with_user_action(
+                reqwest::Method::DELETE,
+                &path,
+                Some(&body),
+                &user_action,
+            )
             .await
     }
 }
