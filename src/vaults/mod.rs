@@ -378,7 +378,7 @@ impl VaultsClient {
             .await
     }
 
-    /// Sends part or all of the locked amount to the lock's beneficiary, paying the network fee from the vault's available balance. Owner only, not subject to policies. Returns the outgoing transfer. The funds stay locked while it is in flight; once confirmed the lock is deleted and any unsent remainder returns to the available balance. If the transfer fails the lock stays in place and can be transferred again.
+    /// Sends part or all of the locked amount to the lock's beneficiary, paying the network fee from the vault's available balance. Owner only. The outgoing transfer is evaluated by `Wallets:Sign` policies like any other transfer. Returns the outgoing transfer. The funds stay locked while it is in flight; once confirmed the lock is deleted and any unsent remainder returns to the available balance. If the transfer fails the lock stays in place and can be transferred again.
     pub async fn transfer_vault_lock(
         &self,
         vault_id: String,
