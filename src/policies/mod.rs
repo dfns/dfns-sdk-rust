@@ -28,7 +28,7 @@ impl PoliciesClient {
             .await
     }
 
-    /// Update an existing policy. The policy status is not editable through this endpoint — the update body has no `status` field. To deactivate a policy, use the Archive Policy endpoint instead.
+    /// Update an existing policy. The policy status is not editable through this endpoint: the update body has no `status` field. To deactivate a policy, use the Delete Policy endpoint, which archives it.
     pub async fn update_policy(
         &self,
         policy_id: String,
@@ -41,7 +41,7 @@ impl PoliciesClient {
             .await
     }
 
-    /// Delete an existing policy.
+    /// Delete an existing policy. The policy is archived, not erased: its status becomes `Archived`, it stops applying to new activities, and it can still be read with Get Policy.
     pub async fn delete_policy(
         &self,
         policy_id: String,

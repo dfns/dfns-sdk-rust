@@ -6,7 +6,6 @@ pub mod signer;
 pub mod types;
 
 pub mod address_watches;
-pub mod agreements;
 pub mod allocations;
 pub mod auth;
 pub mod exchanges;
@@ -32,7 +31,6 @@ pub use error::Error;
 #[derive(Clone)]
 pub struct DfnsClient {
     pub address_watches: address_watches::AddressWatchesClient,
-    pub agreements: agreements::AgreementsClient,
     pub allocations: allocations::AllocationsClient,
     pub auth: auth::AuthClient,
     pub exchanges: exchanges::ExchangesClient,
@@ -57,7 +55,6 @@ impl DfnsClient {
         let client = Client::new(options)?;
         Ok(DfnsClient {
             address_watches: address_watches::AddressWatchesClient::new(client.clone()),
-            agreements: agreements::AgreementsClient::new(client.clone()),
             allocations: allocations::AllocationsClient::new(client.clone()),
             auth: auth::AuthClient::new(client.clone()),
             exchanges: exchanges::ExchangesClient::new(client.clone()),
@@ -83,7 +80,6 @@ impl DfnsClient {
 #[derive(Clone)]
 pub struct DfnsDelegatedClient {
     pub address_watches: address_watches::delegated::DelegatedAddressWatchesClient,
-    pub agreements: agreements::delegated::DelegatedAgreementsClient,
     pub allocations: allocations::delegated::DelegatedAllocationsClient,
     pub auth: auth::delegated::DelegatedAuthClient,
     pub exchanges: exchanges::delegated::DelegatedExchangesClient,
@@ -110,7 +106,6 @@ impl DfnsDelegatedClient {
             address_watches: address_watches::delegated::DelegatedAddressWatchesClient::new(
                 client.clone(),
             ),
-            agreements: agreements::delegated::DelegatedAgreementsClient::new(client.clone()),
             allocations: allocations::delegated::DelegatedAllocationsClient::new(client.clone()),
             auth: auth::delegated::DelegatedAuthClient::new(client.clone()),
             exchanges: exchanges::delegated::DelegatedExchangesClient::new(client.clone()),

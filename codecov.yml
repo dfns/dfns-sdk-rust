@@ -9,7 +9,6 @@ coverage:
 
 ignore:
   - "src/address_watches/**"
-  - "src/agreements/**"
   - "src/allocations/**"
   - "src/auth/**"
   - "src/exchanges/**"
