@@ -1366,6 +1366,48 @@ pub struct TransferAssetResponse {
     pub details: Option<std::collections::HashMap<String, serde_json::Value>>,
 }
 
+/// Search Wallets
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct SearchWalletsRequest {
+    #[serde(rename = "q", default, skip_serializing_if = "Option::is_none")]
+    pub q: Option<String>,
+    #[serde(rename = "sort", default, skip_serializing_if = "Option::is_none")]
+    pub sort: Option<serde_json::Value>,
+    #[serde(rename = "limit", default, skip_serializing_if = "Option::is_none")]
+    pub limit: Option<i64>,
+    #[serde(
+        rename = "paginationToken",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub pagination_token: Option<String>,
+    #[serde(
+        rename = "includeAssets",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub include_assets: Option<String>,
+    #[serde(rename = "matching", default, skip_serializing_if = "Option::is_none")]
+    pub matching: Option<String>,
+    #[serde(rename = "filters", default, skip_serializing_if = "Option::is_none")]
+    pub filters: Option<serde_json::Value>,
+}
+
+/// Search Wallets
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct SearchWalletsResponse {
+    #[serde(rename = "items")]
+    pub items: Vec<serde_json::Value>,
+    #[serde(
+        rename = "nextPageToken",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub next_page_token: Option<String>,
+    #[serde(rename = "partial", default, skip_serializing_if = "Option::is_none")]
+    pub partial: Option<String>,
+}
+
 /// Tag Wallet
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct TagWalletRequest {

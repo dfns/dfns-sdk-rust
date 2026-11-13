@@ -526,7 +526,7 @@ impl DelegatedWalletsClient {
             .await
     }
 
-    /// Retrieves the list of Wallets in your organization. You can filter the results by owner (either by owner id or owner username). The list cannot be filtered by tags or externalId — those are set at wallet creation only; to segment wallets by tag or externalId, list them and filter client-side, or maintain the mapping in your own system. Pagination is supported via limit and paginationToken parameters.
+    /// Retrieves the list of Wallets in your organization. You can filter the results by owner (either by owner id or owner username). To find wallets by tag, external id, name, network, status or token held, use [Search Wallets](https://docs.dfns.co/api-reference/wallets/search-wallets). Pagination is supported via limit and paginationToken parameters.
     pub async fn list_wallets(
         &self,
         query: Option<ListWalletsQuery>,
@@ -858,6 +858,21 @@ impl DelegatedWalletsClient {
                 Some(&body),
                 &user_action,
             )
+            .await
+    }
+
+    /// Searches the wallets of your organization: find a wallet from an identifier you already have, from a word in its name, or from a token it holds, and narrow the results with filters.
+    ///
+    /// **How `q` matches**
+    ///
+    pub async fn search_wallets(
+        &self,
+        body: SearchWalletsRequest,
+    ) -> Result<SearchWalletsResponse, crate::error::Error> {
+        let path = String::from("/wallets/search");
+        let body = serde_json::to_value(&body)?;
+        self.client
+            .request::<SearchWalletsResponse>(reqwest::Method::POST, &path, Some(&body), false)
             .await
     }
 
