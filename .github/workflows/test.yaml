@@ -28,9 +28,9 @@ jobs:
         uses: Swatinem/rust-cache@8cbdedb5103daa674dcf46d3590fe06a76645684 # v2.8.0
 
       - name: Install cargo-llvm-cov
-        uses: taiki-e/install-action@a24ba45235ed716ff76646268742990dc9458860 # v2.62.42
+        uses: taiki-e/install-action@cfdb7ed4ccc7c7dce37759eae89dc5674b469b39 # v2.90.3
         with:
-          tool: cargo-llvm-cov
+          tool: cargo-llvm-cov@0.9.1
 
       - name: Test
         run: cargo llvm-cov --locked --all-features --workspace --lcov --output-path lcov.info
